@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../login/services/auth.service';
 
 @Component({
@@ -14,7 +14,8 @@ export class SistemaComponent {
     user: any
 
     constructor(
-        private authService: AuthService
+        private authService: AuthService,
+        private router: Router
     ){}
 
     ngOnInit(){
@@ -23,5 +24,11 @@ export class SistemaComponent {
 
     cerrarSesion(){
         this.authService.cerrarSesion()
+    }
+
+    navigate(ruta:any, e:any = null){
+        if(e) e.preventDefault();
+
+        this.router.navigate(['/sistema/' + ruta])
     }
 }
