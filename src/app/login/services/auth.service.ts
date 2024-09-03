@@ -10,7 +10,7 @@ declare var vars: any;
 })
 export class AuthService {
 
-    API_URI = vars.API_URI;
+    AUTH_URI = vars.AUTH_URI;
 
     isAuthenticated: any
     user: any
@@ -65,7 +65,7 @@ export class AuthService {
     }
 
     crearSesion(user: any, pass: any) {
-        this.http.post(`${this.API_URI}/login`, { user: user, password: pass }).subscribe(
+        this.http.post(`${this.AUTH_URI}/login`, { user: user, password: pass }).subscribe(
             (res: any) => {
                 if (res.ok) {
                     this.setearSesionOk(res.mensaje)

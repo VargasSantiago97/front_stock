@@ -3,23 +3,58 @@
     <button type="button" class="btn btn-secondary m-2">Secondary</button>
 
     <div class="container-fluid p-2">
-        <p-table [value]="products" [tableStyle]="{ 'min-width': '50rem' }"
+        <p-table [value]="clientes" [tableStyle]="{ 'min-width': '50rem' }" #dt1
             styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" [paginator]="true" [rows]="25"
-            [rowsPerPageOptions]="[10, 25, 50, 100, 500, 1000]">
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50, 100, 500, 1000]"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" sortField="alias"
+            [globalFilterFields]="['alias', 'cuit', 'razon_social']" dataKey="id">
+
+            <ng-template pTemplate="caption">
+                <div class="flex text-end">
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (onClick)="clear(dt1)" />
+
+                    <span class="p-input-icon-left ml-auto text-end">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" [(ngModel)]="searchValue"
+                            (input)="dt1.filterGlobal(searchValue, 'contains')" placeholder="Buscar" />
+                    </span>
+                </div>
+            </ng-template>
+
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
+                    <th pSortableColumn="alias" style="width:20%">
+                        ALIAS <p-sortIcon field="alias" />
+                    </th>
+                    <th pSortableColumn="cuit" style="width:20%">
+                        CUIT <p-sortIcon field="cuit" />
+                    </th>
+                    <th pSortableColumn="razon_social" style="width:20%">
+                        RAZON SOCIAL <p-sortIcon field="razon_social" />
+                    </th>
+                    <th pSortableColumn="direccion" style="width:20%">
+                        DIRECCION <p-sortIcon field="direccion" />
+                    </th>
+                    <th pSortableColumn="localidad" style="width:20%">
+                        LOCALIDAD <p-sortIcon field="localidad" />
+                    </th>
+                    <th pSortableColumn="codigo_postal" style="width:20%">
+                        C.P. <p-sortIcon field="codigo_postal" />
+                    </th>
+                    <th pSortableColumn="provincia" style="width:20%">
+                        PROVINCIA <p-sortIcon field="provincia" />
+                    </th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-product>
-                <tr>
-                    <td>{{ product.code }}</td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.category }}</td>
-                    <td>{{ product.quantity }}</td>
+            <ng-template pTemplate="body" let-cliente>
+                <tr (dblclick)="mostrarModalCliente(cliente)">
+                    <td>{{ cliente.alias }}</td>
+                    <td>{{ cliente.cuit }}</td>
+                    <td>{{ cliente.razon_social }}</td>
+                    <td>{{ cliente.direccion }}</td>
+                    <td>{{ cliente.localidad }}</td>
+                    <td>{{ cliente.codigo_postal }}</td>
+                    <td>{{ cliente.provincia }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -107,7 +142,7 @@
         </div>
     </div>
     <p-divider align="left" type="solid">
-        <b>Contacto</b>
+        <b>Contacto principal</b>
     </p-divider>
     <div class="row">
         <div class="col-12">
@@ -131,155 +166,166 @@
         <b>Autorizados</b>
     </p-divider>
     @for (autorizado of autorizados; track $index) {
-        <div class="card p-2 py-4 my-1">
-            <div class="row">
-                <div class="col-12">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">NOMBRE/APELLIDO</span>
-                        <input type="text" class="form-control" placeholder="Nombre" aria-label="Nombre"
-                            aria-describedby="basic-addon1">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-md-6">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">DNI</span>
-                        <input type="text" class="form-control" placeholder="N° Documento" aria-label="N° Documento"
-                            aria-describedby="basic-addon1">
-                    </div>
-                </div>
-                <div class="col-12 col-md-6">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">CARGO</span>
-                        <input type="text" class="form-control" placeholder="Cargo en la empresa"
-                            aria-label="Cargo en la empresa" aria-describedby="basic-addon1">
-                    </div>
+    <div class="card p-2 py-4 my-1">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">NOMBRE/APELLIDO</span>
+                    <input type="text" class="form-control" placeholder="Nombre" aria-label="Nombre"
+                        aria-describedby="basic-addon1">
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">DNI</span>
+                    <input type="text" class="form-control" placeholder="N° Documento" aria-label="N° Documento"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CARGO</span>
+                    <input type="text" class="form-control" placeholder="Cargo en la empresa"
+                        aria-label="Cargo en la empresa" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CONTACTO</span>
+                    <input type="text" class="form-control" placeholder="Teléfono/Correo" aria-label="Teléfono/Correo"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-12 col-md-4 text-end">
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                    (click)="agregarAutorizado()">EDITAR</button>
+                <button type="button" class="btn btn-sm btn-danger py-2" (click)="agregarAutorizado()">ELIMINAR</button>
+            </div>
+        </div>
+    </div>
     }
 
-    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarAutorizado()">AGREGAR</button> 
-    <p-divider align="left"
-        type="solid">
+    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarAutorizado()">AGREGAR AUTORIZADO</button>
+
+    <p-divider align="left" type="solid">
         <b>Transporte</b>
     </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
+    @for (transporte of transportes; track $index) {
+    <div class="card p-2 py-4 my-1">
+        <div class="row mb-4 mb-md-0">
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">TRANSPORTE</span>
+                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CUIT</span>
+                    <input type="text" class="form-control" placeholder="CUIT Transportista"
+                        aria-label="CUIT Transportista" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4 mb-md-0">
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CHOFER</span>
+                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CUIT</span>
+                    <input type="text" class="form-control" placeholder="CUIT Chofer" aria-label="CUIT Chofer"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">PAT CH.</span>
+                    <input type="text" class="form-control" placeholder="Patente chasis" aria-label="Patente chasis"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">PAT AC.</span>
+                    <input type="text" class="form-control" placeholder="Patente acoplado" aria-label="Patente acoplado"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-12 col-md-4 text-end">
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                    (click)="agregarTransporte()">EDITAR</button>
+                <button type="button" class="btn btn-sm btn-danger py-2" (click)="agregarTransporte()">ELIMINAR</button>
             </div>
         </div>
     </div>
+    }
+
+    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarTransporte()">AGREGAR TRANSPORTE</button>
+
     <p-divider align="left" type="solid">
         <b>Establecimientos</b>
     </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
+
+    @for (establecimiento of establecimientos; track $index) {
+    <div class="card p-2 py-4 my-1">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">DESCRIPCION</span>
+                    <input type="text" class="form-control" placeholder="Descripcion" aria-label="Descripcion"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
+                    <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
+                    <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
+                        aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                    (click)="agregarEstablecimiento()">EDITAR</button>
+                <button type="button" class="btn btn-sm btn-danger py-2"
+                    (click)="agregarEstablecimiento()">ELIMINAR</button>
             </div>
         </div>
     </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
+    }
+    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarEstablecimiento()">AGREGAR
+        ESTABLECIMIENTO</button>
+
+    <p-divider align="left" type="solid"></p-divider>
+
     <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Establecimientos</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1">
-            </div>
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="agregarEstablecimiento()">CERRAR</button>
+            <button type="button" class="btn btn-danger m-2" (click)="agregarEstablecimiento()">ELIMINAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="agregarEstablecimiento()">GUARDAR</button>
+
         </div>
     </div>
 </p-dialog>
