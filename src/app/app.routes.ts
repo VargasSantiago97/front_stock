@@ -18,13 +18,13 @@ export const routes: Routes = [
         path: 'sistema', component: SistemaComponent, 
         children: [
             { path: '', redirectTo: '/sistema/inicio', pathMatch: 'full' },
-            { path: 'inicio', component: InicioComponent },
-            { path: 'clientes', component: ClientesComponent },
-            { path: 'productos', component: ProductosComponent },
-            { path: 'ingresos', component: IngresosComponent },
-            { path: 'egresos', component: EgresosComponent },
-            { path: 'stock', component: StockComponent },
-            { path: 'depositos', component: DepositosComponent }
+            { path: 'inicio', component: InicioComponent, canActivate: [AuthGuard] },
+            { path: 'clientes', component: ClientesComponent, canActivate: [AuthGuard] },
+            { path: 'productos', component: ProductosComponent, canActivate: [AuthGuard] },
+            { path: 'ingresos', component: IngresosComponent, canActivate: [AuthGuard] },
+            { path: 'egresos', component: EgresosComponent, canActivate: [AuthGuard] },
+            { path: 'stock', component: StockComponent, canActivate: [AuthGuard] },
+            { path: 'depositos', component: DepositosComponent, canActivate: [AuthGuard] }
         ],
         canActivate: [AuthGuard]
     },

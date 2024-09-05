@@ -58,8 +58,8 @@ export class AuthService {
         this.isAuthenticated = ya < exp;
         this.user = objetoJSON
 
-        localStorage.setItem('stock_user_id', objetoJSON.sub)
-        localStorage.setItem('stock_permisos', objetoJSON.permisos)
+        sessionStorage.setItem('stock_user_id', objetoJSON.sub)
+        sessionStorage.setItem('stock_permisos', objetoJSON.permisos)
 
         return ya < exp
     }

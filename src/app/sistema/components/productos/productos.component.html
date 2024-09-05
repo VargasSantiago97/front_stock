@@ -1,1 +1,224 @@
-<p>productos works!</p>
+<div class="container-fluid">
+    <div class="row mx-1">
+        <div class="col-12 col-sm-6 col-xl-2 p-0">
+            <div class="card m-1 p-2 shadow">
+                <h3>Rubros <button type="button" class="btn btn-primary m-2"
+                        (click)="mostrarModalRubro()">NUEVO</button></h3>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_rubro" (keyup)="filtroRubro()"
+                    [ngStyle]="{'background-color':searchValue_rubro == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox">
+                    @for (rub of rubrosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_rubro == rub.id ? 'selected' : ''"
+                        (click)="onChangeRubro(rub.id)" (dblclick)="mostrarModalRubro(rub.id)">{{rub.descripcion}}</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-2 p-0">
+            <div class="card m-1 p-2 shadow">
+                <h3>SubRubros <button type="button" class="btn btn-primary m-2"
+                        (click)="mostrarModalSubRubro()">NUEVO</button></h3>
+
+                @if (id_rubro) {
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_subRubro" (keyup)="filtroSubRubro()"
+                    [ngStyle]="{'background-color':searchValue_subRubro == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox">
+                    @for (subRub of subRubrosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_subRubro == subRub.id ? 'selected' : ''"
+                        (click)="onChangeSubRubro(subRub.id)" (dblclick)="mostrarModalSubRubro(subRub.id)">
+                        {{subRub.descripcion}}</div>
+                    }
+                </div>
+                } @else {
+                <p>Seleccione un RUBRO</p>
+                }
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-xl-8 p-0">
+            <div class="card m-1 p-2 shadow">
+                <h3>Articulos <button type="button" class="btn btn-primary m-2"
+                        (click)="mostrarModalArticulo()">NUEVO</button>
+                </h3>
+
+                <div class="container-fluid p-2">
+                    <p-table [value]="clientes" [tableStyle]="{ 'min-width': '50rem' }" #dt1
+                        styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" [paginator]="true"
+                        [rows]="20" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 50, 100, 500, 1000]"
+                        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+                        sortField="alias" [globalFilterFields]="['alias', 'cuit', 'razon_social', 'codigo']"
+                        dataKey="id">
+
+                        <ng-template pTemplate="caption">
+                            <div class="flex text-end">
+                                <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash"
+                                    (onClick)="clear(dt1)" />
+
+                                <span class="p-input-icon-left ml-auto text-end">
+                                    <i class="pi pi-search"></i>
+                                    <input pInputText type="text" [(ngModel)]="searchValue"
+                                        (input)="dt1.filterGlobal(searchValue, 'contains')" placeholder="Buscar" />
+                                </span>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pSortableColumn="id" style="width:20%">
+                                    CÓD. <p-sortIcon field="id" />
+                                </th>
+                                <th pSortableColumn="cuit" style="width:20%">
+                                    DESCRIPCION <p-sortIcon field="cuit" />
+                                </th>
+                                <th pSortableColumn="razon_social" style="width:20%">
+                                    U.M. <p-sortIcon field="razon_social" />
+                                </th>
+                                <th pSortableColumn="direccion" style="width:20%">
+                                    DIRECCION <p-sortIcon field="direccion" />
+                                </th>
+                                <th pSortableColumn="localidad" style="width:20%">
+                                    LOCALIDAD <p-sortIcon field="localidad" />
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-cliente>
+                            <tr (dblclick)="mostrarModalArticulo(cliente.id)">
+                                <td class="text-nowrap"><strong>{{ cliente.id }}</strong></td>
+                                <td class="text-nowrap">{{ cliente.alias }}</td>
+                                <td class="text-nowrap">{{ cliente.cuit }}</td>
+                                <td class="text-nowrap">{{ cliente.razon_social }}</td>
+                                <td class="text-nowrap">{{ cliente.direccion }}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<p-dialog header="{{rubro.id ? 'EDITAR RUBRO' : 'NUEVO RUBRO'}}" [modal]="true" [(visible)]="visible_rubro"
+    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Alias</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="rubro.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Desc.</span>
+                <input type="text" class="form-control" placeholder="Descripcion completa"
+                    aria-label="Descripcion completa" aria-describedby="basic-addon1" [(ngModel)]="rubro.descripcion">
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_rubro = false">CERRAR</button>
+            @if (rubro.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarRubro(rubro.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarRubro(rubro)">{{rubro.id ? 'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>
+
+
+<p-dialog header="{{subRubro.id ? 'EDITAR SUB-RUBRO' : 'NUEVO SUB-RUBRO'}}" [modal]="true"
+    [(visible)]="visible_subRubro" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [maximizable]="true">
+
+    <h3 class="mb-5 text-center">SUBRUBRO DE: <strong
+            style="color: brown;">{{obtenerDescripcionRubro(id_rubro)}}</strong></h3>
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Alias</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="subRubro.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Desc.</span>
+                <input type="text" class="form-control" placeholder="Descripcion completa"
+                    aria-label="Descripcion completa" aria-describedby="basic-addon1"
+                    [(ngModel)]="subRubro.descripcion">
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_subRubro = false">CERRAR</button>
+            @if (subRubro.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarSubRubro(subRubro.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarSubRubro(subRubro)">{{subRubro.id ?
+                'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>
+
+
+<p-dialog header="{{articulo.id ? 'EDITAR ARTICULO' : 'NUEVO ARTICULO'}}" [modal]="true" [(visible)]="visible_articulo"
+    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+    <h3 class="mb-5 text-center">ARTICULO DE: <strong
+            style="color: brown;">{{obtenerDescripcionRubro(id_rubro)}}</strong> - <strong
+            style="color: brown;">{{obtenerDescripcionSubRubro(id_subRubro)}}</strong></h3>
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Alias</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="subRubro.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Desc.</span>
+                <input type="text" class="form-control" placeholder="Descripcion completa"
+                    aria-label="Descripcion completa" aria-describedby="basic-addon1"
+                    [(ngModel)]="subRubro.descripcion">
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_subRubro = false">CERRAR</button>
+            @if (subRubro.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarSubRubro(subRubro.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarSubRubro(subRubro)">{{subRubro.id ?
+                'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>

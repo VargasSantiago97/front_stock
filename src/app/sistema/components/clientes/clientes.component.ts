@@ -10,7 +10,7 @@ import { PadronService } from '../../services/padron.service';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
-import { Cliente } from '../../interfaces/clientes';
+import { Autorizado, Cliente, Establecimiento, Transporte } from '../../interfaces/clientes';
 import { ConsultasService } from '../../services/consultas.service';
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -29,27 +29,31 @@ export class ClientesComponent {
     visible: boolean = false;
     spinnerCUIT: boolean = false;
 
-    cliente: Cliente = {
+    cliente_nuevo: Cliente = {
         alias: '',
         id: '',
         cuit: 0,
+        codigo: '',
         razon_social: '',
         direccion: '',
         localidad: '',
         provincia: '',
         codigo_postal: '',
         datos: {},
-        estado: 0,
+        estado: 1,
         createdBy: '',
         updatedBy: '',
         createdAt: '',
-        updatedAt: ''
+        updatedAt: '',
+        telefono: '',
+        correo: ''
     }
+    cliente: Cliente = { ...this.cliente_nuevo }
     clientes: Cliente[] = [];
 
-    autorizados: any = []
-    transportes: any = []
-    establecimientos: any = []
+    autorizados: Autorizado[] = []
+    transportes: Transporte[] = []
+    establecimientos: Establecimiento[] = []
 
     constructor(
         private padron: PadronService,
@@ -58,12 +62,14 @@ export class ClientesComponent {
     ) { }
 
     ngOnInit() {
-        this.cs.getAll('clientes', (clientes:Cliente[]) => { this.clientes = clientes; console.log(clientes) })
+        this.actualizarDatosTabla()
     }
 
-    showDialog() {
-        this.visible = true;
+    actualizarDatosTabla(){
+        this.cs.getAll('clientes', (clientes:Cliente[]) => { this.clientes = clientes })
+        this.visible = false
     }
+
 
     buscarCUIT() {
         this.spinnerCUIT = true
@@ -126,21 +132,163 @@ export class ClientesComponent {
         this.searchValue = ''
     }
 
-    mostrarModalCliente(cliente:Cliente){
-        this.cliente = cliente
+    mostrarModalCliente(id:any = undefined){
+        if(id){
+            this.cliente = { ... this.clientes.find((e:any) => { return e.id == id })! }
+
+            this.buscarAutorizados(id)
+            this.buscarTransporte(id)
+            this.buscarEstablecimientos(id)
+        } else {
+            this.cliente = { ...this.cliente_nuevo }
+            this.autorizados = []
+            this.transportes = []
+            this.establecimientos = []
+        }
         this.visible = true
     }
+    guardarCambiosCliente(){
+        if(this.cliente.id){
+            this.cs.update('clientes', this.cliente, (cant:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
+                this.actualizarDatosTabla()
+            })
+        } else {
+            this.cs.create('clientes', this.cliente, (id:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Cliente creado con ID: ' + id })
+                this.actualizarDatosTabla()
+            })
+        }
+    }
+    eliminarCliente(id:string){
+        this.cs.delete('clientes', id, (cant:any) => {
+            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
+            this.actualizarDatosTabla()
+        })
+    }
 
 
 
-
+    buscarAutorizados(id_cliente:string){
+        this.cs.getAll('autorizados/' + id_cliente, (data:Autorizado[]) => {
+            this.autorizados = data
+        })
+    }
     agregarAutorizado(){
-        this.autorizados.push(1)
+        this.autorizados.push({
+            id: '',
+            id_cliente: this.cliente.id,
+            descripcion: '',
+            documento: '',
+            cargo: '',
+            contacto: '',
+            datos: {},
+            estado: 1,
+            createdBy: '',
+            updatedBy: '',
+            createdAt: '',
+            updatedAt: ''
+        })
+    }
+    guardarAutorizado(autorizado:Autorizado){
+        if(autorizado.id){
+            this.cs.update('autorizados', autorizado, (cant:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
+            })
+        } else {
+            this.cs.create('autorizados', autorizado, (id:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Autorizado creado con ID: ' + id })
+                autorizado.id = id
+            })
+        }
+    }
+    eliminarAutorizado(id:string){
+        this.cs.delete('autorizados', id, (cant:any) => {
+            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
+            this.autorizados = this.autorizados.filter((aut:Autorizado) => { return aut.id != id })
+        })
+    }
+
+
+    buscarTransporte(id_cliente:string){
+        this.cs.getAll('transportes/' + id_cliente, (data:Transporte[]) => {
+            this.transportes = data
+        })
     }
     agregarTransporte(){
-        this.transportes.push(1)
+        this.transportes.push({
+            id: '',
+            id_cliente: this.cliente.id,
+            transporte: '',
+            cuit_transporte: 0,
+            chofer: '',
+            cuit_chofer: 0,
+            patente_chasis: '',
+            patente_acoplado: '',
+            datos: {},
+            estado: 1,
+            createdBy: '',
+            updatedBy: '',
+            createdAt: '',
+            updatedAt: ''
+        })
+    }
+    guardarTransporte(transporte:Transporte){
+        if(transporte.id){
+            this.cs.update('transportes', transporte, (cant:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
+            })
+        } else {
+            this.cs.create('transportes', transporte, (id:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Transporte creado con ID: ' + id })
+                transporte.id = id
+            })
+        }
+    }
+    eliminarTransporte(id:string){
+        this.cs.delete('transportes', id, (cant:any) => {
+            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
+            this.transportes = this.transportes.filter((transp:Transporte) => { return transp.id != id })
+        })
+    }
+
+
+    buscarEstablecimientos(id_cliente:string){
+        this.cs.getAll('establecimientos/' + id_cliente, (data:Establecimiento[]) => {
+            this.establecimientos = data
+        })
     }
     agregarEstablecimiento(){
-        this.establecimientos.push(1)
+        this.establecimientos.push({
+            id: '',
+            id_cliente: this.cliente.id,
+            descripcion: '',
+            localidad: '',
+            provincia: '',
+            datos: {},
+            estado: 1,
+            createdBy: '',
+            updatedBy: '',
+            createdAt: '',
+            updatedAt: ''
+        })
+    }
+    guardarEstablecimiento(establecimiento:Establecimiento){
+        if(establecimiento.id){
+            this.cs.update('establecimientos', establecimiento, (cant:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
+            })
+        } else {
+            this.cs.create('establecimientos', establecimiento, (id:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Establecimiento creado con ID: ' + id })
+                establecimiento.id = id
+            })
+        }
+    }
+    eliminarEstablecimiento(id:string){
+        this.cs.delete('establecimientos', id, (cant:any) => {
+            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
+            this.establecimientos = this.establecimientos.filter((aut:Establecimiento) => { return aut.id != id })
+        })
     }
 }
