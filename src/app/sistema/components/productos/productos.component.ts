@@ -12,12 +12,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Rubro, SubRubro } from '../../interfaces/productos';
 import { ConsultasService } from '../../services/consultas.service';
 import { MessageService } from 'primeng/api';
-
+import { Laboratorio, UnidadMedida } from '../../interfaces/variables';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
     selector: 'app-productos',
     standalone: true,
-    imports: [ListboxModule, FormsModule, TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, InputTextModule],
+    imports: [ListboxModule, FormsModule, TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, InputTextModule, CheckboxModule],
     templateUrl: './productos.component.html',
     styleUrl: './productos.component.css'
 })
@@ -71,6 +72,20 @@ export class ProductosComponent {
 
     searchValue_rubro: string = ''
     searchValue_subRubro: string = ''
+    searchValue_laboratorio
+
+    unidadMedidas: UnidadMedida[] = []
+    unidadMedidasFiltrados: UnidadMedida[] = []
+    laboratorios: Laboratorio[] = []
+    laboratoriosFiltrados: Laboratorio[] = []
+
+
+
+
+    selected_laboratorio: any
+    selected_unidadMedida: any
+
+    pizza: string[] = [];
 
 
     constructor(
@@ -482,6 +497,8 @@ export class ProductosComponent {
         }]
 
         this.buscarRubros()
+        this.buscarLaboratorios()
+        this.buscarUnidadMedidas()
     }
 
     clear(table: Table) {
@@ -489,6 +506,18 @@ export class ProductosComponent {
         this.searchValue = ''
     }
     mostrarModalCliente(id: any) { } //ELIMINAR
+    buscarLaboratorios(){
+        this.cs.getAll('laboratorios', (data:Laboratorio[]) => {
+            this.laboratorios = data
+            console.log(this.laboratorios)
+        })
+    }
+    buscarUnidadMedidas(){
+        this.cs.getAll('unidadMedidas', (data:UnidadMedida[]) => {
+            this.unidadMedidas = data
+            console.log(this.unidadMedidas)
+        })
+    }
 
 
 
@@ -613,17 +642,17 @@ export class ProductosComponent {
     filtroSubRubro(){
         this.subRubrosFiltrados = this.subRubros.filter((subRubro:SubRubro) => { return subRubro.descripcion.toLocaleUpperCase().includes(this.searchValue_subRubro.toLocaleUpperCase()) })
     }
-
+filtroLaboratorio
 
     mostrarModalArticulo(id:any = null){
         if(! (this.id_rubro && this.id_subRubro) ){
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un RUBRO y SUBRUBRO'})
         }
-
+        /* 
         if(id){
-            this.subRubro = this.subRubros.find((subRubro:SubRubro) => { return subRubro.id == id })!
+            this.articulo = this.articulos.find((articulo:any) => { return articulo.id == id })!
         } else {
-            this.subRubro = {
+            this.articulo = {
                 id: '',
                 id_rubro: this.id_rubro,
                 descripcion: '',
@@ -635,7 +664,7 @@ export class ProductosComponent {
                 createdAt: '',
                 updatedAt: ''
             }
-        }
+        } */
 
         this.visible_articulo = true
     }

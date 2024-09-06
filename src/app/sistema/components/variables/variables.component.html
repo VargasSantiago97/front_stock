@@ -1,0 +1,149 @@
+<div class="container-fluid">
+    <div class="row mx-1">
+        <div class="col-12 col-sm-6 col-xl-2 p-0">
+            <div class="card m-1 p-2 shadow">
+                <h3>U. de Medida <button type="button" class="btn btn-primary m-2"
+                        (click)="mostrarModalUnidadMedida()">NUEVO</button></h3>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_unidadMedida" (keyup)="filtroUnidadMedida()"
+                    [ngStyle]="{'background-color':searchValue_unidadMedida == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox">
+                    @for (um of unidadMedidasFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_unidadMedida == um.id ? 'selected' : ''"
+                        (click)="id_unidadMedida = um.id" (dblclick)="mostrarModalUnidadMedida(um.id)">{{um.alias}}
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-2 p-0">
+            <div class="card m-1 p-2 shadow">
+                <h3>Laboratorios <button type="button" class="btn btn-primary m-2"
+                        (click)="mostrarModalLaboratorio()">NUEVO</button></h3>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_laboratorio" (keyup)="filtroLaboratorio()"
+                    [ngStyle]="{'background-color':searchValue_laboratorio == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox">
+                    @for (lab of laboratoriosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_laboratorio == lab.id ? 'selected' : ''"
+                        (click)="id_laboratorio = lab.id" (dblclick)="mostrarModalLaboratorio(lab.id)">{{lab.alias}}
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TERMINAR DIALOGO PARA DEPOSITO, LUEGO HACER LA API-->
+<p-dialog header="{{unidadMedida.id ? 'EDITAR UNIDAD DE MEDIDA' : 'NUEVO UNIDAD DE MEDIDA'}}" [modal]="true" [(visible)]="visible_unidadMedida"
+    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Alias</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="unidadMedida.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Descripcion</span>
+                <input type="text" class="form-control" placeholder="Descripcion"
+                    aria-label="Descripcion" aria-describedby="basic-addon1" [(ngModel)]="unidadMedida.descripcion">
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_unidadMedida = false">CERRAR</button>
+            @if (unidadMedida.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarUnidadMedida(unidadMedida.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarUnidadMedida(unidadMedida)">{{unidadMedida.id ? 'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="{{unidadMedida.id ? 'EDITAR UNIDAD DE MEDIDA' : 'NUEVO UNIDAD DE MEDIDA'}}" [modal]="true" [(visible)]="visible_unidadMedida"
+    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Alias</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="unidadMedida.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Descripcion</span>
+                <input type="text" class="form-control" placeholder="Descripcion"
+                    aria-label="Descripcion" aria-describedby="basic-addon1" [(ngModel)]="unidadMedida.descripcion">
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_unidadMedida = false">CERRAR</button>
+            @if (unidadMedida.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarUnidadMedida(unidadMedida.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarUnidadMedida(unidadMedida)">{{unidadMedida.id ? 'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="{{laboratorio.id ? 'EDITAR LABORATORIO' : 'NUEVO LABORATORIO'}}" [modal]="true" [(visible)]="visible_laboratorio"
+    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Alias</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="laboratorio.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Razon Social</span>
+                <input type="text" class="form-control" placeholder="Razon Social"
+                    aria-label="Razon Social" aria-describedby="basic-addon1" [(ngModel)]="laboratorio.descripcion">
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_laboratorio = false">CERRAR</button>
+            @if (laboratorio.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarLaboratorio(laboratorio.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarLaboratorio(laboratorio)">{{laboratorio.id ? 'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>

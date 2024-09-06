@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
@@ -15,12 +15,27 @@ export class AuthService {
     isAuthenticated: any
     user: any
 
+    mensajeSesionActivado: boolean = false
+
     constructor(
         private http: HttpClient,
         private messageService: MessageService,
         private router: Router
     ) {
         this.existeSesion()
+    }
+
+    alertarProntoCierreDeSesion(){
+        let user = sessionStorage.getItem('stock_user')
+        let password = prompt('ATENCIÓN, LA SESIÓN ESTÁ POR CADUCAR. POR FAVOR, REINGRESE SU CONTRASEÑA.\n\nUSER: ' + user)
+
+        if(password){
+            this.crearSesion(user, password, false)
+        } else {
+            setTimeout(() => {
+                this.isLoggedIn() ? null : this.cerrarSesion()
+            }, 10000)
+        }
     }
 
     existeSesion() {
@@ -58,17 +73,38 @@ export class AuthService {
         this.isAuthenticated = ya < exp;
         this.user = objetoJSON
 
+
+        //SETEAR MENSAJE PARA ANTICIPAR CIERRE DE SESION.
+        if(this.isAuthenticated && !this.mensajeSesionActivado){
+            this.mensajeSesionActivado = true
+
+            setTimeout(() => {
+                this.alertarProntoCierreDeSesion()
+            }, exp-ya-10000)
+        }
+
+
         sessionStorage.setItem('stock_user_id', objetoJSON.sub)
+        sessionStorage.setItem('stock_user', objetoJSON.user)
         sessionStorage.setItem('stock_permisos', objetoJSON.permisos)
 
         return ya < exp
     }
 
-    crearSesion(user: any, pass: any) {
+    crearSesion(user: any, pass: any, redirrecionar: boolean = true) {
         this.http.post(`${this.AUTH_URI}/login`, { user: user, password: pass }).subscribe(
             (res: any) => {
                 if (res.ok) {
-                    this.setearSesionOk(res.mensaje)
+                    sessionStorage.setItem('stock_session', 'ok')
+                    sessionStorage.setItem('stock_token', res.mensaje)
+
+                    this.existeSesion()
+
+                    this.mensajeSesionActivado = false
+
+                    if(redirrecionar){
+                        this.router.navigate(['/']);
+                    }
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error!', detail: res.mensaje })
                     console.error(res)
@@ -85,13 +121,6 @@ export class AuthService {
         )
     }
 
-    setearSesionOk(token: any) {
-        sessionStorage.setItem('stock_session', 'ok')
-        sessionStorage.setItem('stock_token', token)
-
-        this.existeSesion()
-        this.router.navigate(['/']);
-    }
 
     cerrarSesion(){
         sessionStorage.clear()

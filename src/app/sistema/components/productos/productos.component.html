@@ -188,11 +188,12 @@
     <h3 class="mb-5 text-center">ARTICULO DE: <strong
             style="color: brown;">{{obtenerDescripcionRubro(id_rubro)}}</strong> - <strong
             style="color: brown;">{{obtenerDescripcionSubRubro(id_subRubro)}}</strong></h3>
+
     <div class="row">
         <div class="col-12 col-md-4">
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">Alias</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                <span class="input-group-text" id="basic-addon1">Cód.</span>
+                <input type="text" class="form-control" placeholder="Código de artículo" aria-label="Código de artículo"
                     aria-describedby="basic-addon1" [(ngModel)]="subRubro.alias">
             </div>
         </div>
@@ -206,6 +207,62 @@
         </div>
     </div>
 
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="card m-1 p-2 shadow-sm">
+                <h5>Laboratorio / Marca</h5>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_laboratorio" (keyup)="filtroLaboratorio()"
+                    [ngStyle]="{'background-color':searchValue_laboratorio == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox" style="max-height: 20vh;">
+                    @for (rub of rubrosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_rubro == rub.id ? 'selected' : ''"
+                        (click)="onChangeRubro(rub.id)" (dblclick)="mostrarModalRubro(rub.id)">{{rub.descripcion}}</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card m-1 p-2 shadow-sm">
+                <h5>Unidad de Medida</h5>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_rubro" (keyup)="filtroRubro()"
+                    [ngStyle]="{'background-color':searchValue_rubro == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox">
+                    @for (rub of rubrosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_rubro == rub.id ? 'selected' : ''"
+                        (click)="onChangeRubro(rub.id)" (dblclick)="mostrarModalRubro(rub.id)">{{rub.descripcion}}</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col-12 col-sm-4">
+            <div class="flex align-items-center">
+                <p-checkbox [(ngModel)]="pizza" label="SOLICITA VENCIMIENTO" name="pizza" value="Cheese" />
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="flex align-items-center">
+                <p-checkbox [(ngModel)]="pizza" label="SOLICITA N° SERIE / LOTE" name="pizza" value="Mushroom" />
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="flex align-items-center">
+                <p-checkbox [(ngModel)]="pizza" label="ACTIVO" name="pizza" value="Pepper" />
+            </div>
+        </div>
+    </div>
 
     <p-divider align="left" type="solid"></p-divider>
 
