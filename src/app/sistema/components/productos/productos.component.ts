@@ -55,10 +55,12 @@ export class ProductosComponent {
         createdAt: '',
         updatedAt: ''
     }
-    articulo: any = {id:1}
+    articulo: any = {id:0}
 
     id_rubro: string = ''
     id_subRubro: string = ''
+    id_laboratorio: string = ''
+    id_unidadMedida: string = ''
 
     rubros: Rubro[] = []
     rubrosFiltrados: Rubro[] = []
@@ -72,7 +74,8 @@ export class ProductosComponent {
 
     searchValue_rubro: string = ''
     searchValue_subRubro: string = ''
-    searchValue_laboratorio
+    searchValue_laboratorio: string = ''
+    searchValue_unidadMedida: string = ''
 
     unidadMedidas: UnidadMedida[] = []
     unidadMedidasFiltrados: UnidadMedida[] = []
@@ -86,6 +89,8 @@ export class ProductosComponent {
     selected_unidadMedida: any
 
     pizza: string[] = [];
+
+    cant_fundamental: number = 1
 
 
     constructor(
@@ -509,13 +514,13 @@ export class ProductosComponent {
     buscarLaboratorios(){
         this.cs.getAll('laboratorios', (data:Laboratorio[]) => {
             this.laboratorios = data
-            console.log(this.laboratorios)
+            this.filtroLaboratorio()
         })
     }
     buscarUnidadMedidas(){
         this.cs.getAll('unidadMedidas', (data:UnidadMedida[]) => {
             this.unidadMedidas = data
-            console.log(this.unidadMedidas)
+            this.filtroUnidadMedida()
         })
     }
 
@@ -642,7 +647,13 @@ export class ProductosComponent {
     filtroSubRubro(){
         this.subRubrosFiltrados = this.subRubros.filter((subRubro:SubRubro) => { return subRubro.descripcion.toLocaleUpperCase().includes(this.searchValue_subRubro.toLocaleUpperCase()) })
     }
-filtroLaboratorio
+    filtroLaboratorio(){
+        this.laboratoriosFiltrados = this.laboratorios.filter((laboratorio:Laboratorio) => { return laboratorio.descripcion.toLocaleUpperCase().includes(this.searchValue_laboratorio.toLocaleUpperCase()) })  
+    }
+    filtroUnidadMedida(){
+        this.unidadMedidasFiltrados = this.unidadMedidas.filter((unidadMedida:UnidadMedida) => { return unidadMedida.descripcion.toLocaleUpperCase().includes(this.searchValue_unidadMedida.toLocaleUpperCase()) })  
+    }
+
 
     mostrarModalArticulo(id:any = null){
         if(! (this.id_rubro && this.id_subRubro) ){
@@ -680,8 +691,11 @@ filtroLaboratorio
     //HELPERS
     obtenerDescripcionRubro(id:string){
         return this.rubros.find((rub:Rubro) => { return rub.id == id })?.descripcion
-    }    
+    }
     obtenerDescripcionSubRubro(id:string){
         return this.subRubros.find((subRub:Rubro) => { return subRub.id == id })?.descripcion
+    }
+    obtenerDescripcionUnidadMedida(id:string){
+        return this.unidadMedidas.find((unidadMedida:UnidadMedida) => { return unidadMedida.id == id })?.descripcion
     }
 }

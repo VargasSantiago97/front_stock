@@ -219,9 +219,9 @@
                     [ngStyle]="{'background-color':searchValue_laboratorio == '' ? '' : 'rgb(202, 253, 202)'}">
 
                 <div class="listbox-container" id="listbox" style="max-height: 20vh;">
-                    @for (rub of rubrosFiltrados; track $index) {
-                    <div class="listbox-item" [ngClass]="id_rubro == rub.id ? 'selected' : ''"
-                        (click)="onChangeRubro(rub.id)" (dblclick)="mostrarModalRubro(rub.id)">{{rub.descripcion}}</div>
+                    @for (lab of laboratoriosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_laboratorio == lab.id ? 'selected' : ''"
+                        (click)="id_laboratorio = lab.id">{{lab.descripcion}}</div>
                     }
                 </div>
             </div>
@@ -231,19 +231,30 @@
                 <h5>Unidad de Medida</h5>
 
                 <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
-                    [(ngModel)]="searchValue_rubro" (keyup)="filtroRubro()"
-                    [ngStyle]="{'background-color':searchValue_rubro == '' ? '' : 'rgb(202, 253, 202)'}">
+                    [(ngModel)]="searchValue_unidadMedida" (keyup)="filtroUnidadMedida()"
+                    [ngStyle]="{'background-color':searchValue_unidadMedida == '' ? '' : 'rgb(202, 253, 202)'}">
 
-                <div class="listbox-container" id="listbox">
-                    @for (rub of rubrosFiltrados; track $index) {
-                    <div class="listbox-item" [ngClass]="id_rubro == rub.id ? 'selected' : ''"
-                        (click)="onChangeRubro(rub.id)" (dblclick)="mostrarModalRubro(rub.id)">{{rub.descripcion}}</div>
+                <div class="listbox-container" id="listbox" style="max-height: 20vh;">
+                    @for (um of unidadMedidasFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_unidadMedida == um.id ? 'selected' : ''"
+                        (click)="id_unidadMedida = um.id">{{um.descripcion}}</div>
                     }
                 </div>
             </div>
         </div>
     </div>
 
+    @if(id_unidadMedida){
+    <p-divider align="left" type="solid"></p-divider>
+    <h6>Aproximadamente, una unidad de <strong>"{{obtenerDescripcionUnidadMedida(id_unidadMedida)}}"</strong> equivale
+        a: <input type="number" class="input_unidad_fundamental" placeholder="X" [(ngModel)]="cant_fundamental">
+        <select class="input_unidad_fundamental">
+            <option value="kilos">KILOS</option>
+            <option value="litros">LITROS</option>
+            <option value="unidades">UNIDADES</option>
+        </select>
+    </h6>
+    }
     <p-divider align="left" type="solid"></p-divider>
 
     <div class="row">

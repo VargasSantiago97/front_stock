@@ -22,6 +22,15 @@
     color: white;
 }
 
+.input_unidad_fundamental {
+    padding: 5px;
+    margin: 0px 5px;
+    width: 120px;
+    text-align: right;
+    border-radius: 6px;
+    border: 1px solid #c2c1c1;
+}
+
 #searchInput {
     margin-bottom: 10px;
 }
