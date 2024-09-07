@@ -46,11 +46,11 @@
                 </h3>
 
                 <div class="container-fluid p-2">
-                    <p-table [value]="clientes" [tableStyle]="{ 'min-width': '50rem' }" #dt1
+                    <p-table [value]="articulos" [tableStyle]="{ 'min-width': '50rem' }" #dt1
                         styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" [paginator]="true"
                         [rows]="20" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 50, 100, 500, 1000]"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-                        sortField="alias" [globalFilterFields]="['alias', 'cuit', 'razon_social', 'codigo']"
+                        sortField="descripcion" [globalFilterFields]="['codigo', 'descripcion', 'observaciones']"
                         dataKey="id">
 
                         <ng-template pTemplate="caption">
@@ -68,30 +68,38 @@
 
                         <ng-template pTemplate="header">
                             <tr>
-                                <th pSortableColumn="id" style="width:20%">
-                                    CÓD. <p-sortIcon field="id" />
+                                <th pSortableColumn="codigo" class="p-1">
+                                    CÓD. <p-sortIcon field="codigo" />
                                 </th>
-                                <th pSortableColumn="cuit" style="width:20%">
-                                    DESCRIPCION <p-sortIcon field="cuit" />
+                                <th pSortableColumn="descripcion" class="p-1">
+                                    DESCRIPCION <p-sortIcon field="descripcion" />
                                 </th>
-                                <th pSortableColumn="razon_social" style="width:20%">
-                                    U.M. <p-sortIcon field="razon_social" />
+                                <th pSortableColumn="id_laboratorio" class="p-1">
+                                    LABORATORIO <p-sortIcon field="id_laboratorio" />
                                 </th>
-                                <th pSortableColumn="direccion" style="width:20%">
-                                    DIRECCION <p-sortIcon field="direccion" />
+                                <th pSortableColumn="id_unidadMedida" class="p-1">
+                                    U.M. <p-sortIcon field="id_unidadMedida" />
                                 </th>
-                                <th pSortableColumn="localidad" style="width:20%">
-                                    LOCALIDAD <p-sortIcon field="localidad" />
+                                <th pSortableColumn="solicitaVencimiento" class="p-1">
+                                    VTO <p-sortIcon field="solicitaVencimiento" />
+                                </th>
+                                <th pSortableColumn="solicitaLote" class="p-1">
+                                    LOTE <p-sortIcon field="solicitaLote" />
+                                </th>
+                                <th pSortableColumn="activo" class="p-1">
+                                    STATUS <p-sortIcon field="activo" />
                                 </th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-cliente>
-                            <tr (dblclick)="mostrarModalArticulo(cliente.id)">
-                                <td class="text-nowrap"><strong>{{ cliente.id }}</strong></td>
-                                <td class="text-nowrap">{{ cliente.alias }}</td>
-                                <td class="text-nowrap">{{ cliente.cuit }}</td>
-                                <td class="text-nowrap">{{ cliente.razon_social }}</td>
-                                <td class="text-nowrap">{{ cliente.direccion }}</td>
+                        <ng-template pTemplate="body" let-art>
+                            <tr (dblclick)="mostrarModalArticulo(art.id)">
+                                <td class="text-nowrap" class="p-1"><strong>{{ art.codigo }}</strong></td>
+                                <td class="text-nowrap" class="p-1">{{ art.descripcion }}</td>
+                                <td class="text-nowrap" class="p-1">{{ obtenerDescripcionLaboratorio(art.id_laboratorio) }}</td>
+                                <td class="text-nowrap" class="p-1">{{ obtenerDescripcionUnidadMedida(art.id_unidadMedida) }}</td>
+                                <td class="text-center" class="p-1"><p-tag [value]="art.solicitaVencimiento ? 'SI' : 'NO'" [severity]="art.solicitaVencimiento ? 'success' : 'danger'" /></td>
+                                <td class="text-center" class="p-1"><p-tag [value]="art.solicitaLote ? 'SI' : 'NO'" [severity]="art.solicitaLote ? 'success' : 'danger'" /></td>
+                                <td class="text-center" class="p-1"><p-tag [value]="art.activo ? 'ACTIVO' : 'INACTIVO'" [severity]="art.activo ? 'success' : 'danger'" /></td>
                             </tr>
                         </ng-template>
                     </p-table>
@@ -194,7 +202,7 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">Cód.</span>
                 <input type="text" class="form-control" placeholder="Código de artículo" aria-label="Código de artículo"
-                    aria-describedby="basic-addon1" [(ngModel)]="subRubro.alias">
+                    aria-describedby="basic-addon1" [(ngModel)]="articulo.codigo">
             </div>
         </div>
         <div class="col-12 col-md-8">
@@ -202,10 +210,15 @@
                 <span class="input-group-text" id="basic-addon1">Desc.</span>
                 <input type="text" class="form-control" placeholder="Descripcion completa"
                     aria-label="Descripcion completa" aria-describedby="basic-addon1"
-                    [(ngModel)]="subRubro.descripcion">
+                    [(ngModel)]="articulo.descripcion">
             </div>
         </div>
     </div>
+
+    <p-divider align="left" type="solid">Observaciones / Detalles</p-divider>
+
+    <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="articulo.observaciones">
+    </textarea>
 
     <p-divider align="left" type="solid"></p-divider>
 
@@ -220,8 +233,8 @@
 
                 <div class="listbox-container" id="listbox" style="max-height: 20vh;">
                     @for (lab of laboratoriosFiltrados; track $index) {
-                    <div class="listbox-item" [ngClass]="id_laboratorio == lab.id ? 'selected' : ''"
-                        (click)="id_laboratorio = lab.id">{{lab.descripcion}}</div>
+                    <div class="listbox-item" [ngClass]="articulo.id_laboratorio == lab.id ? 'selected' : ''"
+                        (click)="articulo.id_laboratorio = lab.id">{{lab.descripcion}}</div>
                     }
                 </div>
             </div>
@@ -236,19 +249,19 @@
 
                 <div class="listbox-container" id="listbox" style="max-height: 20vh;">
                     @for (um of unidadMedidasFiltrados; track $index) {
-                    <div class="listbox-item" [ngClass]="id_unidadMedida == um.id ? 'selected' : ''"
-                        (click)="id_unidadMedida = um.id">{{um.descripcion}}</div>
+                    <div class="listbox-item" [ngClass]="articulo.id_unidadMedida == um.id ? 'selected' : ''"
+                        (click)="articulo.id_unidadMedida = um.id">{{um.descripcion}}</div>
                     }
                 </div>
             </div>
         </div>
     </div>
 
-    @if(id_unidadMedida){
+    @if(articulo.id_unidadMedida){
     <p-divider align="left" type="solid"></p-divider>
-    <h6>Aproximadamente, una unidad de <strong>"{{obtenerDescripcionUnidadMedida(id_unidadMedida)}}"</strong> equivale
-        a: <input type="number" class="input_unidad_fundamental" placeholder="X" [(ngModel)]="cant_fundamental">
-        <select class="input_unidad_fundamental">
+    <h6>Aproximadamente, una unidad de <strong>"{{obtenerDescripcionUnidadMedida(articulo.id_unidadMedida)}}"</strong> equivale
+        a: <input type="number" class="input_unidad_fundamental" placeholder="X" [(ngModel)]="articulo.cantidadUnidadFundamental">
+        <select class="input_unidad_fundamental" [(ngModel)]="articulo.unidadFundamental">
             <option value="kilos">KILOS</option>
             <option value="litros">LITROS</option>
             <option value="unidades">UNIDADES</option>
@@ -260,17 +273,17 @@
     <div class="row">
         <div class="col-12 col-sm-4">
             <div class="flex align-items-center">
-                <p-checkbox [(ngModel)]="pizza" label="SOLICITA VENCIMIENTO" name="pizza" value="Cheese" />
+                <p-checkbox [(ngModel)]="articulo.solicitaVencimiento" label="SOLICITA VENCIMIENTO" [binary]="true"/>
             </div>
         </div>
         <div class="col-12 col-sm-4">
             <div class="flex align-items-center">
-                <p-checkbox [(ngModel)]="pizza" label="SOLICITA N° SERIE / LOTE" name="pizza" value="Mushroom" />
+                <p-checkbox [(ngModel)]="articulo.solicitaLote" label="SOLICITA N° SERIE / LOTE" [binary]="true" />
             </div>
         </div>
         <div class="col-12 col-sm-4">
             <div class="flex align-items-center">
-                <p-checkbox [(ngModel)]="pizza" label="ACTIVO" name="pizza" value="Pepper" />
+                <p-checkbox [(ngModel)]="articulo.activo" label="ACTIVO" [binary]="true" />
             </div>
         </div>
     </div>
@@ -279,11 +292,11 @@
 
     <div class="row">
         <div class="col text-end">
-            <button type="button" class="btn btn-warning m-2" (click)="visible_subRubro = false">CERRAR</button>
-            @if (subRubro.id) {
-            <button type="button" class="btn btn-danger m-2" (click)="eliminarSubRubro(subRubro.id)">ELIMINAR</button>
+            <button type="button" class="btn btn-warning m-2" (click)="visible_articulo = false">CERRAR</button>
+            @if (articulo.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarArticulo(articulo.id)">ELIMINAR</button>
             }
-            <button type="button" class="btn btn-success m-2" (click)="guardarSubRubro(subRubro)">{{subRubro.id ?
+            <button type="button" class="btn btn-success m-2" (click)="guardarArticulo(articulo)">{{articulo.id ?
                 'EDITAR'
                 : 'GUARDAR'}}</button>
 

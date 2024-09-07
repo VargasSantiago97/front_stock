@@ -1,1 +1,355 @@
-<p>ingresos works!</p>
+<div class="container-fluid p-2">
+    <button type="button" class="btn btn-primary m-2" (click)="mostrarModalCliente()">NUEVO REMITO DE INGRESO</button>
+    <button type="button" class="btn btn-primary m-2" (click)="mostrarModalCliente()">NUEVA DEVOLUCION DE MERCADERIA</button>
+
+    <div class="container-fluid p-2">
+        <p-table [value]="clientes" [tableStyle]="{ 'min-width': '50rem' }" #dt1
+            styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" [paginator]="true" [rows]="25"
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50, 100, 500, 1000]"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" sortField="alias"
+            [globalFilterFields]="['alias', 'cuit', 'razon_social', 'codigo']" dataKey="id">
+
+            <ng-template pTemplate="caption">
+                <div class="flex text-end">
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (onClick)="clear(dt1)" />
+
+                    <span class="p-input-icon-left ml-auto text-end">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" [(ngModel)]="searchValue"
+                            (input)="dt1.filterGlobal(searchValue, 'contains')" placeholder="Buscar" />
+                    </span>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="codigo" style="width:20%">
+                        CÓD. <p-sortIcon field="codigo" />
+                    </th>
+                    <th pSortableColumn="alias" style="width:20%">
+                        ALIAS <p-sortIcon field="alias" />
+                    </th>
+                    <th pSortableColumn="cuit" style="width:20%">
+                        CUIT <p-sortIcon field="cuit" />
+                    </th>
+                    <th pSortableColumn="razon_social" style="width:20%">
+                        RAZON SOCIAL <p-sortIcon field="razon_social" />
+                    </th>
+                    <th pSortableColumn="direccion" style="width:20%">
+                        DIRECCION <p-sortIcon field="direccion" />
+                    </th>
+                    <th pSortableColumn="localidad" style="width:20%">
+                        LOCALIDAD <p-sortIcon field="localidad" />
+                    </th>
+                    <th pSortableColumn="codigo_postal" style="width:20%">
+                        C.P. <p-sortIcon field="codigo_postal" />
+                    </th>
+                    <th pSortableColumn="provincia" style="width:20%">
+                        PROVINCIA <p-sortIcon field="provincia" />
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-cliente>
+                <tr (dblclick)="mostrarModalCliente(cliente.id)">
+                    <td class="text-nowrap"><strong>{{ cliente.codigo }}</strong></td>
+                    <td class="text-nowrap">{{ cliente.alias }}</td>
+                    <td class="text-nowrap">{{ cliente.cuit }}</td>
+                    <td class="text-nowrap">{{ cliente.razon_social }}</td>
+                    <td class="text-nowrap">{{ cliente.direccion }}</td>
+                    <td class="text-nowrap">{{ cliente.localidad }}</td>
+                    <td class="text-nowrap">{{ cliente.codigo_postal }}</td>
+                    <td class="text-nowrap">{{ cliente.provincia }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
+<p-dialog header="{{cliente.id ? 'Editar cliente' : 'Nuevo cliente'}}" [modal]="true" [(visible)]="visible"
+    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">CÓD.</span>
+                <input type="text" class="form-control" placeholder="Código" aria-label="Código"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.codigo">
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">CUIT</span>
+                <input type="text" class="form-control" placeholder="C.U.I.T." aria-label="C.U.I.T."
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.cuit" (keyup.enter)="buscarCUIT()">
+            </div>
+        </div>
+    </div>
+    <div style="text-align: center;" *ngIf="spinnerCUIT">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+    <p-divider align="left" type="solid">
+        <b>Datos</b>
+    </p-divider>
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.alias">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">RAZON SOCIAL</span>
+                <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.razon_social">
+            </div>
+        </div>
+    </div>
+    <p-divider align="left" type="solid">
+        <b>Domicilio</b>
+    </p-divider>
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
+                <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.localidad">
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
+                <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.provincia">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">DIRECCION</span>
+                <input type="text" class="form-control" placeholder="Direccion" aria-label="Direccion"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.direccion">
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">C.P.</span>
+                <input type="text" class="form-control" placeholder="Cód. postal" aria-label="Cód. postal"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.codigo_postal">
+            </div>
+        </div>
+    </div>
+    <p-divider align="left" type="solid">
+        <b>Contacto principal</b>
+    </p-divider>
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">TELEFONO</span>
+                <input type="text" class="form-control" placeholder="Telefono" aria-label="Telefono"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.telefono">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">CORREO</span>
+                <input type="text" class="form-control" placeholder="Correo electrónico" aria-label="Correo electrónico"
+                    aria-describedby="basic-addon1" [(ngModel)]="cliente.correo">
+            </div>
+        </div>
+    </div>
+
+    @if (cliente.id) {
+
+    <p-divider align="left" type="solid">
+        <b>Autorizados</b>
+    </p-divider>
+    @for (autorizado of autorizados; track $index) {
+    <div class="card shadow p-2 py-4 my-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">NOMBRE/APELLIDO</span>
+                    <input type="text" class="form-control" placeholder="Nombre" aria-label="Nombre"
+                        aria-describedby="basic-addon1" [(ngModel)]="autorizado.descripcion">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">DNI</span>
+                    <input type="text" class="form-control" placeholder="N° Documento" aria-label="N° Documento"
+                        aria-describedby="basic-addon1" [(ngModel)]="autorizado.documento">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CARGO</span>
+                    <input type="text" class="form-control" placeholder="Cargo en la empresa"
+                        aria-label="Cargo en la empresa" aria-describedby="basic-addon1" [(ngModel)]="autorizado.cargo">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CONTACTO</span>
+                    <input type="text" class="form-control" placeholder="Teléfono/Correo" aria-label="Teléfono/Correo"
+                        aria-describedby="basic-addon1" [(ngModel)]="autorizado.contacto">
+                </div>
+            </div>
+            <div class="col-12 col-md-4 text-end">
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                    (click)="guardarAutorizado(autorizado)">{{autorizado.id ? 'EDITAR' : 'GUARDAR'}}</button>
+
+                @if (autorizado.id) {
+                <button type="button" class="btn btn-sm btn-danger py-2"
+                    (click)="eliminarAutorizado(autorizado.id)">ELIMINAR</button>
+                }
+            </div>
+        </div>
+    </div>
+    }
+
+    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarAutorizado()">AGREGAR AUTORIZADO</button>
+
+    <p-divider align="left" type="solid">
+        <b>Transporte</b>
+    </p-divider>
+    @for (transporte of transportes; track $index) {
+    <div class="card shadow p-2 py-4 my-3">
+        <div class="row mb-4 mb-md-0">
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">TRANSPORTE</span>
+                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                        aria-describedby="basic-addon1" [(ngModel)]="transporte.transporte">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CUIT</span>
+                    <input type="text" class="form-control" placeholder="CUIT Transportista"
+                        aria-label="CUIT Transportista" aria-describedby="basic-addon1"
+                        [(ngModel)]="transporte.cuit_transporte">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4 mb-md-0">
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CHOFER</span>
+                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                        aria-describedby="basic-addon1" [(ngModel)]="transporte.chofer">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">CUIT</span>
+                    <input type="text" class="form-control" placeholder="CUIT Chofer" aria-label="CUIT Chofer"
+                        aria-describedby="basic-addon1" [(ngModel)]="transporte.cuit_chofer">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">PAT CH.</span>
+                    <input type="text" class="form-control" placeholder="Patente chasis" aria-label="Patente chasis"
+                        aria-describedby="basic-addon1" [(ngModel)]="transporte.patente_chasis">
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">PAT AC.</span>
+                    <input type="text" class="form-control" placeholder="Patente acoplado" aria-label="Patente acoplado"
+                        aria-describedby="basic-addon1" [(ngModel)]="transporte.patente_acoplado">
+                </div>
+            </div>
+            <div class="col-12 col-md-4 text-end">
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                    (click)="guardarTransporte(transporte)">{{transporte.id ? 'EDITAR' : 'GUARDAR'}}</button>
+
+                @if (transporte.id) {
+                <button type="button" class="btn btn-sm btn-danger py-2"
+                    (click)="eliminarTransporte(transporte.id)">ELIMINAR</button>
+                }
+            </div>
+        </div>
+    </div>
+    }
+
+    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarTransporte()">AGREGAR TRANSPORTE</button>
+
+    <p-divider align="left" type="solid">
+        <b>Establecimientos / Destinos</b>
+    </p-divider>
+
+    @for (establecimiento of establecimientos; track $index) {
+    <div class="card shadow p-2 py-4 my-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">DESCRIPCION</span>
+                    <input type="text" class="form-control" placeholder="Descripcion" aria-label="Descripcion"
+                        aria-describedby="basic-addon1" [(ngModel)]="establecimiento.descripcion">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
+                    <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
+                        aria-describedby="basic-addon1" [(ngModel)]="establecimiento.localidad">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
+                    <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
+                        aria-describedby="basic-addon1" [(ngModel)]="establecimiento.provincia">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                    (click)="guardarEstablecimiento(establecimiento)">{{establecimiento.id ? 'EDITAR' :
+                    'GUARDAR'}}</button>
+
+                @if (establecimiento.id) {
+                <button type="button" class="btn btn-sm btn-danger py-2"
+                    (click)="eliminarEstablecimiento(establecimiento.id)">ELIMINAR</button>
+                }
+            </div>
+        </div>
+    </div>
+    }
+    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarEstablecimiento()">AGREGAR
+        ESTABLECIMIENTO</button>
+
+    }
+
+    <p-divider align="left" type="solid"></p-divider>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible = false">CERRAR</button>
+            @if (cliente.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarCliente(cliente.id)">ELIMINAR</button>
+            }
+            <button type="button" class="btn btn-success m-2" (click)="guardarCambiosCliente()">{{cliente.id ? 'EDITAR'
+                : 'GUARDAR'}}</button>
+
+        </div>
+    </div>
+</p-dialog>

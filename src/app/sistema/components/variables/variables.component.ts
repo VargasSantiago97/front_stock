@@ -82,6 +82,7 @@ export class VariablesComponent {
     ngOnInit() {
         this.buscarLaboratorios()
         this.buscarUnidadMedidas()
+        this.buscarDepositos()
     }
 
     mostrarModalLaboratorio(id:any = null) {

@@ -2,6 +2,24 @@
     <div class="row mx-1">
         <div class="col-12 col-sm-6 col-xl-2 p-0">
             <div class="card m-1 p-2 shadow">
+                <h3>Depositos <button type="button" class="btn btn-primary m-2"
+                        (click)="mostrarModalDeposito()">NUEVO</button></h3>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                    [(ngModel)]="searchValue_deposito" (keyup)="filtroDeposito()"
+                    [ngStyle]="{'background-color':searchValue_deposito == '' ? '' : 'rgb(202, 253, 202)'}">
+
+                <div class="listbox-container" id="listbox">
+                    @for (dep of depositosFiltrados; track $index) {
+                    <div class="listbox-item" [ngClass]="id_deposito == dep.id ? 'selected' : ''"
+                        (click)="id_deposito = dep.id" (dblclick)="mostrarModalDeposito(dep.id)">{{dep.alias}}
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-2 p-0">
+            <div class="card m-1 p-2 shadow">
                 <h3>U. de Medida <button type="button" class="btn btn-primary m-2"
                         (click)="mostrarModalUnidadMedida()">NUEVO</button></h3>
 
@@ -39,8 +57,7 @@
     </div>
 </div>
 
-<!-- TERMINAR DIALOGO PARA DEPOSITO, LUEGO HACER LA API-->
-<p-dialog header="{{unidadMedida.id ? 'EDITAR UNIDAD DE MEDIDA' : 'NUEVO UNIDAD DE MEDIDA'}}" [modal]="true" [(visible)]="visible_unidadMedida"
+<p-dialog header="{{deposito.id ? 'EDITAR DEPOSITO' : 'NUEVO DEPOSITO'}}" [modal]="true" [(visible)]="visible_deposito"
     [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
 
     <div class="row">
@@ -48,28 +65,27 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">Alias</span>
                 <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="unidadMedida.alias">
+                    aria-describedby="basic-addon1" [(ngModel)]="deposito.alias">
             </div>
         </div>
         <div class="col-12 col-md-8">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">Descripcion</span>
                 <input type="text" class="form-control" placeholder="Descripcion"
-                    aria-label="Descripcion" aria-describedby="basic-addon1" [(ngModel)]="unidadMedida.descripcion">
+                    aria-label="Descripcion" aria-describedby="basic-addon1" [(ngModel)]="deposito.descripcion">
             </div>
         </div>
     </div>
-
 
     <p-divider align="left" type="solid"></p-divider>
 
     <div class="row">
         <div class="col text-end">
-            <button type="button" class="btn btn-warning m-2" (click)="visible_unidadMedida = false">CERRAR</button>
-            @if (unidadMedida.id) {
-            <button type="button" class="btn btn-danger m-2" (click)="eliminarUnidadMedida(unidadMedida.id)">ELIMINAR</button>
+            <button type="button" class="btn btn-warning m-2" (click)="visible_deposito = false">CERRAR</button>
+            @if (deposito.id) {
+            <button type="button" class="btn btn-danger m-2" (click)="eliminarDeposito(deposito.id)">ELIMINAR</button>
             }
-            <button type="button" class="btn btn-success m-2" (click)="guardarUnidadMedida(unidadMedida)">{{unidadMedida.id ? 'EDITAR'
+            <button type="button" class="btn btn-success m-2" (click)="guardarDeposito(deposito)">{{deposito.id ? 'EDITAR'
                 : 'GUARDAR'}}</button>
 
         </div>

@@ -9,16 +9,18 @@ import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
-import { Rubro, SubRubro } from '../../interfaces/productos';
+import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { ConsultasService } from '../../services/consultas.service';
 import { MessageService } from 'primeng/api';
 import { Laboratorio, UnidadMedida } from '../../interfaces/variables';
 import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TagModule } from 'primeng/tag';
 
 @Component({
     selector: 'app-productos',
     standalone: true,
-    imports: [ListboxModule, FormsModule, TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, InputTextModule, CheckboxModule],
+    imports: [ListboxModule, FormsModule, TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, InputTextModule, CheckboxModule, InputTextareaModule, TagModule],
     templateUrl: './productos.component.html',
     styleUrl: './productos.component.css'
 })
@@ -55,18 +57,36 @@ export class ProductosComponent {
         createdAt: '',
         updatedAt: ''
     }
-    articulo: any = {id:0}
+    articulo: Articulo = {
+        id: '',
+        id_rubro: '',
+        id_subRubro: '',
+        id_laboratorio: '',
+        id_unidadMedida: '',
+        codigo: '',
+        descripcion: '',
+        observaciones: '',
+        unidadFundamental: '',
+        cantidadUnidadFundamental: 1,
+        solicitaVencimiento: false,
+        solicitaLote: false,
+        activo: true,
+        datos: {},
+        estado: 1,
+        createdBy: '',
+        updatedBy: '',
+        createdAt: '',
+        updatedAt: ''
+    }
 
     id_rubro: string = ''
     id_subRubro: string = ''
-    id_laboratorio: string = ''
-    id_unidadMedida: string = ''
 
     rubros: Rubro[] = []
     rubrosFiltrados: Rubro[] = []
     subRubros: SubRubro[] = []
     subRubrosFiltrados: SubRubro[] = []
-    articulos: any[] = []
+    articulos: Articulo[] = []
 
     visible_rubro: boolean = false;
     visible_subRubro: boolean = false;
@@ -82,15 +102,6 @@ export class ProductosComponent {
     laboratorios: Laboratorio[] = []
     laboratoriosFiltrados: Laboratorio[] = []
 
-
-
-
-    selected_laboratorio: any
-    selected_unidadMedida: any
-
-    pizza: string[] = [];
-
-    cant_fundamental: number = 1
 
 
     constructor(
@@ -577,6 +588,7 @@ export class ProductosComponent {
     onChangeRubro(id:string){
         this.id_rubro = id
         this.id_subRubro = ''
+        this.articulos = []
 
         this.buscarSubRubros()
     }
@@ -636,8 +648,7 @@ export class ProductosComponent {
     }
     onChangeSubRubro(id:string){
         this.id_subRubro = id
-
-        //buscar articulos
+        this.buscarArticulos()
     }
 
 
@@ -659,15 +670,23 @@ export class ProductosComponent {
         if(! (this.id_rubro && this.id_subRubro) ){
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un RUBRO y SUBRUBRO'})
         }
-        /* 
         if(id){
-            this.articulo = this.articulos.find((articulo:any) => { return articulo.id == id })!
+            this.articulo = this.articulos.find((articulo:Articulo) => { return articulo.id == id })!
         } else {
             this.articulo = {
                 id: '',
                 id_rubro: this.id_rubro,
+                id_subRubro: this.id_subRubro,
+                id_laboratorio: '',
+                id_unidadMedida: '',
+                codigo: '',
                 descripcion: '',
-                alias: '',
+                observaciones: '',
+                unidadFundamental: 'kilos',
+                cantidadUnidadFundamental: 1,
+                solicitaVencimiento: false,
+                solicitaLote: false,
+                activo: true,
                 datos: {},
                 estado: 1,
                 createdBy: '',
@@ -675,9 +694,36 @@ export class ProductosComponent {
                 createdAt: '',
                 updatedAt: ''
             }
-        } */
+        }
 
         this.visible_articulo = true
+    }
+    buscarArticulos(){
+        this.cs.getAll(`articulos/${this.id_rubro}/${this.id_subRubro}`, (data:Articulo[]) => {
+            this.articulos = data
+        })
+    }
+    guardarArticulo(articulo:Articulo){
+        if(articulo.id){
+            this.cs.update('articulos', articulo, (cant:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
+                this.visible_articulo = false
+                this.buscarArticulos()
+            })
+        } else {
+            this.cs.create('articulos', articulo, (id:any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Articulo creado con ID: ' + id })
+                this.visible_articulo = false
+                this.buscarArticulos()
+            })
+        }
+    }
+    eliminarArticulo(id:string){
+        this.cs.delete('articulos', id, (cant:any) => {
+            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
+            this.visible_subRubro = false
+            this.buscarArticulos()
+        })
     }
 
 
@@ -697,5 +743,8 @@ export class ProductosComponent {
     }
     obtenerDescripcionUnidadMedida(id:string){
         return this.unidadMedidas.find((unidadMedida:UnidadMedida) => { return unidadMedida.id == id })?.descripcion
+    }
+    obtenerDescripcionLaboratorio(id:string){
+        return this.laboratorios.find((laboratorio:Laboratorio) => { return laboratorio.id == id })?.descripcion
     }
 }
