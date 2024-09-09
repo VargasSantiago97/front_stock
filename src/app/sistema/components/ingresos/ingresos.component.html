@@ -62,12 +62,22 @@
 </div>
 
 
-<p-dialog header="{{ingreso.id ? 'Ver ingreso' : 'Nuevo ingreso'}}" [modal]="true" [(visible)]="visible_ingreso"
-    [style]="{ width: '70rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+<p-dialog header="{{ingreso.id ? 'Ver ingreso' : 'NUEVO INGRESO DE MERCADERIA'}}" [modal]="true"
+    [(visible)]="visible_ingreso" [style]="{ width: '80rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [maximizable]="true" [closeOnEscape]="false">
 
-    <div class="row">
-        <div class="col-6 col-md-3">
-            <div class="input-group mb-3">
+    <div class="row py-2" style="background-color: rgba(176, 245, 187, 0.555); border-radius: 6px;">
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Modelo</span>
+                <select class="input-group-text" [(ngModel)]="ingreso.modelo">
+                    <option value=1>Moliendas</option>
+                    <option value=2>NorSemillas</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+            <div class="input-group">
                 <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
                 <select class="input-group-text" [(ngModel)]="ingreso.punto" style="width: 50%;">
                     <option value=1>1</option>
@@ -76,14 +86,14 @@
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="input-group mb-3">
+            <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">N</span>
                 <input type="number" class="form-control" placeholder="Numero" aria-label="Numero"
                     aria-describedby="basic-addon1" [(ngModel)]="ingreso.numero" disabled="">
             </div>
         </div>
-        <div class="col-12 col-md-6">
-            <div class="input-group mb-3">
+        <div class="col-6 col-md-3">
+            <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">FECHA</span>
                 <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
                     aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha">
@@ -91,314 +101,228 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12 col-md-4">
-            <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}">
-                <b>Autorizado</b>
-            </p-divider>
-            <div class="input-group m-1 p-0">
-                <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control m-0 p-0 px-3" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-            <div class="input-group m-1 p-0">
-                <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control m-0 p-0 px-3" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-            <div class="input-group m-1 p-0">
-                <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control m-0 p-0 px-3" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <p-divider align="center" type="solid" class="m-0 p-0">
-                <b>Transporte</b>
-            </p-divider>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <p-divider align="center" type="solid" class="m-0 p-0">
-                <b>Origen</b>
-            </p-divider>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-        </div>
-    </div>
+    <ul class="nav nav-tabs my-2">
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'cliente' ? 'active' : ''}}" href=""
+                (click)="pestana('cliente', $event)">CLIENTE</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'documentos' ? 'active' : ''}}" href=""
+                (click)="pestana('documentos', $event)">DOCUMENTOS</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'observaciones' ? 'active' : ''}}" href=""
+                (click)="pestana('observaciones', $event)">OBSERVACIONES</a>
+        </li>
+    </ul>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">ALIAS</span>
-                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">RAZON SOCIAL</span>
-                <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.razon_social">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Domicilio</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12 col-md-6">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
-                <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.localidad">
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
-                <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.provincia">
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-md-6">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">DIRECCION</span>
-                <input type="text" class="form-control" placeholder="Direccion" aria-label="Direccion"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.direccion">
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">C.P.</span>
-                <input type="text" class="form-control" placeholder="Cód. postal" aria-label="Cód. postal"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.codigo_postal">
-            </div>
-        </div>
-    </div>
-    <p-divider align="left" type="solid">
-        <b>Contacto principal</b>
-    </p-divider>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">TELEFONO</span>
-                <input type="text" class="form-control" placeholder="Telefono" aria-label="Telefono"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.telefono">
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">CORREO</span>
-                <input type="text" class="form-control" placeholder="Correo electrónico" aria-label="Correo electrónico"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.correo">
-            </div>
-        </div>
-    </div>
 
-    @if (ingreso.id) {
-
-    <p-divider align="left" type="solid">
-        <b>Autorizados</b>
-    </p-divider>
-    @for (autorizado of autorizados; track $index) {
-    <div class="card shadow p-2 py-4 my-3">
+    @if(pestActiva == 'cliente'){
+    <div style="min-height: 180px;">
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 col-md-4">
                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">NOMBRE/APELLIDO</span>
-                    <input type="text" class="form-control" placeholder="Nombre" aria-label="Nombre"
-                        aria-describedby="basic-addon1" [(ngModel)]="autorizado.descripcion">
+                    <span class="input-group-text" id="basic-addon1">Cód.</span>
+                    <input type="text" class="form-control" placeholder="Código" aria-label="Código"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.codigo"
+                        (keyup.enter)="buscarClientePorCodigo()">
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">DNI</span>
-                    <input type="text" class="form-control" placeholder="N° Documento" aria-label="N° Documento"
-                        aria-describedby="basic-addon1" [(ngModel)]="autorizado.documento">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">CARGO</span>
-                    <input type="text" class="form-control" placeholder="Cargo en la empresa"
-                        aria-label="Cargo en la empresa" aria-describedby="basic-addon1" [(ngModel)]="autorizado.cargo">
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-12 col-md-8">
                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">CONTACTO</span>
-                    <input type="text" class="form-control" placeholder="Teléfono/Correo" aria-label="Teléfono/Correo"
-                        aria-describedby="basic-addon1" [(ngModel)]="autorizado.contacto">
-                </div>
-            </div>
-            <div class="col-12 col-md-4 text-end">
-                <button type="button" class="btn btn-sm btn-warning py-2 me-2">{{autorizado.id ? 'EDITAR' :
-                    'GUARDAR'}}</button>
-
-                @if (autorizado.id) {
-                <button type="button" class="btn btn-sm btn-danger py-2">ELIMINAR</button>
-                }
-            </div>
-        </div>
-    </div>
-    }
-
-    <button type="button" class="btn btn-sm btn-success m-2">AGREGAR AUTORIZADO</button>
-
-    <p-divider align="left" type="solid">
-        <b>Transporte</b>
-    </p-divider>
-    @for (transporte of transportes; track $index) {
-    <div class="card shadow p-2 py-4 my-3">
-        <div class="row mb-4 mb-md-0">
-            <div class="col-12 col-md-8">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">TRANSPORTE</span>
+                    <span class="input-group-text" id="basic-addon1">Razon Social</span>
                     <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
-                        aria-describedby="basic-addon1" [(ngModel)]="transporte.transporte">
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.razon_social" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarAutorizados(true)">
+                    <b>Autorizado</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
+                        aria-label="Descripcion" aria-describedby="basic-addon1"
+                        [(ngModel)]="ingreso.autorizado_descripcion" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">N° Doc</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Documento" aria-label="Documento"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_documento" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Contacto</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Contacto" aria-label="Contacto"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_contacto" disabled>
                 </div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">CUIT</span>
-                    <input type="text" class="form-control" placeholder="CUIT Transportista"
-                        aria-label="CUIT Transportista" aria-describedby="basic-addon1"
-                        [(ngModel)]="transporte.cuit_transporte">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarTransportes(true)">
+                    <b>Transporte</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Transp</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Transporte"
+                        aria-label="Transporte" aria-describedby="basic-addon1"
+                        [(ngModel)]="ingreso.transporte_transporte" disabled>
                 </div>
-            </div>
-        </div>
-        <div class="row mb-4 mb-md-0">
-            <div class="col-12 col-md-8">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">CHOFER</span>
-                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
-                        aria-describedby="basic-addon1" [(ngModel)]="transporte.chofer">
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Chofer</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chofer" aria-label="Chofer"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_chofer" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Patentes</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chasis" aria-label="Chasis"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_chasis" disabled>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Acoplado" aria-label="Acoplado"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_acoplado" disabled>
                 </div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">CUIT</span>
-                    <input type="text" class="form-control" placeholder="CUIT Chofer" aria-label="CUIT Chofer"
-                        aria-describedby="basic-addon1" [(ngModel)]="transporte.cuit_chofer">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarEstablecimientos(true)">
+                    <b>Origen</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
+                        aria-label="Descripcion" aria-describedby="basic-addon1"
+                        [(ngModel)]="ingreso.establecimiento_descripcion" disabled>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-6 col-md-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">PAT CH.</span>
-                    <input type="text" class="form-control" placeholder="Patente chasis" aria-label="Patente chasis"
-                        aria-describedby="basic-addon1" [(ngModel)]="transporte.patente_chasis">
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Loc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Localidad" aria-label="Localidad"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_localidad" disabled>
                 </div>
-            </div>
-            <div class="col-6 col-md-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">PAT AC.</span>
-                    <input type="text" class="form-control" placeholder="Patente acoplado" aria-label="Patente acoplado"
-                        aria-describedby="basic-addon1" [(ngModel)]="transporte.patente_acoplado">
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Prov.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Provincia" aria-label="Provincia"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia" disabled>
                 </div>
-            </div>
-            <div class="col-12 col-md-4 text-end">
-                <button type="button" class="btn btn-sm btn-warning py-2 me-2">{{transporte.id ? 'EDITAR' :
-                    'GUARDAR'}}</button>
-
-                @if (transporte.id) {
-                <button type="button" class="btn btn-sm btn-danger py-2">ELIMINAR</button>
-                }
             </div>
         </div>
     </div>
     }
 
-    <button type="button" class="btn btn-sm btn-success m-2">AGREGAR TRANSPORTE</button>
+    @if(pestActiva == 'documentos'){
+    <div style="min-height: 180px;">
+        <div class="row">
+            <div class="col-3">
+                <div class="input-group">
+                    <select class="input-group-text" [(ngModel)]="ingreso.modelo">
+                        <option value=1>REMITO</option>
+                        <option value=2>FACTURA</option>
+                        <option value=2>TICKET BALANZA</option>
+                        <option value=2>OTROS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <select class="input-group-text" [(ngModel)]="ingreso.modelo">
+                        <option value=1>A</option>
+                        <option value=2>B</option>
+                        <option value=2>C</option>
+                        <option value=2>R</option>
+                        <option value=2>X</option>
+                    </select>
+                    
+                    <input type="number" class="form-control m-0 p-0 px-3" placeholder="Punto" aria-label="Punto"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia">
+                        
+                    <input type="number" class="form-control m-0 p-0 px-3" placeholder="Numero" aria-label="Numero"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">FECHA</span>
+                    <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha">
+                </div>
+            </div>
+            <div class="col-3">
+                <button type="button" class="btn btn-warning" (click)="visible_ingreso = false">CERRAR</button>
+            </div>
+        </div>
+    </div>
+    }
 
-    <p-divider align="left" type="solid">
-        <b>Establecimientos / Destinos</b>
+    @if(pestActiva == 'observaciones'){
+    <div style="min-height: 180px;">
+        <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Detalles</p-divider>
+
+        <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones">
+        </textarea>
+    </div>
+    }
+
+    <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '20px 0px'}">
+        <b>Artículos a ingresar</b>
     </p-divider>
 
-    @for (establecimiento of establecimientos; track $index) {
-    <div class="card shadow p-2 py-4 my-3">
-        <div class="row">
-            <div class="col-12">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">DESCRIPCION</span>
-                    <input type="text" class="form-control" placeholder="Descripcion" aria-label="Descripcion"
-                        aria-describedby="basic-addon1" [(ngModel)]="establecimiento.descripcion">
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
-                    <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
-                        aria-describedby="basic-addon1" [(ngModel)]="establecimiento.localidad">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
-                    <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
-                        aria-describedby="basic-addon1" [(ngModel)]="establecimiento.provincia">
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 text-end">
-                <button type="button" class="btn btn-sm btn-warning py-2 me-2">{{establecimiento.id ? 'EDITAR' :
-                    'GUARDAR'}}</button>
-
-                @if (establecimiento.id) {
-                <button type="button" class="btn btn-sm btn-danger py-2">ELIMINAR</button>
-                }
-            </div>
-        </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>MarkMarkMarkMarkMarkMarkMark</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                </tr>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                </tr>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    }
-    <button type="button" class="btn btn-sm btn-success m-2">AGREGAR
-        ESTABLECIMIENTO</button>
-
-    }
-
-    <p-divider align="left" type="solid"></p-divider>
 
     <div class="row">
         <div class="col text-end">
@@ -410,5 +334,235 @@
                 : 'GUARDAR'}}</button>
 
         </div>
+    </div>
+</p-dialog>
+
+
+
+<p-dialog header="SELECCIONAR CLIENTE" [modal]="true" [(visible)]="visible_cliente" [style]="{ width: '30rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_cliente" (keyup)="filtroCliente()"
+                [ngStyle]="{'background-color':searchValue_cliente == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (client of clientesFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarCliente(client)"><strong>{{client.alias}}</strong> - CUIT
+                    {{client.cuit}}</div>
+                }
+            </div>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR AUTORIZADO" [modal]="true" [(visible)]="visible_autorizado" [style]="{ width: '30rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_autorizado" (keyup)="filtroAutorizado()"
+                [ngStyle]="{'background-color':searchValue_autorizado == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (autorizado of autorizadosFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarAutorizado(autorizado)">
+                    <strong>{{autorizado.descripcion}}</strong> - DOC {{autorizado.documento}}
+                </div>
+                }
+                <div class="listbox-item" (click)="asignarAutorizado(undefined)"><strong>NINGUNO</strong></div>
+            </div>
+        </div>
+
+        @if (autorizado.id) {
+        <div class="card shadow p-2 py-4 my-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">NOMBRE/APELLIDO</span>
+                        <input type="text" class="form-control" placeholder="Nombre" aria-label="Nombre"
+                            aria-describedby="basic-addon1" [(ngModel)]="autorizado.descripcion">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">DNI</span>
+                        <input type="text" class="form-control" placeholder="N° Documento" aria-label="N° Documento"
+                            aria-describedby="basic-addon1" [(ngModel)]="autorizado.documento">
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CARGO</span>
+                        <input type="text" class="form-control" placeholder="Cargo en la empresa"
+                            aria-label="Cargo en la empresa" aria-describedby="basic-addon1"
+                            [(ngModel)]="autorizado.cargo">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CONTACTO</span>
+                        <input type="text" class="form-control" placeholder="Teléfono/Correo"
+                            aria-label="Teléfono/Correo" aria-describedby="basic-addon1"
+                            [(ngModel)]="autorizado.contacto">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 text-end">
+                    <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                        (click)="guardarAutorizado()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn-sm btn-success m-2 my-5" (click)="agregarAutorizado()">AGREGAR
+            AUTORIZADO</button>
+        }
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR TRANSPORTE" [modal]="true" [(visible)]="visible_transporte" [style]="{ width: '30rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_transporte" (keyup)="filtroTransporte()"
+                [ngStyle]="{'background-color':searchValue_transporte == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (transp of transportesFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarTransporte(transp)">T: {{transp.transporte}} - C:
+                    {{transp.chofer}} - P: {{transp.patente_chasis}} / {{transp.patente_acoplado}}</div>
+                }
+                <div class="listbox-item" (click)="asignarTransporte(undefined)"><strong>NINGUNO</strong></div>
+            </div>
+        </div>
+
+        @if (transporte.id) {
+        <div class="card shadow p-2 py-4 my-3">
+            <div class="row mb-4 mb-md-0">
+                <div class="col-12 col-md-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">TRANSPORTE</span>
+                        <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.transporte">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CUIT</span>
+                        <input type="text" class="form-control" placeholder="CUIT Transportista"
+                            aria-label="CUIT Transportista" aria-describedby="basic-addon1"
+                            [(ngModel)]="transporte.cuit_transporte">
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4 mb-md-0">
+                <div class="col-12 col-md-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CHOFER</span>
+                        <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.chofer">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CUIT</span>
+                        <input type="text" class="form-control" placeholder="CUIT Chofer" aria-label="CUIT Chofer"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.cuit_chofer">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">PAT CH.</span>
+                        <input type="text" class="form-control" placeholder="Patente chasis" aria-label="Patente chasis"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.patente_chasis">
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">PAT AC.</span>
+                        <input type="text" class="form-control" placeholder="Patente acoplado"
+                            aria-label="Patente acoplado" aria-describedby="basic-addon1"
+                            [(ngModel)]="transporte.patente_acoplado">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 text-end">
+                    <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                        (click)="guardarTransporte()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn-sm btn-success m-2 my-5" (click)="agregarTransporte()">AGREGAR
+            TRANSPORTE</button>
+        }
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR ESTABLECIMIENTO/ORIGEN" [modal]="true" [(visible)]="visible_establecimiento"
+    [style]="{ width: '30rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_establecimiento" (keyup)="filtroEstablecimiento()"
+                [ngStyle]="{'background-color':searchValue_establecimiento == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (est of establecimientosFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarEstablecimiento(est)">{{est.descripcion}}</div>
+                }
+                <div class="listbox-item" (click)="asignarEstablecimiento(undefined)"><strong>NINGUNO</strong></div>
+            </div>
+        </div>
+
+        @if (establecimiento.id) {
+        <div class="card shadow p-2 py-4 my-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">DESCRIPCION</span>
+                        <input type="text" class="form-control" placeholder="Descripcion" aria-label="Descripcion"
+                            aria-describedby="basic-addon1" [(ngModel)]="establecimiento.descripcion">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
+                        <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
+                            aria-describedby="basic-addon1" [(ngModel)]="establecimiento.localidad">
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
+                        <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
+                            aria-describedby="basic-addon1" [(ngModel)]="establecimiento.provincia">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-end">
+                    <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                        (click)="guardarEstablecimiento()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn-sm btn-success m-2 my-5" (click)="agregarEstablecimiento()">AGREGAR
+            ESTABLECIMIENTO</button>
+        }
     </div>
 </p-dialog>

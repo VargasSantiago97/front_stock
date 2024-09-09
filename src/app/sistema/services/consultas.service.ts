@@ -55,19 +55,30 @@ export class ConsultasService {
     }
 
     //FUNCIONES PUBLICAS
-    public getAll(tabla: string, fn: any = null) {
+
+    /**ASD
+     * CONSULTA A BASE DE DATOS
+     * @param tabla 
+     * @param fn_ok [CALLBACK INFO]
+     * @param fn_error  [OPCIONAL]
+     */
+    public getAll(tabla: string, fn_ok: any, fn_error: any = null) {
 
         this.api_getAll(tabla).subscribe(
             (res:any) => {
                 if(res.mensaje){
-                    fn(res.mensaje)
+                    fn_ok(res.mensaje)
                 } else {
                     this.ms.add({ severity: 'error', summary: 'Error!', detail: 'El servidor envio respuesta incorrecta' })
                 }
             },
             (err:any) => {
-                this.ms.add({ severity: 'error', summary: 'Error!', detail: err.message })
-                console.error(err)
+                if(fn_error){
+                    fn_error(err)
+                } else {
+                    this.ms.add({ severity: 'error', summary: 'Error!', detail: err.message })
+                    console.error(err)
+                }
             }
         )
     }

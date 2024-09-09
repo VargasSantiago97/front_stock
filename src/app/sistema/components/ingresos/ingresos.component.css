@@ -1,0 +1,36 @@
+.listbox-container {
+    width: 100%;
+    max-height: 40vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.listbox-item {
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.listbox-item:hover {
+    background-color: #f0f0f0;
+}
+
+.listbox-item.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+.input_unidad_fundamental {
+    padding: 5px;
+    margin: 0px 5px;
+    width: 120px;
+    text-align: right;
+    border-radius: 6px;
+    border: 1px solid #c2c1c1;
+}
+
+#searchInput {
+    margin-bottom: 10px;
+}
