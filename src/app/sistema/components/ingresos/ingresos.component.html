@@ -1,102 +1,165 @@
 <div class="container-fluid p-2">
-    <button type="button" class="btn btn-primary m-2" (click)="mostrarModalCliente()">NUEVO REMITO DE INGRESO</button>
-    <button type="button" class="btn btn-primary m-2" (click)="mostrarModalCliente()">NUEVA DEVOLUCION DE MERCADERIA</button>
+    <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()">NUEVO REMITO DE INGRESO</button>
+    <button type="button" class="btn btn-primary m-2">NUEVA DEVOLUCION DE
+        MERCADERIA</button>
 
-    <div class="container-fluid p-2">
-        <p-table [value]="clientes" [tableStyle]="{ 'min-width': '50rem' }" #dt1
-            styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" [paginator]="true" [rows]="25"
-            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50, 100, 500, 1000]"
-            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" sortField="alias"
-            [globalFilterFields]="['alias', 'cuit', 'razon_social', 'codigo']" dataKey="id">
-
-            <ng-template pTemplate="caption">
-                <div class="flex text-end">
-                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (onClick)="clear(dt1)" />
-
-                    <span class="p-input-icon-left ml-auto text-end">
-                        <i class="pi pi-search"></i>
-                        <input pInputText type="text" [(ngModel)]="searchValue"
-                            (input)="dt1.filterGlobal(searchValue, 'contains')" placeholder="Buscar" />
-                    </span>
-                </div>
-            </ng-template>
-
-            <ng-template pTemplate="header">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm">
+            <thead>
                 <tr>
-                    <th pSortableColumn="codigo" style="width:20%">
-                        CÓD. <p-sortIcon field="codigo" />
-                    </th>
-                    <th pSortableColumn="alias" style="width:20%">
-                        ALIAS <p-sortIcon field="alias" />
-                    </th>
-                    <th pSortableColumn="cuit" style="width:20%">
-                        CUIT <p-sortIcon field="cuit" />
-                    </th>
-                    <th pSortableColumn="razon_social" style="width:20%">
-                        RAZON SOCIAL <p-sortIcon field="razon_social" />
-                    </th>
-                    <th pSortableColumn="direccion" style="width:20%">
-                        DIRECCION <p-sortIcon field="direccion" />
-                    </th>
-                    <th pSortableColumn="localidad" style="width:20%">
-                        LOCALIDAD <p-sortIcon field="localidad" />
-                    </th>
-                    <th pSortableColumn="codigo_postal" style="width:20%">
-                        C.P. <p-sortIcon field="codigo_postal" />
-                    </th>
-                    <th pSortableColumn="provincia" style="width:20%">
-                        PROVINCIA <p-sortIcon field="provincia" />
-                    </th>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
                 </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-cliente>
-                <tr (dblclick)="mostrarModalCliente(cliente.id)">
-                    <td class="text-nowrap"><strong>{{ cliente.codigo }}</strong></td>
-                    <td class="text-nowrap">{{ cliente.alias }}</td>
-                    <td class="text-nowrap">{{ cliente.cuit }}</td>
-                    <td class="text-nowrap">{{ cliente.razon_social }}</td>
-                    <td class="text-nowrap">{{ cliente.direccion }}</td>
-                    <td class="text-nowrap">{{ cliente.localidad }}</td>
-                    <td class="text-nowrap">{{ cliente.codigo_postal }}</td>
-                    <td class="text-nowrap">{{ cliente.provincia }}</td>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>MarkMarkMarkMarkMarkMarkMark</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
                 </tr>
-            </ng-template>
-        </p-table>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                </tr>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                    <td>Otto</td>
+                    <td>mdo</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
 
-<p-dialog header="{{cliente.id ? 'Editar cliente' : 'Nuevo cliente'}}" [modal]="true" [(visible)]="visible"
-    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+<p-dialog header="{{ingreso.id ? 'Ver ingreso' : 'Nuevo ingreso'}}" [modal]="true" [(visible)]="visible_ingreso"
+    [style]="{ width: '70rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
 
     <div class="row">
-        <div class="col-12 col-md-6">
+        <div class="col-6 col-md-3">
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">CÓD.</span>
-                <input type="text" class="form-control" placeholder="Código" aria-label="Código"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.codigo">
+                <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
+                <select class="input-group-text" [(ngModel)]="ingreso.punto" style="width: 50%;">
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">N</span>
+                <input type="number" class="form-control" placeholder="Numero" aria-label="Numero"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.numero" disabled="">
             </div>
         </div>
         <div class="col-12 col-md-6">
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">CUIT</span>
-                <input type="text" class="form-control" placeholder="C.U.I.T." aria-label="C.U.I.T."
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.cuit" (keyup.enter)="buscarCUIT()">
+                <span class="input-group-text" id="basic-addon1">FECHA</span>
+                <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha">
             </div>
         </div>
     </div>
-    <div style="text-align: center;" *ngIf="spinnerCUIT">
-        <p-progressSpinner></p-progressSpinner>
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}">
+                <b>Autorizado</b>
+            </p-divider>
+            <div class="input-group m-1 p-0">
+                <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control m-0 p-0 px-3" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+            <div class="input-group m-1 p-0">
+                <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control m-0 p-0 px-3" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+            <div class="input-group m-1 p-0">
+                <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control m-0 p-0 px-3" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <p-divider align="center" type="solid" class="m-0 p-0">
+                <b>Transporte</b>
+            </p-divider>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <p-divider align="center" type="solid" class="m-0 p-0">
+                <b>Origen</b>
+            </p-divider>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">ALIAS</span>
+                <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
+            </div>
+        </div>
     </div>
-    <p-divider align="left" type="solid">
-        <b>Datos</b>
-    </p-divider>
+
     <div class="row">
         <div class="col-12">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">ALIAS</span>
                 <input type="text" class="form-control" placeholder="Alias" aria-label="Alias"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.alias">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.alias">
             </div>
         </div>
     </div>
@@ -105,7 +168,7 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">RAZON SOCIAL</span>
                 <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.razon_social">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.razon_social">
             </div>
         </div>
     </div>
@@ -117,14 +180,14 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
                 <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.localidad">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.localidad">
             </div>
         </div>
         <div class="col-12 col-md-6">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
                 <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.provincia">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.provincia">
             </div>
         </div>
     </div>
@@ -133,14 +196,14 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">DIRECCION</span>
                 <input type="text" class="form-control" placeholder="Direccion" aria-label="Direccion"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.direccion">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.direccion">
             </div>
         </div>
         <div class="col-12 col-md-6">
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">C.P.</span>
                 <input type="text" class="form-control" placeholder="Cód. postal" aria-label="Cód. postal"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.codigo_postal">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.codigo_postal">
             </div>
         </div>
     </div>
@@ -152,7 +215,7 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">TELEFONO</span>
                 <input type="text" class="form-control" placeholder="Telefono" aria-label="Telefono"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.telefono">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.telefono">
             </div>
         </div>
     </div>
@@ -161,12 +224,12 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">CORREO</span>
                 <input type="text" class="form-control" placeholder="Correo electrónico" aria-label="Correo electrónico"
-                    aria-describedby="basic-addon1" [(ngModel)]="cliente.correo">
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.correo">
             </div>
         </div>
     </div>
 
-    @if (cliente.id) {
+    @if (ingreso.id) {
 
     <p-divider align="left" type="solid">
         <b>Autorizados</b>
@@ -207,19 +270,18 @@
                 </div>
             </div>
             <div class="col-12 col-md-4 text-end">
-                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
-                    (click)="guardarAutorizado(autorizado)">{{autorizado.id ? 'EDITAR' : 'GUARDAR'}}</button>
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2">{{autorizado.id ? 'EDITAR' :
+                    'GUARDAR'}}</button>
 
                 @if (autorizado.id) {
-                <button type="button" class="btn btn-sm btn-danger py-2"
-                    (click)="eliminarAutorizado(autorizado.id)">ELIMINAR</button>
+                <button type="button" class="btn btn-sm btn-danger py-2">ELIMINAR</button>
                 }
             </div>
         </div>
     </div>
     }
 
-    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarAutorizado()">AGREGAR AUTORIZADO</button>
+    <button type="button" class="btn btn-sm btn-success m-2">AGREGAR AUTORIZADO</button>
 
     <p-divider align="left" type="solid">
         <b>Transporte</b>
@@ -275,19 +337,18 @@
                 </div>
             </div>
             <div class="col-12 col-md-4 text-end">
-                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
-                    (click)="guardarTransporte(transporte)">{{transporte.id ? 'EDITAR' : 'GUARDAR'}}</button>
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2">{{transporte.id ? 'EDITAR' :
+                    'GUARDAR'}}</button>
 
                 @if (transporte.id) {
-                <button type="button" class="btn btn-sm btn-danger py-2"
-                    (click)="eliminarTransporte(transporte.id)">ELIMINAR</button>
+                <button type="button" class="btn btn-sm btn-danger py-2">ELIMINAR</button>
                 }
             </div>
         </div>
     </div>
     }
 
-    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarTransporte()">AGREGAR TRANSPORTE</button>
+    <button type="button" class="btn btn-sm btn-success m-2">AGREGAR TRANSPORTE</button>
 
     <p-divider align="left" type="solid">
         <b>Establecimientos / Destinos</b>
@@ -322,19 +383,17 @@
         </div>
         <div class="row">
             <div class="col-12 text-end">
-                <button type="button" class="btn btn-sm btn-warning py-2 me-2"
-                    (click)="guardarEstablecimiento(establecimiento)">{{establecimiento.id ? 'EDITAR' :
+                <button type="button" class="btn btn-sm btn-warning py-2 me-2">{{establecimiento.id ? 'EDITAR' :
                     'GUARDAR'}}</button>
 
                 @if (establecimiento.id) {
-                <button type="button" class="btn btn-sm btn-danger py-2"
-                    (click)="eliminarEstablecimiento(establecimiento.id)">ELIMINAR</button>
+                <button type="button" class="btn btn-sm btn-danger py-2">ELIMINAR</button>
                 }
             </div>
         </div>
     </div>
     }
-    <button type="button" class="btn btn-sm btn-success m-2" (click)="agregarEstablecimiento()">AGREGAR
+    <button type="button" class="btn btn-sm btn-success m-2">AGREGAR
         ESTABLECIMIENTO</button>
 
     }
@@ -343,11 +402,11 @@
 
     <div class="row">
         <div class="col text-end">
-            <button type="button" class="btn btn-warning m-2" (click)="visible = false">CERRAR</button>
-            @if (cliente.id) {
-            <button type="button" class="btn btn-danger m-2" (click)="eliminarCliente(cliente.id)">ELIMINAR</button>
+            <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
+            @if (ingreso.id) {
+            <button type="button" class="btn btn-danger m-2">ELIMINAR</button>
             }
-            <button type="button" class="btn btn-success m-2" (click)="guardarCambiosCliente()">{{cliente.id ? 'EDITAR'
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">{{ingreso.id ? 'EDITAR'
                 : 'GUARDAR'}}</button>
 
         </div>

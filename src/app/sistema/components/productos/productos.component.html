@@ -93,13 +93,13 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-art>
                             <tr (dblclick)="mostrarModalArticulo(art.id)">
-                                <td class="text-nowrap" class="p-1"><strong>{{ art.codigo }}</strong></td>
-                                <td class="text-nowrap" class="p-1">{{ art.descripcion }}</td>
-                                <td class="text-nowrap" class="p-1">{{ obtenerDescripcionLaboratorio(art.id_laboratorio) }}</td>
-                                <td class="text-nowrap" class="p-1">{{ obtenerDescripcionUnidadMedida(art.id_unidadMedida) }}</td>
-                                <td class="text-center" class="p-1"><p-tag [value]="art.solicitaVencimiento ? 'SI' : 'NO'" [severity]="art.solicitaVencimiento ? 'success' : 'danger'" /></td>
-                                <td class="text-center" class="p-1"><p-tag [value]="art.solicitaLote ? 'SI' : 'NO'" [severity]="art.solicitaLote ? 'success' : 'danger'" /></td>
-                                <td class="text-center" class="p-1"><p-tag [value]="art.activo ? 'ACTIVO' : 'INACTIVO'" [severity]="art.activo ? 'success' : 'danger'" /></td>
+                                <td class="text-nowrap p-1"><strong>{{ art.codigo }}</strong></td>
+                                <td class="text-nowrap p-1">{{ art.descripcion }}</td>
+                                <td class="text-nowrap p-1">{{ obtenerDescripcionLaboratorio(art.id_laboratorio) }}</td>
+                                <td class="text-nowrap p-1">{{ obtenerDescripcionUnidadMedida(art.id_unidadMedida) }}</td>
+                                <td class="text-center p-1"><p-tag [value]="art.solicitaVencimiento ? 'SI' : 'NO'" [severity]="art.solicitaVencimiento ? 'success' : 'danger'" /></td>
+                                <td class="text-center p-1"><p-tag [value]="art.solicitaLote ? 'SI' : 'NO'" [severity]="art.solicitaLote ? 'success' : 'danger'" /></td>
+                                <td class="text-center p-1"><p-tag [value]="art.activo ? 'ACTIVO' : 'INACTIVO'" [severity]="art.activo ? 'success' : 'danger'" /></td>
                             </tr>
                         </ng-template>
                     </p-table>

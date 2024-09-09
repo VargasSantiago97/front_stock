@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../login/services/auth.service';
+import { DockModule } from 'primeng/dock';
 
 @Component({
     selector: 'app-sistema',
     standalone: true,
-    imports: [RouterOutlet],
+    imports: [RouterOutlet, DockModule],
     templateUrl: './sistema.component.html',
     styleUrl: './sistema.component.css'
 })
