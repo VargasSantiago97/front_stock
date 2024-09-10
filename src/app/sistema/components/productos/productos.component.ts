@@ -739,7 +739,7 @@ export class ProductosComponent {
         return this.rubros.find((rub:Rubro) => { return rub.id == id })?.descripcion
     }
     obtenerDescripcionSubRubro(id:string){
-        return this.subRubros.find((subRub:Rubro) => { return subRub.id == id })?.descripcion
+        return this.subRubros.find((subRub:SubRubro) => { return subRub.id == id })?.descripcion
     }
     obtenerDescripcionUnidadMedida(id:string){
         return this.unidadMedidas.find((unidadMedida:UnidadMedida) => { return unidadMedida.id == id })?.descripcion

@@ -16,6 +16,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { Deposito, UnidadMedida } from '../../interfaces/variables';
+import { ArticuloAsociado } from '../../interfaces/remitos';
+import { Articulo } from '../../interfaces/productos';
+import { PdfService } from '../../services/pdf.service';
 
 
 @Component({
@@ -34,11 +38,13 @@ export class IngresosComponent {
     visible_autorizado: boolean = false
     visible_transporte: boolean = false
     visible_establecimiento: boolean = false
+    visible_articulo: boolean = false
 
     searchValue_cliente: string = ''
     searchValue_autorizado: string = ''
     searchValue_transporte: string = ''
     searchValue_establecimiento: string = ''
+    searchValue_articulo: string = ''
 
     ingreso: any = {
         id: 0,
@@ -104,17 +110,56 @@ export class IngresosComponent {
     establecimientos: Establecimiento[] = []
     establecimientosFiltrados: Establecimiento[] = []
 
+    depositos: Deposito[] = []
+    unidadMedidas: UnidadMedida[] = []
+
+    articulos: Articulo[] = []
+    articulosFiltrados: Articulo[] = []
+    articulosIngreso: ArticuloAsociado[] = []
+    articuloProvisorio: ArticuloAsociado | undefined
+
+
     constructor(
         private padron: PadronService,
         private ms: MessageService,
-        private cs: ConsultasService
+        private cs: ConsultasService,
+        private pdf: PdfService
     ) { }
 
     ngOnInit() {
         this.actualizarDatosTabla()
+
+        this.cs.getAll('depositos', (data: Deposito[]) => { this.depositos = data })
+        this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
     }
 
-    pestana(pes:string, e:any){
+
+
+    verRemito() {
+        const remitoId = '1'; // Reemplaza con el ID correspondiente
+        this.pdf.ingreso(remitoId).subscribe((blob:any) => {
+            const url = window.URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+    descargarRemito() {
+        const remitoId = '1'; // Reemplaza con el ID correspondiente
+        this.pdf.ingreso(remitoId).subscribe((blob:any) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `remito_${remitoId}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+    pestana(pes: string, e: any) {
         e.preventDefault()
         this.pestActiva = pes
     }
@@ -142,6 +187,8 @@ export class IngresosComponent {
                 punto: 2,
                 modelo: 1
             }
+
+            this.agregarArticulos()
         }
         this.visible_ingreso = true
     }
@@ -201,7 +248,7 @@ export class IngresosComponent {
 
         this.visible_cliente = false
 
-        if(continua){
+        if (continua) {
             this.buscarAutorizados()
         }
     }
@@ -214,11 +261,11 @@ export class IngresosComponent {
 
         this.visible_autorizado = false
 
-        if(continua){
+        if (continua) {
             this.buscarTransportes()
         }
     }
-    asignarTransporte(transporte: Transporte | undefined, continua: boolean = true){
+    asignarTransporte(transporte: Transporte | undefined, continua: boolean = true) {
         this.ingreso.id_transporte = transporte?.id
         this.ingreso.transporte_transporte = transporte?.transporte
         this.ingreso.transporte_cuit_transporte = transporte?.cuit_transporte
@@ -229,11 +276,11 @@ export class IngresosComponent {
 
         this.visible_transporte = false
 
-        if(continua){
+        if (continua) {
             this.buscarEstablecimientos()
         }
     }
-    asignarEstablecimiento(establecimiento: Establecimiento | undefined){
+    asignarEstablecimiento(establecimiento: Establecimiento | undefined) {
         this.ingreso.id_establecimiento = establecimiento?.id
         this.ingreso.establecimiento_descripcion = establecimiento?.descripcion
         this.ingreso.establecimiento_localidad = establecimiento?.localidad
@@ -248,15 +295,21 @@ export class IngresosComponent {
     filtroAutorizado() {
         this.autorizadosFiltrados = this.autorizados.filter((autorizado: Autorizado) => { return autorizado.descripcion.toLocaleUpperCase().includes(this.searchValue_autorizado.toLocaleUpperCase()) })
     }
-    filtroTransporte(){
+    filtroTransporte() {
         this.transportesFiltrados = this.transportes.filter((transporte: Transporte) => { return transporte.transporte.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) || transporte.chofer.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) || transporte.patente_chasis.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) || transporte.patente_acoplado.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) })
     }
-    filtroEstablecimiento(){
+    filtroEstablecimiento() {
         this.establecimientosFiltrados = this.establecimientos.filter((establecimiento: Establecimiento) => { return establecimiento.descripcion.toLocaleUpperCase().includes(this.searchValue_establecimiento.toLocaleUpperCase()) })
+    }
+    filtroArticulo() {
+        this.articulosFiltrados = this.articulos.filter((articulo: Articulo) => { return articulo.descripcion.toLocaleUpperCase().includes(this.searchValue_articulo.toLocaleUpperCase()) })
     }
 
 
     buscarAutorizados(mostrar: boolean = false) {
+        if (!this.id_cliente) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un cliente' })
+        }
         this.cs.getAll('autorizados/' + this.id_cliente, (data: Autorizado[]) => {
 
             if (data.length > 0 || mostrar) {
@@ -285,6 +338,9 @@ export class IngresosComponent {
         })
     }
     buscarTransportes(mostrar: boolean = false) {
+        if (!this.id_cliente) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un cliente' })
+        }
         this.cs.getAll('transportes/' + this.id_cliente, (data: Transporte[]) => {
             if (data.length > 0 || mostrar) {
                 this.transportes = data
@@ -313,6 +369,9 @@ export class IngresosComponent {
         })
     }
     buscarEstablecimientos(mostrar: boolean = false) {
+        if (!this.id_cliente) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un cliente' })
+        }
         this.cs.getAll('establecimientos/' + this.id_cliente, (data: Establecimiento[]) => {
             if (data.length > 0 || mostrar) {
                 this.establecimientos = data
@@ -408,6 +467,153 @@ export class IngresosComponent {
             this.asignarEstablecimiento(this.establecimiento)
         })
 
+    }
+
+    //ARTICULOS
+    agregarArticulos(cantidad: number = 20) {
+        this.articulosIngreso = []
+        for (let index = 1; index <= cantidad; index++) {
+            this.articulosIngreso.push({
+                id: index.toString(),
+                id_articulo: '',
+                id_documento: '',
+                id_rubro: '',
+                id_subRubro: '',
+                id_laboratorio: '',
+                id_unidadMedida: '',
+                id_deposito: '',
+                cantidad: 0,
+                cantidadUnidadFundamental: 0,
+                lote: '',
+                vencimiento: new Date(),
+                codigo: '',
+                descripcion: '',
+                observaciones: '',
+                unidadFundamental: '',
+                cantidadPorUnidadFundamental: 0,
+                datos: {},
+                estado: 1,
+                createdBy: '',
+                updatedBy: '',
+                createdAt: '',
+                updatedAt: ''
+            })
+        }
+    }
+    buscarArticuloPorCodigo(art: ArticuloAsociado) {
+        if (!art.codigo) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ingrese un CODIGO' })
+        }
+
+        this.cs.getAll('articulos/buscar/codigo/' + art.codigo, (data: Articulo) => {
+            this.asignarArticulo(art, data)
+        }, (err: any) => {
+            this.cs.getAll('articulos/buscar/descripcion/' + art.codigo, (data: Articulo[]) => {
+                if (data.length == 1) {
+                    this.asignarArticulo(art, data[0])
+                }
+                else if (data.length > 1) {
+                    this.articulos = data
+                    this.searchValue_articulo = ''
+                    this.filtroArticulo()
+                    this.visible_articulo = true
+                    this.articuloProvisorio = art
+                } else {
+                    art = {
+                        id: art.id,
+                        id_articulo: '',
+                        id_documento: '',
+                        id_rubro: '',
+                        id_subRubro: '',
+                        id_laboratorio: '',
+                        id_unidadMedida: '',
+                        id_deposito: '',
+                        cantidad: 0,
+                        cantidadUnidadFundamental: 0,
+                        lote: '',
+                        vencimiento: new Date(),
+                        codigo: '',
+                        descripcion: '',
+                        observaciones: '',
+                        unidadFundamental: '',
+                        cantidadPorUnidadFundamental: 0,
+                        datos: {},
+                        estado: 1,
+                        createdBy: '',
+                        updatedBy: '',
+                        createdAt: '',
+                        updatedAt: ''
+                    }
+                    this.ms.add({ severity: 'error', summary: 'Error!', detail: 'No se encontró ningún articulo con ese código o descripción' })
+                }
+            })
+        })
+    }
+    asignarArticulo(art: ArticuloAsociado, datos: Articulo) {
+
+        art.id_articulo = datos.id
+        art.codigo = datos.codigo
+        art.descripcion = datos.descripcion
+        art.id_unidadMedida = datos.id_unidadMedida
+        art.unidadFundamental = datos.unidadFundamental
+        art.cantidadPorUnidadFundamental = datos.cantidadUnidadFundamental
+
+        this.visible_articulo = false
+
+        if (datos.solicitaLote || datos.solicitaVencimiento) {
+        }
+    }
+    verDetallesArticulos(id: any) { }
+    eliminarArticulo(id: string) {
+        this.articulosIngreso = this.articulosIngreso.map((art: ArticuloAsociado) => {
+            if (art.id === id) {
+                return {
+                    id: id,
+                    id_articulo: '',
+                    id_documento: '',
+                    id_rubro: '',
+                    id_subRubro: '',
+                    id_laboratorio: '',
+                    id_unidadMedida: '',
+                    id_deposito: '',
+                    cantidad: 0,
+                    cantidadUnidadFundamental: 0,
+                    lote: '',
+                    vencimiento: new Date(),
+                    codigo: '',
+                    descripcion: '',
+                    observaciones: '',
+                    unidadFundamental: '',
+                    cantidadPorUnidadFundamental: 0,
+                    datos: {},
+                    estado: 1,
+                    createdBy: '',
+                    updatedBy: '',
+                    createdAt: '',
+                    updatedAt: ''
+                };
+            }
+            return art;
+        });
+    }
+
+    //HELPERS
+    //obtenerDescripcionRubro(id: string) {
+    //    return this.rubros.find((rub: Rubro) => { return rub.id == id })?.descripcion
+    //}
+    //obtenerDescripcionSubRubro(id: string) {
+    //    return this.subRubros.find((subRub: Rubro) => { return subRub.id == id })?.descripcion
+    //}
+    obtenerDescripcionUnidadMedida(id: string) {
+        return this.unidadMedidas.find((unidadMedida: UnidadMedida) => { return unidadMedida.id == id })?.alias
+    }
+    //obtenerDescripcionLaboratorio(id: string) {
+    //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
+    //}
+
+    calcularUnidadFundamental(art: ArticuloAsociado) {
+        console.log(art)
+        art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
     }
 
 }

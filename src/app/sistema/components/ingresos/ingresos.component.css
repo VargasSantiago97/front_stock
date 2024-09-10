@@ -31,6 +31,12 @@
     border: 1px solid #c2c1c1;
 }
 
+.input_tabla {
+    border-radius: 2px;
+    border: 1px solid rgb(214, 214, 214);
+    width: 100%;
+}
+
 #searchInput {
     margin-bottom: 10px;
 }
