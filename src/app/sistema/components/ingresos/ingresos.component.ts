@@ -40,6 +40,10 @@ export class IngresosComponent {
     visible_establecimiento: boolean = false
     visible_articulo: boolean = false
 
+    permite_secuencia_lote: boolean = false
+    cantidad_secuencia_lote: number = 1
+    digitos_secuencia_lote: number = 3
+
     searchValue_cliente: string = ''
     searchValue_autorizado: string = ''
     searchValue_transporte: string = ''
@@ -205,7 +209,7 @@ export class IngresosComponent {
         //    })
         //}
 
-        console.log(this.ingreso)
+        console.log(this.articulosIngreso)
     }
 
     buscarClientePorCodigo() {
@@ -506,6 +510,34 @@ export class IngresosComponent {
             createdAt: '',
             updatedAt: ''
         })
+
+        this.permite_secuencia_lote = false
+    }
+    agregarArticulosSecuencia() {
+
+        let ultimo = this.articulosIngreso.reduce((anterior: ArticuloAsociado, curr: ArticuloAsociado) => {
+            return parseInt(curr.id) > parseInt(anterior.id) ? curr : anterior
+        })
+
+        let serie = ultimo.lote.slice(-this.digitos_secuencia_lote)
+        let serie_base = ultimo.lote.slice(0, -this.digitos_secuencia_lote);
+
+        let numero_serie = 0
+        try {
+            numero_serie = parseInt(serie) ? parseInt(serie) : 0
+        } catch {
+            numero_serie = 0
+        }
+
+        for (let index = 0; index < this.cantidad_secuencia_lote; index++) {
+
+            this.articulosIngreso.push({
+                ... ultimo,
+                id: (parseInt(ultimo.id)+index+1).toString(),
+                lote: serie_base + (numero_serie+index+1).toString().padStart(this.digitos_secuencia_lote, '0')
+                
+            }) 
+        }
     }
     buscarArticuloPorCodigo(art: ArticuloAsociado) {
         if (!art.codigo) {
@@ -571,43 +603,12 @@ export class IngresosComponent {
 
         this.visible_articulo = false
 
-        if (datos.solicitaLote || datos.solicitaVencimiento) {
-        }
+        this.permite_secuencia_lote = datos.solicitaLote
+
     }
-    verDetallesArticulos(id: any) { }
+
     eliminarArticulo(id: string) {
-        this.articulosIngreso = this.articulosIngreso.map((art: ArticuloAsociado) => {
-            if (art.id === id) {
-                return {
-                    id: id,
-                    id_articulo: '',
-                    id_documento: '',
-                    id_rubro: '',
-                    id_subRubro: '',
-                    id_laboratorio: '',
-                    id_unidadMedida: '',
-                    id_deposito: '',
-                    cantidad: 0,
-                    cantidadUnidadFundamental: 0,
-                    solicitaLote: false,
-                    solicitaVencimiento: false,
-                    lote: '',
-                    vencimiento: new Date(),
-                    codigo: '',
-                    descripcion: '',
-                    observaciones: '',
-                    unidadFundamental: '',
-                    cantidadPorUnidadFundamental: 0,
-                    datos: {},
-                    estado: 1,
-                    createdBy: '',
-                    updatedBy: '',
-                    createdAt: '',
-                    updatedAt: ''
-                };
-            }
-            return art;
-        });
+        this.articulosIngreso = this.articulosIngreso.filter((art: ArticuloAsociado) => { return art.id != id });
     }
 
     //HELPERS

@@ -305,7 +305,7 @@
                     <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
                         {{$index + 1}})</th>
                     <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
-                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)"></th>
+                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)" [readOnly]="art.id_articulo"></th>
                     <td class="text-nowrap p-0" style="min-width: 500px;">{{art.descripcion ? art.descripcion : '-'}}
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
@@ -323,14 +323,17 @@
                             }
                         </select>
                     </td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="text" [disabled]="!art.solicitaLote"
-                            [(ngModel)]="art.lote"></td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="date" [disabled]="!art.solicitaVencimiento"
-                            [(ngModel)]="art.vencimiento"></td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        @if (art.solicitaLote) {
+                        <input class="input_tabla" type="text" [(ngModel)]="art.lote">
+                        }
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        @if (art.solicitaVencimiento) {
+                        <input class="input_tabla" type="date" [(ngModel)]="art.vencimiento">
+                        }
+                    </td>
                     <td class="text-nowrap p-0">
-
-                        <button type="button" class="btn btn-sm btn-secondary m-0 mx-1 p-0 px-1"
-                            (click)="verDetallesArticulos(art)"><i class="pi pi-bars"></i></button>
                         @if(art.id_articulo){
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
                             (click)="eliminarArticulo(art.id)"><i class="pi pi-trash"></i></button>
@@ -341,7 +344,15 @@
             </tbody>
         </table>
 
-        <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="agregarArticulos()">Agregar</button>
+        <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="agregarArticulos()">Agregar nuevo</button>
+        @if (permite_secuencia_lote) {
+            AGREGAR
+            <input type="number" step="1" class="input_tabla" [(ngModel)]="cantidad_secuencia_lote" style="width: 60px;">
+            ARTICULOS TOMANDO LOS ULTIMOS
+            <input type="number" step="1" class="input_tabla" [(ngModel)]="digitos_secuencia_lote" style="width: 60px;">
+            DIGITOS DEL LOTE.
+            <button type="button" class="btn btn-primary m-2 p-0 px-2" (click)="agregarArticulosSecuencia()">Agregar {{cantidad_secuencia_lote}}</button>
+        }
     </div>
 
     <div class="row">
