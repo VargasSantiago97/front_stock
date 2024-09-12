@@ -69,13 +69,15 @@
     [(visible)]="visible_ingreso" [style]="{ width: '85rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
     [maximizable]="true" [closeOnEscape]="false">
 
+    <!-- HEADERS -->
     <div class="row py-2" style="background-color: rgba(176, 245, 187, 0.555); border-radius: 6px;">
         <div class="col-6 col-md-3 mb-2 mb-md-0">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">Modelo</span>
                 <select class="input-group-text" [(ngModel)]="ingreso.modelo">
-                    <option value=1>Moliendas</option>
-                    <option value=2>NorSemillas</option>
+                    @for (modRem of modelosRemitos; track $index) {
+                    <option value={{modRem.alias}}>{{modRem.descripcion}}</option>
+                    }
                 </select>
             </div>
         </div>
@@ -83,8 +85,9 @@
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
                 <select class="input-group-text" [(ngModel)]="ingreso.punto" style="width: 50%;">
-                    <option value=1>1</option>
-                    <option value=2>2</option>
+                    @for (ptoVta of puntosVenta; track $index) {
+                    <option value={{ptoVta.punto}}>{{ptoVta.descripcion}}</option>
+                    }
                 </select>
             </div>
         </div>
@@ -104,6 +107,7 @@
         </div>
     </div>
 
+    <!-- PESTAÑAS -->
     <ul class="nav nav-tabs my-2">
         <li class="nav-item">
             <a class="nav-link p-1 px-3 {{pestActiva == 'cliente' ? 'active' : ''}}" href=""
@@ -196,7 +200,7 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
                         aria-label="Descripcion" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.articulo_descripcion" disabled>
+                        [(ngModel)]="ingreso.establecimiento_descripcion" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Loc.</span>
@@ -215,45 +219,49 @@
 
     @if(pestActiva == 'documentos'){
     <div style="min-height: 180px;">
-        <div class="row">
+        @for (doc of ingreso.datos.documentos; track $index) {
+        <div class="row mb-2">
             <div class="col-3">
                 <div class="input-group">
-                    <select class="input-group-text" [(ngModel)]="ingreso.modelo">
-                        <option value=1>REMITO</option>
-                        <option value=2>FACTURA</option>
-                        <option value=2>TICKET BALANZA</option>
-                        <option value=2>OTROS</option>
+                    <select class="input-group-text" [(ngModel)]="doc.tipo">
+                        <option value=remito>REMITO</option>
+                        <option value=factura>FACTURA</option>
+                        <option value=ticket_balanza>TICKET BALANZA</option>
+                        <option value=otros>OTROS</option>
                     </select>
                 </div>
             </div>
             <div class="col-3">
                 <div class="input-group">
-                    <select class="input-group-text" [(ngModel)]="ingreso.modelo">
-                        <option value=1>A</option>
-                        <option value=2>B</option>
-                        <option value=2>C</option>
-                        <option value=2>R</option>
-                        <option value=2>X</option>
+                    <select class="input-group-text" [(ngModel)]="doc.letra">
+                        <option value=A>A</option>
+                        <option value=B>B</option>
+                        <option value=C>C</option>
+                        <option value=R>R</option>
+                        <option value=X>X</option>
                     </select>
 
                     <input type="number" class="form-control m-0 p-0 px-3" placeholder="Punto" aria-label="Punto"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto">
 
                     <input type="number" class="form-control m-0 p-0 px-3" placeholder="Numero" aria-label="Numero"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero">
                 </div>
             </div>
             <div class="col-3">
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon1">FECHA</span>
                     <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha">
                 </div>
             </div>
             <div class="col-3">
-                <button type="button" class="btn btn-warning" (click)="visible_ingreso = false">CERRAR</button>
+                <button type="button" class="btn btn-warning p-1 mx-3"
+                    (click)="eliminarDocumento(doc.id)">ELIMINAR</button>
             </div>
         </div>
+        }
+        <button type="button" class="btn btn-warning px-3" (click)="agregarDocumento()">Agregar</button>
     </div>
     }
 
@@ -305,7 +313,8 @@
                     <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
                         {{$index + 1}})</th>
                     <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
-                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)" [readOnly]="art.id_articulo"></th>
+                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)"
+                            [readOnly]="art.id_articulo"></th>
                     <td class="text-nowrap p-0" style="min-width: 500px;">{{art.descripcion ? art.descripcion : '-'}}
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
@@ -346,23 +355,26 @@
 
         <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="agregarArticulos()">Agregar nuevo</button>
         @if (permite_secuencia_lote) {
-            AGREGAR
-            <input type="number" step="1" class="input_tabla" [(ngModel)]="cantidad_secuencia_lote" style="width: 60px;">
-            ARTICULOS TOMANDO LOS ULTIMOS
-            <input type="number" step="1" class="input_tabla" [(ngModel)]="digitos_secuencia_lote" style="width: 60px;">
-            DIGITOS DEL LOTE.
-            <button type="button" class="btn btn-primary m-2 p-0 px-2" (click)="agregarArticulosSecuencia()">Agregar {{cantidad_secuencia_lote}}</button>
+        AGREGAR
+        <input type="number" step="1" class="input_tabla" [(ngModel)]="cantidad_secuencia_lote" style="width: 60px;">
+        ARTICULOS TOMANDO LOS ULTIMOS
+        <input type="number" step="1" class="input_tabla" [(ngModel)]="digitos_secuencia_lote" style="width: 60px;">
+        DIGITOS DEL LOTE.
+        <button type="button" class="btn btn-primary m-2 p-0 px-2" (click)="agregarArticulosSecuencia()">Agregar
+            {{cantidad_secuencia_lote}}</button>
         }
     </div>
 
     <div class="row">
         <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="verTotalesArticulosIngreso()">VER
+                TOTALES</button>
             <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
-            @if (ingreso.id) {
-            <button type="button" class="btn btn-danger m-2">ELIMINAR</button>
+            @if (!ingreso.id) {
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR Y MOSTRAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR Y DESCARGAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR</button>
             }
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">{{ingreso.id ? 'EDITAR'
-                : 'GUARDAR'}}</button>
 
         </div>
     </div>
@@ -613,5 +625,61 @@
                 }
             </div>
         </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="TOTALES" [modal]="true" [(visible)]="visible_totales" [style]="{ width: '70rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        @for (rub of datosTotales; track $index) {
+        <div class="card m-2 p-2 shadow">
+            <h4>RUBRO: {{rub.rubro}}</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Sub Rubro / Articulo</th>
+                        <th>Cantidad</th>
+                        <th>U.M.</th>
+                        <th class="table-light">~ KILOS</th>
+                        <th class="table-light">~ LITROS</th>
+                        <th class="table-light">~ UN.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (subRub of rub.datos; track $index) {
+                    <tr class="table-secondary">
+                        <td>{{subRub.subRubro}}</td>
+                        <td class="text-end">{{mostrarNumero(subRub.totales)}}</td>
+                        <td></td>
+                        <td class="text-end">{{mostrarNumero(subRub.kilos)}}</td>
+                        <td class="text-end">{{mostrarNumero(subRub.litros)}}</td>
+                        <td class="text-end">{{mostrarNumero(subRub.unidades)}}</td>
+                    </tr>
+                    @for (art of subRub.datos; track $index) {
+                    <tr>
+                        <td style="padding-left: 50px;">{{art.descripcion}}</td>
+                        <td class="text-end">{{mostrarNumero(art.cantidad)}}</td>
+                        <td>{{art.unidadMedida}}</td>
+                        <td class="text-end">{{mostrarNumero(art.kilos)}}</td>
+                        <td class="text-end">{{mostrarNumero(art.litros)}}</td>
+                        <td class="text-end">{{mostrarNumero(art.unidades)}}</td>
+                    </tr>
+                    }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-secondary">
+                        <td><strong>TOTALES</strong></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.totales)}}</strong></td>
+                        <td></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.kilos)}}</strong></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.litros)}}</strong></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.unidades)}}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        }
     </div>
 </p-dialog>

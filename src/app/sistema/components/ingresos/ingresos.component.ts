@@ -17,10 +17,11 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { Deposito, UnidadMedida } from '../../interfaces/variables';
-import { ArticuloAsociado } from '../../interfaces/remitos';
-import { Articulo } from '../../interfaces/productos';
+import { ArticuloAsociado, Remito } from '../../interfaces/remitos';
+import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { PdfService } from '../../services/pdf.service';
 
+declare var vars: any;
 
 @Component({
     selector: 'app-ingresos',
@@ -31,6 +32,9 @@ import { PdfService } from '../../services/pdf.service';
 })
 export class IngresosComponent {
 
+    modelosRemitos = vars.modelosRemitos;
+    puntosVenta = vars.puntosVenta;
+
     pestActiva: string = ''
 
     visible_ingreso: boolean = false
@@ -39,6 +43,8 @@ export class IngresosComponent {
     visible_transporte: boolean = false
     visible_establecimiento: boolean = false
     visible_articulo: boolean = false
+    visible_totales: boolean = false
+    datosTotales: any = []
 
     permite_secuencia_lote: boolean = false
     cantidad_secuencia_lote: number = 1
@@ -50,10 +56,47 @@ export class IngresosComponent {
     searchValue_establecimiento: string = ''
     searchValue_articulo: string = ''
 
-    ingreso: any = {
-        id: 0,
-        numero: 123,
-        punto: 2
+    ingreso: Remito = {
+        id: '',
+        numero: 0,
+        punto: 2,
+        datos: { documentos: [] },
+        fecha: '',
+        modelo: '',
+        id_cliente: '',
+        codigo: '',
+        razon_social: '',
+        cuit: 0,
+        alias: '',
+        direccion: '',
+        localidad: '',
+        provincia: '',
+        codigo_postal: '',
+        telefono: '',
+        correo: '',
+        id_autorizado: '',
+        autorizado_descripcion: '',
+        autorizado_documento: '',
+        autorizado_contacto: '',
+        id_transporte: '',
+        transporte_transporte: '',
+        transporte_cuit_transporte: 0,
+        transporte_chofer: '',
+        transporte_cuit_chofer: 0,
+        transporte_patente_chasis: '',
+        transporte_patente_acoplado: '',
+        id_establecimiento: '',
+        establecimiento_descripcion: '',
+        establecimiento_localidad: '',
+        establecimiento_provincia: '',
+        observaciones: '',
+        observaciones_sistema: '',
+        total_unidades: '',
+        estado: 1,
+        createdBy: '',
+        updatedBy: '',
+        createdAt: '',
+        updatedAt: ''
     }
 
 
@@ -122,6 +165,8 @@ export class IngresosComponent {
     articulosIngreso: ArticuloAsociado[] = []
     articuloProvisorio: ArticuloAsociado | undefined
 
+    rubros: Rubro[] = []
+    subRubros: SubRubro[] = []
 
     constructor(
         private padron: PadronService,
@@ -135,6 +180,8 @@ export class IngresosComponent {
 
         this.cs.getAll('depositos', (data: Deposito[]) => { this.depositos = data })
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
+        this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
+        this.cs.getAll('subRubros', (data: SubRubro[]) => { this.subRubros = data })
     }
 
 
@@ -143,7 +190,8 @@ export class IngresosComponent {
         const remitoId = '1'; // Reemplaza con el ID correspondiente
         this.pdf.ingreso(remitoId).subscribe((blob:any) => {
             const url = window.URL.createObjectURL(blob);
-            window.open(url, '_blank');
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
         }, error => {
             console.error('Error al obtener el PDF', error);
         });
@@ -180,20 +228,54 @@ export class IngresosComponent {
             //buscar datos remito
             //setear no modificable
         } else {
-            const fechaActual = new Date();
-            const ano = fechaActual.getFullYear();
-            const mes = ('0' + (fechaActual.getMonth() + 1)).slice(-2);
-            const dia = ('0' + fechaActual.getDate()).slice(-2);
 
             this.ingreso = {
-                fecha: `${ano}-${mes}-${dia}`,
-                numero: 123,
-                punto: 2,
-                modelo: 1
+                id: '',
+                numero: 0,
+                punto: this.puntosVenta[0].punto,
+                datos: { documentos: [] },
+                fecha: this.fechaHoy(),
+                modelo: this.modelosRemitos[0].alias,
+                id_cliente: '',
+                codigo: '',
+                razon_social: '',
+                cuit: 0,
+                alias: '',
+                direccion: '',
+                localidad: '',
+                provincia: '',
+                codigo_postal: '',
+                telefono: '',
+                correo: '',
+                id_autorizado: '',
+                autorizado_descripcion: '',
+                autorizado_documento: '',
+                autorizado_contacto: '',
+                id_transporte: '',
+                transporte_transporte: '',
+                transporte_cuit_transporte: 0,
+                transporte_chofer: '',
+                transporte_cuit_chofer: 0,
+                transporte_patente_chasis: '',
+                transporte_patente_acoplado: '',
+                id_establecimiento: '',
+                establecimiento_descripcion: '',
+                establecimiento_localidad: '',
+                establecimiento_provincia: '',
+                observaciones: '',
+                observaciones_sistema: '',
+                total_unidades: '',
+                estado: 1,
+                createdBy: '',
+                updatedBy: '',
+                createdAt: '',
+                updatedAt: ''
             }
 
             this.articulosIngreso = []
+            this.agregarDocumento()
         }
+        this.permite_secuencia_lote = false
         this.visible_ingreso = true
     }
     guardarIngreso() {
@@ -210,6 +292,7 @@ export class IngresosComponent {
         //}
 
         console.log(this.articulosIngreso)
+        console.log(this.ingreso)
     }
 
     buscarClientePorCodigo() {
@@ -258,10 +341,12 @@ export class IngresosComponent {
     }
     asignarAutorizado(autorizado: Autorizado | undefined, continua: boolean = true) {
 
-        this.ingreso.id_autorizado = autorizado?.id
-        this.ingreso.autorizado_descripcion = autorizado?.descripcion
-        this.ingreso.autorizado_documento = autorizado?.documento
-        this.ingreso.autorizado_contacto = autorizado?.contacto
+        if(autorizado){
+            this.ingreso.id_autorizado = autorizado?.id
+            this.ingreso.autorizado_descripcion = autorizado?.descripcion
+            this.ingreso.autorizado_documento = autorizado?.documento
+            this.ingreso.autorizado_contacto = autorizado?.contacto
+        }
 
         this.visible_autorizado = false
 
@@ -270,13 +355,16 @@ export class IngresosComponent {
         }
     }
     asignarTransporte(transporte: Transporte | undefined, continua: boolean = true) {
-        this.ingreso.id_transporte = transporte?.id
-        this.ingreso.transporte_transporte = transporte?.transporte
-        this.ingreso.transporte_cuit_transporte = transporte?.cuit_transporte
-        this.ingreso.transporte_chofer = transporte?.chofer
-        this.ingreso.transporte_cuit_chofer = transporte?.cuit_chofer
-        this.ingreso.transporte_patente_chasis = transporte?.patente_chasis
-        this.ingreso.transporte_patente_acoplado = transporte?.patente_acoplado
+        if(transporte){
+            this.ingreso.id_transporte = transporte?.id
+            this.ingreso.transporte_transporte = transporte?.transporte
+            this.ingreso.transporte_cuit_transporte = transporte?.cuit_transporte
+            this.ingreso.transporte_chofer = transporte?.chofer
+            this.ingreso.transporte_cuit_chofer = transporte?.cuit_chofer
+            this.ingreso.transporte_patente_chasis = transporte?.patente_chasis
+            this.ingreso.transporte_patente_acoplado = transporte?.patente_acoplado
+        }
+
 
         this.visible_transporte = false
 
@@ -285,10 +373,12 @@ export class IngresosComponent {
         }
     }
     asignarEstablecimiento(establecimiento: Establecimiento | undefined) {
-        this.ingreso.id_establecimiento = establecimiento?.id
-        this.ingreso.establecimiento_descripcion = establecimiento?.descripcion
-        this.ingreso.establecimiento_localidad = establecimiento?.localidad
-        this.ingreso.establecimiento_provincia = establecimiento?.provincia
+        if(establecimiento){
+            this.ingreso.id_establecimiento = establecimiento?.id
+            this.ingreso.establecimiento_descripcion = establecimiento?.descripcion
+            this.ingreso.establecimiento_localidad = establecimiento?.localidad
+            this.ingreso.establecimiento_provincia = establecimiento?.provincia
+        }
 
         this.visible_establecimiento = false
     }
@@ -497,12 +587,13 @@ export class IngresosComponent {
             solicitaLote: false,
             solicitaVencimiento: false,
             lote: '',
-            vencimiento: new Date(),
+            vencimiento: this.fechaHoy(),
             codigo: '',
             descripcion: '',
             observaciones: '',
             unidadFundamental: '',
             cantidadPorUnidadFundamental: 0,
+            ajuste: 'positivo',
             datos: {},
             estado: 1,
             createdBy: '',
@@ -572,12 +663,13 @@ export class IngresosComponent {
                         solicitaLote: false,
                         solicitaVencimiento: false,
                         lote: '',
-                        vencimiento: new Date(),
+                        vencimiento: this.fechaHoy(),
                         codigo: '',
                         descripcion: '',
                         observaciones: '',
                         unidadFundamental: '',
                         cantidadPorUnidadFundamental: 0,
+                        ajuste: 'positivo',
                         datos: {},
                         estado: 1,
                         createdBy: '',
@@ -600,30 +692,146 @@ export class IngresosComponent {
         art.cantidadPorUnidadFundamental = datos.cantidadUnidadFundamental
         art.solicitaLote = datos.solicitaLote
         art.solicitaVencimiento = datos.solicitaVencimiento
+        art.id_rubro = datos.id_rubro 
+        art.id_subRubro = datos.id_subRubro 
+        art.id_laboratorio = datos.id_laboratorio 
+        art.observaciones = datos.observaciones 
+
+        datos.solicitaVencimiento ? art.vencimiento = this.fechaHoy() : ''
 
         this.visible_articulo = false
-
         this.permite_secuencia_lote = datos.solicitaLote
 
     }
 
+
     eliminarArticulo(id: string) {
         this.articulosIngreso = this.articulosIngreso.filter((art: ArticuloAsociado) => { return art.id != id });
+        this.permite_secuencia_lote = false
+    }
+    verTotalesArticulosIngreso(){
+        if(this.articulosIngreso.length == 0){
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'No hay articulos' })
+        }
+
+        this.datosTotales = Object.values(this.articulosIngreso.reduce((rubroAcc:any, item: ArticuloAsociado) => {
+            // Si el rubro no existe en el acumulador, lo agregamos
+            if (!rubroAcc.some((rub:any) => rub.id_rubro == item.id_rubro)) {
+                rubroAcc.push({
+                    id_rubro: item.id_rubro, 
+                    rubro:this.obtenerDescripcionRubro(item.id_rubro), 
+                    datos: [], 
+                    totales: 0,
+                    litros: 0,
+                    kilos: 0,
+                    unidades: 0
+                });
+            }
+        
+            const rubro = rubroAcc.find((rub:any) => rub.id_rubro == item.id_rubro)
+        
+            // Buscamos el subrubro en los datos del rubro actual
+            let subrubro = rubro.datos.find((sub:any) => sub.id_subRubro === item.id_subRubro);
+            
+            // Si no existe el subrubro, lo creamos
+            if (!subrubro) {
+                subrubro = {
+                    id_subRubro: item.id_subRubro, 
+                    subRubro:this.obtenerDescripcionSubRubro(item.id_subRubro), 
+                    datos: [], 
+                    totales: 0,
+                    litros: 0,
+                    kilos: 0,
+                    unidades: 0
+                };
+                rubro.datos.push(subrubro);
+            }
+        
+            // Agregamos el item al subrubro y actualizamos los totales
+            let articulo = subrubro.datos.find((art:any) => art.id_articulo === item.id_articulo)
+
+            if(!articulo){
+                articulo = {
+                    id_articulo: item.id_articulo, 
+                    descripcion: item.descripcion, 
+                    cantidad: 0, 
+                    unidadMedida: this.obtenerDescripcionUnidadMedida(item.id_unidadMedida) ,
+                    litros: 0,
+                    kilos: 0,
+                    unidades: 0
+                }
+                subrubro.datos.push(articulo);
+            }
+            
+            articulo.cantidad += item.cantidad
+            subrubro.totales += item.cantidad;
+            rubro.totales += item.cantidad;
+
+            articulo[item.unidadFundamental] += item.cantidadUnidadFundamental
+            subrubro[item.unidadFundamental] += item.cantidadUnidadFundamental;
+            rubro[item.unidadFundamental] += item.cantidadUnidadFundamental;
+
+            return rubroAcc;
+        }, []));
+
+        this.visible_totales = true
+    }
+
+
+    //DOCUMENTOS
+    agregarDocumento(){
+        let ultimoId = this.ingreso.datos.documentos?.reduce((max: number, curr: any) => {
+            return curr.id > max ? curr.id : max
+        }, 0)
+
+        this.ingreso.datos.documentos?.push({
+            id: ultimoId ? ultimoId+1 : 1,
+            tipo: 'remito',
+            letra: 'R',
+            punto: 1,
+            numero: 1,
+            fecha: this.fechaHoy()
+        })
+    }
+    eliminarDocumento(id:any){
+        if(this.ingreso.datos.documentos?.length) {
+            this.ingreso.datos.documentos = this.ingreso.datos.documentos.filter((e:any) => e.id != id ) 
+        }
     }
 
     //HELPERS
-    //obtenerDescripcionRubro(id: string) {
-    //    return this.rubros.find((rub: Rubro) => { return rub.id == id })?.descripcion
-    //}
-    //obtenerDescripcionSubRubro(id: string) {
-    //    return this.subRubros.find((subRub: Rubro) => { return subRub.id == id })?.descripcion
-    //}
+    obtenerDescripcionRubro(id: string) {
+        return this.rubros.find((rub: Rubro) => { return rub.id == id })?.descripcion
+    }
+    obtenerDescripcionSubRubro(id: string) {
+        return this.subRubros.find((subRub: Rubro) => { return subRub.id == id })?.descripcion
+    }
     obtenerDescripcionUnidadMedida(id: string) {
         return this.unidadMedidas.find((unidadMedida: UnidadMedida) => { return unidadMedida.id == id })?.alias
     }
     //obtenerDescripcionLaboratorio(id: string) {
     //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
     //}
+
+    fechaHoy(){
+        const fechaActual = new Date();
+        const ano = fechaActual.getFullYear();
+        const mes = ('0' + (fechaActual.getMonth() + 1)).slice(-2);
+        const dia = ('0' + fechaActual.getDate()).slice(-2);
+
+        return `${ano}-${mes}-${dia}`
+    }
+    mostrarNumero(ent:any){
+        var numero = ''
+        try {
+            numero = ent.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2})
+        } catch {
+            numero = ent
+        }
+        return numero
+    }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
         console.log(art)
