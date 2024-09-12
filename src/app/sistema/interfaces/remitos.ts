@@ -12,9 +12,10 @@ export interface ArticuloAsociado {
     cantidad:number;
     cantidadUnidadFundamental:number;
 
+    solicitaLote: boolean;
+    solicitaVencimiento: boolean;
     lote:string;
     vencimiento: Date;
-
 
     codigo: string;
     descripcion: string;

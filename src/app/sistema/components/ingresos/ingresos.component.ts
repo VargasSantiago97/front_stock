@@ -188,7 +188,7 @@ export class IngresosComponent {
                 modelo: 1
             }
 
-            this.agregarArticulos()
+            this.articulosIngreso = []
         }
         this.visible_ingreso = true
     }
@@ -470,35 +470,42 @@ export class IngresosComponent {
     }
 
     //ARTICULOS
-    agregarArticulos(cantidad: number = 20) {
-        this.articulosIngreso = []
-        for (let index = 1; index <= cantidad; index++) {
-            this.articulosIngreso.push({
-                id: index.toString(),
-                id_articulo: '',
-                id_documento: '',
-                id_rubro: '',
-                id_subRubro: '',
-                id_laboratorio: '',
-                id_unidadMedida: '',
-                id_deposito: '',
-                cantidad: 0,
-                cantidadUnidadFundamental: 0,
-                lote: '',
-                vencimiento: new Date(),
-                codigo: '',
-                descripcion: '',
-                observaciones: '',
-                unidadFundamental: '',
-                cantidadPorUnidadFundamental: 0,
-                datos: {},
-                estado: 1,
-                createdBy: '',
-                updatedBy: '',
-                createdAt: '',
-                updatedAt: ''
-            })
+    agregarArticulos() {
+        if(this.articulosIngreso.some((art:ArticuloAsociado) => { return !art.id_articulo })){
+            return this.ms.add({ severity: 'info', summary: 'Atencion!', detail: 'Existen Complete los datos vacios' })
         }
+
+        let ultimoId = this.articulosIngreso.reduce((max: number, curr: ArticuloAsociado) => {
+            return parseInt(curr.id) > max ? parseInt(curr.id) : max
+        }, 0)
+
+        this.articulosIngreso.push({
+            id: (ultimoId+1).toString(),
+            id_articulo: '',
+            id_documento: '',
+            id_rubro: '',
+            id_subRubro: '',
+            id_laboratorio: '',
+            id_unidadMedida: '',
+            id_deposito: '',
+            cantidad: 0,
+            cantidadUnidadFundamental: 0,
+            solicitaLote: false,
+            solicitaVencimiento: false,
+            lote: '',
+            vencimiento: new Date(),
+            codigo: '',
+            descripcion: '',
+            observaciones: '',
+            unidadFundamental: '',
+            cantidadPorUnidadFundamental: 0,
+            datos: {},
+            estado: 1,
+            createdBy: '',
+            updatedBy: '',
+            createdAt: '',
+            updatedAt: ''
+        })
     }
     buscarArticuloPorCodigo(art: ArticuloAsociado) {
         if (!art.codigo) {
@@ -530,6 +537,8 @@ export class IngresosComponent {
                         id_deposito: '',
                         cantidad: 0,
                         cantidadUnidadFundamental: 0,
+                        solicitaLote: false,
+                        solicitaVencimiento: false,
                         lote: '',
                         vencimiento: new Date(),
                         codigo: '',
@@ -557,6 +566,8 @@ export class IngresosComponent {
         art.id_unidadMedida = datos.id_unidadMedida
         art.unidadFundamental = datos.unidadFundamental
         art.cantidadPorUnidadFundamental = datos.cantidadUnidadFundamental
+        art.solicitaLote = datos.solicitaLote
+        art.solicitaVencimiento = datos.solicitaVencimiento
 
         this.visible_articulo = false
 
@@ -578,6 +589,8 @@ export class IngresosComponent {
                     id_deposito: '',
                     cantidad: 0,
                     cantidadUnidadFundamental: 0,
+                    solicitaLote: false,
+                    solicitaVencimiento: false,
                     lote: '',
                     vencimiento: new Date(),
                     codigo: '',
