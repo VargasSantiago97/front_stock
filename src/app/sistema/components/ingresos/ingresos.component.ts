@@ -50,6 +50,8 @@ export class IngresosComponent {
     cantidad_secuencia_lote: number = 1
     digitos_secuencia_lote: number = 3
 
+    avisarRegistrosVacios: boolean = true
+
     searchValue_cliente: string = ''
     searchValue_autorizado: string = ''
     searchValue_transporte: string = ''
@@ -98,6 +100,7 @@ export class IngresosComponent {
         createdAt: '',
         updatedAt: ''
     }
+    ingresos: Remito[] = []
 
 
     clientes: Cliente[] = []
@@ -188,7 +191,7 @@ export class IngresosComponent {
 
     verRemito() {
         const remitoId = '1'; // Reemplaza con el ID correspondiente
-        this.pdf.ingreso(remitoId).subscribe((blob:any) => {
+        this.pdf.ingreso(remitoId).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
             window.open(url, '_blank', windowFeatures);
@@ -199,7 +202,7 @@ export class IngresosComponent {
 
     descargarRemito() {
         const remitoId = '1'; // Reemplaza con el ID correspondiente
-        this.pdf.ingreso(remitoId).subscribe((blob:any) => {
+        this.pdf.ingreso(remitoId).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -217,7 +220,7 @@ export class IngresosComponent {
     }
 
     actualizarDatosTabla() {
-        //
+        this.cs.getAll('ingresos', (data: Remito[]) => { this.ingresos = data })
     }
 
 
@@ -225,8 +228,7 @@ export class IngresosComponent {
     mostrarModalIngreso(id: any = undefined) {
         this.pestActiva = 'cliente'
         if (id) {
-            //buscar datos remito
-            //setear no modificable
+            //
         } else {
 
             this.ingreso = {
@@ -273,23 +275,61 @@ export class IngresosComponent {
             }
 
             this.articulosIngreso = []
-            this.agregarDocumento()
         }
         this.permite_secuencia_lote = false
         this.visible_ingreso = true
+        this.id_cliente = ''
     }
     guardarIngreso() {
-        //if (this.cliente.id) {
-        //    this.cs.update('clientes', this.cliente, (cant: any) => {
-        //        this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
-        //        this.actualizarDatosTabla()
-        //    })
-        //} else {
-        //    this.cs.create('clientes', this.cliente, (id: any) => {
-        //        this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Cliente creado con ID: ' + id })
-        //        this.actualizarDatosTabla()
-        //    })
-        //}
+        var cantidadRegistros = this.articulosIngreso.length
+        var cantidadRegistrosId = this.articulosIngreso.filter((e: ArticuloAsociado) => e.id_articulo).length
+        if(!this.ingreso.id_cliente){
+            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'No asignó un cliente' })
+        }
+        if(!cantidadRegistros){
+            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
+        }
+        if(!cantidadRegistrosId){
+            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
+        }
+        if ((cantidadRegistros > cantidadRegistrosId) && this.avisarRegistrosVacios ) {
+            this.avisarRegistrosVacios = false
+            setTimeout(() => {
+                this.avisarRegistrosVacios = true
+            }, 5000);
+
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Existes articulos que están vacíos. Presione nuevamente para confirmar' })
+        }
+
+        this.cs.getAll('ingresos/buscar/ultimo/' + this.ingreso.punto, (ultNum: number) => {
+            this.ingreso.numero = ultNum+1
+
+            this.cs.create('ingresos', this.ingreso, (id: any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id })
+                this.ingreso.id = id
+
+                var artIngs = this.articulosIngreso.map((artIng:ArticuloAsociado) => {
+                    const { id, ...resto } = artIng;
+
+                    return {
+                        ...resto,
+                        id_documento: id 
+                    }
+                })
+
+                this.cs.createMultiple('articulosAsociados', artIngs, (mensaje: any) => {
+                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
+                    this.actualizarDatosTabla()
+                    this.visible_ingreso = false
+                })
+
+            })
+
+        }, (err: any) => {
+            this.ms.add({ severity: 'error', summary: 'Error obteniendo numero de remito', detail: err.message })
+        })
+
+
 
         console.log(this.articulosIngreso)
         console.log(this.ingreso)
@@ -341,7 +381,7 @@ export class IngresosComponent {
     }
     asignarAutorizado(autorizado: Autorizado | undefined, continua: boolean = true) {
 
-        if(autorizado){
+        if (autorizado) {
             this.ingreso.id_autorizado = autorizado?.id
             this.ingreso.autorizado_descripcion = autorizado?.descripcion
             this.ingreso.autorizado_documento = autorizado?.documento
@@ -355,7 +395,7 @@ export class IngresosComponent {
         }
     }
     asignarTransporte(transporte: Transporte | undefined, continua: boolean = true) {
-        if(transporte){
+        if (transporte) {
             this.ingreso.id_transporte = transporte?.id
             this.ingreso.transporte_transporte = transporte?.transporte
             this.ingreso.transporte_cuit_transporte = transporte?.cuit_transporte
@@ -373,7 +413,7 @@ export class IngresosComponent {
         }
     }
     asignarEstablecimiento(establecimiento: Establecimiento | undefined) {
-        if(establecimiento){
+        if (establecimiento) {
             this.ingreso.id_establecimiento = establecimiento?.id
             this.ingreso.establecimiento_descripcion = establecimiento?.descripcion
             this.ingreso.establecimiento_localidad = establecimiento?.localidad
@@ -382,6 +422,7 @@ export class IngresosComponent {
 
         this.visible_establecimiento = false
     }
+
 
     filtroCliente() {
         this.clientesFiltrados = this.clientes.filter((cliente: Cliente) => { return cliente.razon_social.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) || cliente.alias.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) })
@@ -565,7 +606,7 @@ export class IngresosComponent {
 
     //ARTICULOS
     agregarArticulos() {
-        if(this.articulosIngreso.some((art:ArticuloAsociado) => { return !art.id_articulo })){
+        if (this.articulosIngreso.some((art: ArticuloAsociado) => { return !art.id_articulo })) {
             return this.ms.add({ severity: 'info', summary: 'Atencion!', detail: 'Existen Complete los datos vacios' })
         }
 
@@ -574,7 +615,7 @@ export class IngresosComponent {
         }, 0)
 
         this.articulosIngreso.push({
-            id: (ultimoId+1).toString(),
+            id: (ultimoId + 1).toString(),
             id_articulo: '',
             id_documento: '',
             id_rubro: '',
@@ -623,11 +664,11 @@ export class IngresosComponent {
         for (let index = 0; index < this.cantidad_secuencia_lote; index++) {
 
             this.articulosIngreso.push({
-                ... ultimo,
-                id: (parseInt(ultimo.id)+index+1).toString(),
-                lote: serie_base + (numero_serie+index+1).toString().padStart(this.digitos_secuencia_lote, '0')
-                
-            }) 
+                ...ultimo,
+                id: (parseInt(ultimo.id) + index + 1).toString(),
+                lote: serie_base + (numero_serie + index + 1).toString().padStart(this.digitos_secuencia_lote, '0')
+
+            })
         }
     }
     buscarArticuloPorCodigo(art: ArticuloAsociado) {
@@ -692,10 +733,10 @@ export class IngresosComponent {
         art.cantidadPorUnidadFundamental = datos.cantidadUnidadFundamental
         art.solicitaLote = datos.solicitaLote
         art.solicitaVencimiento = datos.solicitaVencimiento
-        art.id_rubro = datos.id_rubro 
-        art.id_subRubro = datos.id_subRubro 
-        art.id_laboratorio = datos.id_laboratorio 
-        art.observaciones = datos.observaciones 
+        art.id_rubro = datos.id_rubro
+        art.id_subRubro = datos.id_subRubro
+        art.id_laboratorio = datos.id_laboratorio
+        art.observaciones = datos.observaciones
 
         datos.solicitaVencimiento ? art.vencimiento = this.fechaHoy() : ''
 
@@ -709,36 +750,36 @@ export class IngresosComponent {
         this.articulosIngreso = this.articulosIngreso.filter((art: ArticuloAsociado) => { return art.id != id });
         this.permite_secuencia_lote = false
     }
-    verTotalesArticulosIngreso(){
-        if(this.articulosIngreso.length == 0){
+    verTotalesArticulosIngreso() {
+        if (this.articulosIngreso.length == 0) {
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'No hay articulos' })
         }
 
-        this.datosTotales = Object.values(this.articulosIngreso.reduce((rubroAcc:any, item: ArticuloAsociado) => {
+        this.datosTotales = Object.values(this.articulosIngreso.reduce((rubroAcc: any, item: ArticuloAsociado) => {
             // Si el rubro no existe en el acumulador, lo agregamos
-            if (!rubroAcc.some((rub:any) => rub.id_rubro == item.id_rubro)) {
+            if (!rubroAcc.some((rub: any) => rub.id_rubro == item.id_rubro)) {
                 rubroAcc.push({
-                    id_rubro: item.id_rubro, 
-                    rubro:this.obtenerDescripcionRubro(item.id_rubro), 
-                    datos: [], 
+                    id_rubro: item.id_rubro,
+                    rubro: this.obtenerDescripcionRubro(item.id_rubro),
+                    datos: [],
                     totales: 0,
                     litros: 0,
                     kilos: 0,
                     unidades: 0
                 });
             }
-        
-            const rubro = rubroAcc.find((rub:any) => rub.id_rubro == item.id_rubro)
-        
+
+            const rubro = rubroAcc.find((rub: any) => rub.id_rubro == item.id_rubro)
+
             // Buscamos el subrubro en los datos del rubro actual
-            let subrubro = rubro.datos.find((sub:any) => sub.id_subRubro === item.id_subRubro);
-            
+            let subrubro = rubro.datos.find((sub: any) => sub.id_subRubro === item.id_subRubro);
+
             // Si no existe el subrubro, lo creamos
             if (!subrubro) {
                 subrubro = {
-                    id_subRubro: item.id_subRubro, 
-                    subRubro:this.obtenerDescripcionSubRubro(item.id_subRubro), 
-                    datos: [], 
+                    id_subRubro: item.id_subRubro,
+                    subRubro: this.obtenerDescripcionSubRubro(item.id_subRubro),
+                    datos: [],
                     totales: 0,
                     litros: 0,
                     kilos: 0,
@@ -746,23 +787,23 @@ export class IngresosComponent {
                 };
                 rubro.datos.push(subrubro);
             }
-        
-            // Agregamos el item al subrubro y actualizamos los totales
-            let articulo = subrubro.datos.find((art:any) => art.id_articulo === item.id_articulo)
 
-            if(!articulo){
+            // Agregamos el item al subrubro y actualizamos los totales
+            let articulo = subrubro.datos.find((art: any) => art.id_articulo === item.id_articulo)
+
+            if (!articulo) {
                 articulo = {
-                    id_articulo: item.id_articulo, 
-                    descripcion: item.descripcion, 
-                    cantidad: 0, 
-                    unidadMedida: this.obtenerDescripcionUnidadMedida(item.id_unidadMedida) ,
+                    id_articulo: item.id_articulo,
+                    descripcion: item.descripcion,
+                    cantidad: 0,
+                    unidadMedida: this.obtenerDescripcionUnidadMedida(item.id_unidadMedida),
                     litros: 0,
                     kilos: 0,
                     unidades: 0
                 }
                 subrubro.datos.push(articulo);
             }
-            
+
             articulo.cantidad += item.cantidad
             subrubro.totales += item.cantidad;
             rubro.totales += item.cantidad;
@@ -779,13 +820,13 @@ export class IngresosComponent {
 
 
     //DOCUMENTOS
-    agregarDocumento(){
+    agregarDocumento() {
         let ultimoId = this.ingreso.datos.documentos?.reduce((max: number, curr: any) => {
             return curr.id > max ? curr.id : max
         }, 0)
 
         this.ingreso.datos.documentos?.push({
-            id: ultimoId ? ultimoId+1 : 1,
+            id: ultimoId ? ultimoId + 1 : 1,
             tipo: 'remito',
             letra: 'R',
             punto: 1,
@@ -793,9 +834,9 @@ export class IngresosComponent {
             fecha: this.fechaHoy()
         })
     }
-    eliminarDocumento(id:any){
-        if(this.ingreso.datos.documentos?.length) {
-            this.ingreso.datos.documentos = this.ingreso.datos.documentos.filter((e:any) => e.id != id ) 
+    eliminarDocumento(id: any) {
+        if (this.ingreso.datos.documentos?.length) {
+            this.ingreso.datos.documentos = this.ingreso.datos.documentos.filter((e: any) => e.id != id)
         }
     }
 
@@ -813,7 +854,7 @@ export class IngresosComponent {
     //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
     //}
 
-    fechaHoy(){
+    fechaHoy() {
         const fechaActual = new Date();
         const ano = fechaActual.getFullYear();
         const mes = ('0' + (fechaActual.getMonth() + 1)).slice(-2);
@@ -821,16 +862,20 @@ export class IngresosComponent {
 
         return `${ano}-${mes}-${dia}`
     }
-    mostrarNumero(ent:any){
+    mostrarNumero(ent: any) {
         var numero = ''
         try {
             numero = ent.toLocaleString('es-ES', {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2})
+                maximumFractionDigits: 2
+            })
         } catch {
             numero = ent
         }
         return numero
+    }
+    mostrarDocumento(pto: number, nro: number) {
+        return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
     }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {

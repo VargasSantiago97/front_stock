@@ -17,10 +17,10 @@ var vars = {
     puntosVenta: [{
         id: 1,
         punto: 1,
-        descripcion: "1 - Primario"
+        descripcion: "1"
     },{
         id: 2,
         punto: 2,
-        descripcion: "2 - Secundario"
+        descripcion: "2"
     }]
 }
