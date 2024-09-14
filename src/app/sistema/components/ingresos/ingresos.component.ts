@@ -189,9 +189,8 @@ export class IngresosComponent {
 
 
 
-    verRemito() {
-        const remitoId = '1'; // Reemplaza con el ID correspondiente
-        this.pdf.ingreso(remitoId).subscribe((blob: any) => {
+    verRemito(id: string) {
+        this.pdf.ingreso(id).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
             window.open(url, '_blank', windowFeatures);
@@ -200,13 +199,12 @@ export class IngresosComponent {
         });
     }
 
-    descargarRemito() {
-        const remitoId = '1'; // Reemplaza con el ID correspondiente
-        this.pdf.ingreso(remitoId).subscribe((blob: any) => {
+    descargarRemito(id: string) {
+        this.pdf.ingreso(id).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `remito_${remitoId}.pdf`;
+            a.download = `remito_${id}.pdf`;
             a.click();
             window.URL.revokeObjectURL(url);
         }, error => {
@@ -224,13 +222,18 @@ export class IngresosComponent {
     }
 
 
-
     mostrarModalIngreso(id: any = undefined) {
         this.pestActiva = 'cliente'
         if (id) {
-            //
-        } else {
+            this.cs.getAll('ingresos/' + id, (dato:Remito) => {
+                this.ingreso = dato
+            })
 
+            this.cs.getAll('articulosAsociados/buscar/' + id, (datos:ArticuloAsociado[]) => {
+                this.articulosIngreso = datos
+                console.log(datos)
+            })
+        } else {
             this.ingreso = {
                 id: '',
                 numero: 0,
@@ -304,16 +307,16 @@ export class IngresosComponent {
         this.cs.getAll('ingresos/buscar/ultimo/' + this.ingreso.punto, (ultNum: number) => {
             this.ingreso.numero = ultNum+1
 
-            this.cs.create('ingresos', this.ingreso, (id: any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id })
-                this.ingreso.id = id
+            this.cs.create('ingresos', this.ingreso, (id_ingreso_creado: any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id_ingreso_creado })
+                this.ingreso.id = id_ingreso_creado
 
                 var artIngs = this.articulosIngreso.map((artIng:ArticuloAsociado) => {
                     const { id, ...resto } = artIng;
 
                     return {
                         ...resto,
-                        id_documento: id 
+                        id_documento: id_ingreso_creado 
                     }
                 })
 
@@ -328,11 +331,6 @@ export class IngresosComponent {
         }, (err: any) => {
             this.ms.add({ severity: 'error', summary: 'Error obteniendo numero de remito', detail: err.message })
         })
-
-
-
-        console.log(this.articulosIngreso)
-        console.log(this.ingreso)
     }
 
     buscarClientePorCodigo() {
@@ -882,5 +880,4 @@ export class IngresosComponent {
         console.log(art)
         art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
     }
-
 }
