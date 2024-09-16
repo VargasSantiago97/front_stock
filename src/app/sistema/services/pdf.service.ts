@@ -15,13 +15,13 @@ export class PdfService {
         private http: HttpClient
     ) { }
 
-    ingreso(id: string): Observable<Blob> {
+    ingreso(id: string, cantidad_copias: number): Observable<Blob> {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
 
-        return this.http.get(`${this.PDF_URI}/pdf/ingresos/${id}`, { headers, responseType: 'blob' })
+        return this.http.get(`${this.PDF_URI}/pdf/ingresos/${id}/${cantidad_copias}`, { headers, responseType: 'blob' })
     }
 }

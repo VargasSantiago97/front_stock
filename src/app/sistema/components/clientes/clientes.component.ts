@@ -154,6 +154,9 @@ export class ClientesComponent {
                 this.actualizarDatosTabla()
             })
         } else {
+            if(this.clientes.some((clien:Cliente) => clien.codigo == this.cliente.codigo)){
+                return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ya existe un cliente con este codigo.' })
+            }
             this.cs.create('clientes', this.cliente, (id:any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Cliente creado con ID: ' + id })
                 this.actualizarDatosTabla()

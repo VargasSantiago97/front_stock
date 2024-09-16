@@ -190,7 +190,7 @@ export class IngresosComponent {
 
 
     verRemito(id: string) {
-        this.pdf.ingreso(id).subscribe((blob: any) => {
+        this.pdf.ingreso(id, 3).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
             window.open(url, '_blank', windowFeatures);
@@ -200,7 +200,7 @@ export class IngresosComponent {
     }
 
     descargarRemito(id: string) {
-        this.pdf.ingreso(id).subscribe((blob: any) => {
+        this.pdf.ingreso(id, 2).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
