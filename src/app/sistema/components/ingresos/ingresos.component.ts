@@ -18,6 +18,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { Deposito, UnidadMedida } from '../../interfaces/variables';
 import { ArticuloAsociado, Remito } from '../../interfaces/remitos';
+import { TagModule } from 'primeng/tag';
 import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { PdfService } from '../../services/pdf.service';
 
@@ -26,7 +27,7 @@ declare var vars: any;
 @Component({
     selector: 'app-ingresos',
     standalone: true,
-    imports: [TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, FormsModule, ProgressSpinnerModule, InputTextModule, InputGroupModule, InputGroupAddonModule, InputTextareaModule],
+    imports: [TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, FormsModule, ProgressSpinnerModule, InputTextModule, InputGroupModule, InputGroupAddonModule, InputTextareaModule, TagModule],
     templateUrl: './ingresos.component.html',
     styleUrl: './ingresos.component.css'
 })
@@ -34,6 +35,7 @@ export class IngresosComponent {
 
     modelosRemitos = vars.modelosRemitos;
     puntosVenta = vars.puntosVenta;
+    depositoSeleccionado = vars.depositoSeleccionado;
 
     pestActiva: string = ''
 
@@ -45,6 +47,8 @@ export class IngresosComponent {
     visible_articulo: boolean = false
     visible_totales: boolean = false
     datosTotales: any = []
+
+    visible_devolucion: boolean = false
 
     permite_secuencia_lote: boolean = false
     cantidad_secuencia_lote: number = 1
@@ -323,7 +327,6 @@ export class IngresosComponent {
                 this.cs.createMultiple('articulosAsociados', artIngs, (mensaje: any) => {
                     this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
                     this.actualizarDatosTabla()
-                    this.visible_ingreso = false
                 })
 
             })
@@ -620,7 +623,7 @@ export class IngresosComponent {
             id_subRubro: '',
             id_laboratorio: '',
             id_unidadMedida: '',
-            id_deposito: '',
+            id_deposito: this.depositoSeleccionado,
             cantidad: 0,
             cantidadUnidadFundamental: 0,
             solicitaLote: false,
@@ -736,10 +739,13 @@ export class IngresosComponent {
         art.id_laboratorio = datos.id_laboratorio
         art.observaciones = datos.observaciones
 
-        datos.solicitaVencimiento ? art.vencimiento = this.fechaHoy() : ''
+        art.vencimiento = datos.solicitaVencimiento ? this.fechaHoy() : ''
 
         this.visible_articulo = false
         this.permite_secuencia_lote = datos.solicitaLote
+
+        console.log(art)
+        console.log(datos)
 
     }
 
@@ -875,9 +881,32 @@ export class IngresosComponent {
     mostrarDocumento(pto: number, nro: number) {
         return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
     }
+    totalesArticulosIngreso() {
+        var cantidad = 0
+        var kilos = 0
+        var litros = 0
+        var unidades = 0
+
+        this.articulosIngreso.map((item: ArticuloAsociado) => {
+
+            cantidad += item.cantidad
+
+            if(item.unidadFundamental == 'kilos'){
+                kilos += item.cantidadUnidadFundamental
+            } else if(item.unidadFundamental == 'litros'){
+                litros += item.cantidadUnidadFundamental
+            } else if(item.unidadFundamental == 'unidades'){
+                unidades += item.cantidadUnidadFundamental
+            }
+
+        });
+
+        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~'+kilos+' kilos.' : ''}${litros ? ' ~'+litros+' litros.' : ''}${unidades ? ' ~'+unidades+' unidades.' : ''}`
+    }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
-        console.log(art)
         art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
+
+        this.ingreso.total_unidades = this.totalesArticulosIngreso()
     }
 }

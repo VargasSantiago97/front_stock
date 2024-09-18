@@ -1,7 +1,7 @@
 var vars = {
-    AUTH_URI: 'http://192.168.50.101:3000',
-    API_URI: 'http://192.168.50.101:3000',
-    PDF_URI: 'http://192.168.50.101:3000',
+    AUTH_URI: 'http://localhost:3000',
+    API_URI: 'http://localhost:3000',
+    PDF_URI: 'http://localhost:3000',
     PADRON_URI: 'http://154.49.246.119/api/afip/api',
 
     modelosRemitos: [{
@@ -22,5 +22,7 @@ var vars = {
         id: 2,
         punto: 2,
         descripcion: "2"
-    }]
+    }],
+
+    depositoSeleccionado: '4054eed0-6c15-4675-b040-12afc7d520d8'
 }
