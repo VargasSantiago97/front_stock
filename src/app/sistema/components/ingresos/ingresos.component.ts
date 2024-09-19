@@ -21,13 +21,15 @@ import { ArticuloAsociado, Remito } from '../../interfaces/remitos';
 import { TagModule } from 'primeng/tag';
 import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { PdfService } from '../../services/pdf.service';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ActivatedRoute } from '@angular/router';
 
 declare var vars: any;
 
 @Component({
     selector: 'app-ingresos',
     standalone: true,
-    imports: [TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, FormsModule, ProgressSpinnerModule, InputTextModule, InputGroupModule, InputGroupAddonModule, InputTextareaModule, TagModule],
+    imports: [TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, FormsModule, ProgressSpinnerModule, InputTextModule, InputGroupModule, InputGroupAddonModule, InputTextareaModule, TagModule, MultiSelectModule],
     templateUrl: './ingresos.component.html',
     styleUrl: './ingresos.component.css'
 })
@@ -109,6 +111,8 @@ export class IngresosComponent {
 
     clientes: Cliente[] = []
     clientesFiltrados: Cliente[] = []
+    clientesTodos: Cliente[] = []
+    selectedClientes: Cliente[] = []
 
     id_cliente: string = ''
 
@@ -179,7 +183,8 @@ export class IngresosComponent {
         private padron: PadronService,
         private ms: MessageService,
         private cs: ConsultasService,
-        private pdf: PdfService
+        private pdf: PdfService,
+        private route: ActivatedRoute
     ) { }
 
     ngOnInit() {
@@ -189,11 +194,20 @@ export class IngresosComponent {
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
         this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
         this.cs.getAll('subRubros', (data: SubRubro[]) => { this.subRubros = data })
+        this.cs.getAll('clientes', (data: Cliente[]) => {this.clientesTodos = data })
+
+        this.route.paramMap.subscribe(params => {
+            var id_cliente = params.get('id_cliente');
+            if(id_cliente){
+                this.mostrarModalIngreso()
+                this.buscarClientePorId(id_cliente)
+            }
+        });
     }
 
 
 
-    verRemito(id: string) {
+    verIngreso(id: string) {
         this.pdf.ingreso(id, 3).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
@@ -203,8 +217,8 @@ export class IngresosComponent {
         });
     }
 
-    descargarRemito(id: string) {
-        this.pdf.ingreso(id, 2).subscribe((blob: any) => {
+    descargarIngreso(id: string) {
+        this.pdf.ingreso(id, 1).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -287,7 +301,7 @@ export class IngresosComponent {
         this.visible_ingreso = true
         this.id_cliente = ''
     }
-    guardarIngreso() {
+    guardarIngreso(tipo: 'D' | 'M' | null = null) {
         var cantidadRegistros = this.articulosIngreso.length
         var cantidadRegistrosId = this.articulosIngreso.filter((e: ArticuloAsociado) => e.id_articulo).length
         if(!this.ingreso.id_cliente){
@@ -327,6 +341,15 @@ export class IngresosComponent {
                 this.cs.createMultiple('articulosAsociados', artIngs, (mensaje: any) => {
                     this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
                     this.actualizarDatosTabla()
+
+                    if(tipo == 'D'){
+                        this.descargarIngreso(id_ingreso_creado)
+                        this.visible_ingreso = false
+                    }
+                    if(tipo == 'M'){
+                        this.verIngreso(id_ingreso_creado)
+                        this.visible_ingreso = false
+                    }
                 })
 
             })
@@ -336,6 +359,11 @@ export class IngresosComponent {
         })
     }
 
+    buscarClientePorId(id: string){
+        this.cs.getAll('clientes/' + id, (data: Cliente) => {
+            this.asignarCliente(data)
+        })    
+    }
     buscarClientePorCodigo() {
         if (!this.ingreso.codigo) {
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ingrese un CODIGO' })

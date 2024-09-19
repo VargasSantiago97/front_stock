@@ -22,9 +22,16 @@ export const routes: Routes = [
             { path: 'inicio', component: InicioComponent, canActivate: [AuthGuard] },
             { path: 'clientes', component: ClientesComponent, canActivate: [AuthGuard] },
             { path: 'productos', component: ProductosComponent, canActivate: [AuthGuard] },
+
             { path: 'ingresos', component: IngresosComponent, canActivate: [AuthGuard] },
+            { path: 'ingresos/:id_cliente', component: IngresosComponent, canActivate: [AuthGuard] },
+
             { path: 'egresos', component: EgresosComponent, canActivate: [AuthGuard] },
+            { path: 'egresos/:id_cliente', component: EgresosComponent, canActivate: [AuthGuard] },
+
             { path: 'stock', component: StockComponent, canActivate: [AuthGuard] },
+            { path: 'stock/:id_cliente', component: StockComponent, canActivate: [AuthGuard] },
+
             { path: 'depositos', component: DepositosComponent, canActivate: [AuthGuard] },
             { path: 'variables', component: VariablesComponent, canActivate: [AuthGuard] }
         ],

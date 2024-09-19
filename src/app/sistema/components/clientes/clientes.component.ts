@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 import { Autorizado, Cliente, Establecimiento, Transporte } from '../../interfaces/clientes';
 import { ConsultasService } from '../../services/consultas.service';
 import { InputTextModule } from 'primeng/inputtext';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -58,7 +59,8 @@ export class ClientesComponent {
     constructor(
         private padron: PadronService,
         private ms: MessageService,
-        private cs: ConsultasService
+        private cs: ConsultasService,
+        private router: Router
     ) { }
 
     ngOnInit() {
@@ -293,5 +295,11 @@ export class ClientesComponent {
             this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
             this.establecimientos = this.establecimientos.filter((aut:Establecimiento) => { return aut.id != id })
         })
+    }
+
+    navigate(ruta:any, e:any = null){
+        if(e) e.preventDefault();
+
+        this.router.navigate(['/sistema/' + ruta])
     }
 }

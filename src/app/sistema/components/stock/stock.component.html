@@ -1,1 +1,79 @@
-<p>stock works!</p>
+<div class="container-fluid">
+
+    @if (visible_scroll) {
+    <div class="row">
+        <div class="col text-center my-5">
+            <p-progressSpinner ariaLabel="loading" />
+        </div>
+    </div>
+    } @else {
+
+    <h1 class="text-center">{{id_cliente ? '' : 'RESUMEN GENERAL DE STOCK'}}</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center align-middle" scope="col" rowspan="2">ARTICULO</th>
+                    <th class="text-center align-middle" scope="col" rowspan="2">ANT</th>
+                    <th class="text-center align-middle" scope="col" colspan="2">INGRESOS</th>
+                    <th class="text-center align-middle" scope="col" colspan="2">SALIDAS</th>
+                    <th class="text-center align-middle" scope="col" colspan="2">OPERACIONES</th>
+                    <th class="text-center align-middle" scope="col" rowspan="2">STOCK OFICIAL</th>
+                    <th class="text-center align-middle" scope="col" rowspan="2">OTROS RETIROS</th>
+                    <th class="text-center align-middle" scope="col" rowspan="2">STOCK REAL</th>
+                </tr>
+                <tr>
+                    <th class="text-center align-middle" scope="col">REMITOS</th>
+                    <th class="text-center align-middle" scope="col">DEVOLUCIONES</th>
+                    <th class="text-center align-middle" scope="col">REMITOS</th>
+                    <th class="text-center align-middle" scope="col">DEVOLUCIONES</th>
+                    <th class="text-center align-middle" scope="col">REMITOS</th>
+                    <th class="text-center align-middle" scope="col">DEVOLUCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope="row">#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                </tr>
+                <tr>
+                    <td scope="row">#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                </tr>
+                <tr>
+                    <td scope="row">#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td>#</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

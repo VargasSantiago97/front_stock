@@ -1,7 +1,19 @@
-<div class="container-fluid p-2">
-    <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()">NUEVO REMITO DE INGRESO</button>
-    <button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
-        MERCADERIA</button>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()">NUEVO REMITO DE
+                INGRESO</button>
+            <button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
+                MERCADERIA</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p-multiSelect [ngStyle]="{padding: '0px'}" [options]="clientesTodos" [(ngModel)]="selectedClientes" optionLabel="alias"
+                placeholder="Seleccionar clientes" />
+        </div>
+    </div>
+    
 
     <div class="table-responsive">
         <table class="table table-striped table-hover table-sm">
@@ -34,13 +46,13 @@
                             (click)="mostrarModalIngreso(ingreso.id)" title="Ver Ingreso"><i
                                 class="pi pi-bars"></i></button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verRemito(ingreso.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            (click)="verIngreso(ingreso.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="descargarRemito(ingreso.id)" title="Descargar PDF"><i
+                            (click)="descargarIngreso(ingreso.id)" title="Descargar PDF"><i
                                 class="pi pi-download"></i></button>
-                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR" (click)="visible_devolucion = true"><i
-                                class="pi pi-ban"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR"
+                            (click)="visible_devolucion = true"><i class="pi pi-ban"></i></button>
                     </td>
                 </tr>
                 }
@@ -380,12 +392,12 @@
                 TOTALES</button>
             <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
             @if (!ingreso.id) {
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR Y MOSTRAR</button>
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR Y DESCARGAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('M')">GUARDAR Y MOSTRAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('D')">GUARDAR Y DESCARGAR</button>
             <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR</button>
             } @else {
-            <button type="button" class="btn btn-success m-2" (click)="verRemito(ingreso.id)">VER PDF</button>
-            <button type="button" class="btn btn-success m-2" (click)="descargarRemito(ingreso.id)">DESCARGAR
+            <button type="button" class="btn btn-success m-2" (click)="verIngreso(ingreso.id)">VER PDF</button>
+            <button type="button" class="btn btn-success m-2" (click)="descargarIngreso(ingreso.id)">DESCARGAR
                 PDF</button>
             }
 
@@ -724,12 +736,12 @@
                 TOTALES</button>
             <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
             @if (!ingreso.id) {
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR Y MOSTRAR</button>
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR Y DESCARGAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('M')">GUARDAR Y MOSTRAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('D')">GUARDAR Y DESCARGAR</button>
             <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR</button>
             } @else {
-            <button type="button" class="btn btn-success m-2" (click)="verRemito(ingreso.id)">VER PDF</button>
-            <button type="button" class="btn btn-success m-2" (click)="descargarRemito(ingreso.id)">DESCARGAR
+            <button type="button" class="btn btn-success m-2" (click)="verIngreso(ingreso.id)">VER PDF</button>
+            <button type="button" class="btn btn-success m-2" (click)="descargarIngreso(ingreso.id)">DESCARGAR
                 PDF</button>
             }
 
