@@ -4,7 +4,7 @@ var vars = {
     PDF_URI: 'http://localhost:3000',
     PADRON_URI: 'http://154.49.246.119/api/afip/api',
 
-    modelosRemitos: [{
+    modelosRemitos: [{ //ACTIVO EL PRIMERO
         id: 1,
         alias: "moliendas",
         descripcion: "Moliendas"
@@ -14,7 +14,7 @@ var vars = {
         descripcion: "NorSemillas"
     }],
 
-    puntosVenta: [{
+    puntosVenta: [{ //ACTIVO EL PRIMERO
         id: 1,
         punto: 1,
         descripcion: "1"

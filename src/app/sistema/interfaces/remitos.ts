@@ -1,5 +1,6 @@
 export interface ArticuloAsociado {
     id: string;
+    id_original: string;
     id_articulo: string;
     id_documento: string;
 

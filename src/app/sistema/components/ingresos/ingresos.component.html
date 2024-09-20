@@ -3,8 +3,8 @@
         <div class="col">
             <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()">NUEVO REMITO DE
                 INGRESO</button>
-            <button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
-                MERCADERIA</button>
+            <!--button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
+                MERCADERIA</button-->
         </div>
     </div>
     <div class="row">
@@ -13,7 +13,7 @@
                 placeholder="Seleccionar clientes" />
         </div>
     </div>
-    
+
 
     <div class="table-responsive">
         <table class="table table-striped table-hover table-sm">
@@ -52,7 +52,7 @@
                             (click)="descargarIngreso(ingreso.id)" title="Descargar PDF"><i
                                 class="pi pi-download"></i></button>
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR"
-                            (click)="visible_devolucion = true"><i class="pi pi-ban"></i></button>
+                            (click)="mostrarModalDevolucion(ingreso.id)"><i class="pi pi-ban"></i></button>
                     </td>
                 </tr>
                 }
@@ -406,9 +406,9 @@
 </p-dialog>
 
 
-<p-dialog header="{{ingreso.id ? 'VER DEVOLUCION' : 'NUEVA DEVOLUCION DE MERCADERIA'}}" [modal]="true"
+<p-dialog header="{{devolucion.id ? 'VER DEVOLUCION' : 'NUEVA DEVOLUCION DE MERCADERIA'}}" [modal]="true"
     [(visible)]="visible_devolucion" [style]="{ width: '85rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-    [maximizable]="true" [closeOnEscape]="ingreso.id != ''">
+    [maximizable]="true" [closeOnEscape]="devolucion.id != ''">
 
     <!-- HEADERS -->
     <div class="row py-2" style="background-color: rgba(255, 183, 183, 0.555); border-radius: 6px;">
@@ -416,7 +416,7 @@
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">Modelo</span>
 
-                <select class="input-group-text" [(ngModel)]="ingreso.modelo" [disabled]="ingreso.id != ''">
+                <select class="input-group-text" [(ngModel)]="devolucion.modelo" [disabled]="devolucion.id != ''">
                     @for (modRem of modelosRemitos; track $index) {
                     <option value={{modRem.alias}}>{{modRem.descripcion}}</option>
                     }
@@ -427,8 +427,8 @@
         <div class="col-6 col-md-3 mb-2 mb-md-0">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
-                <select class="input-group-text" [(ngModel)]="ingreso.punto" style="width: 50%;"
-                    [disabled]="ingreso.id != ''">
+                <select class="input-group-text" [(ngModel)]="devolucion.punto" style="width: 50%;"
+                    [disabled]="devolucion.id != ''">
                     @for (ptoVta of puntosVenta; track $index) {
                     <option value={{ptoVta.punto}}>{{ptoVta.descripcion}}</option>
                     }
@@ -439,14 +439,14 @@
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">N°</span>
                 <input type="number" class="form-control" placeholder="Numero" aria-label="Numero"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.numero" disabled="">
+                    aria-describedby="basic-addon1" [(ngModel)]="devolucion.numero" disabled="">
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">FECHA</span>
                 <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha" [disabled]="ingreso.id != ''">
+                    aria-describedby="basic-addon1" [(ngModel)]="devolucion.fecha" [disabled]="devolucion.id != ''">
             </div>
         </div>
     </div>
@@ -474,12 +474,12 @@
             <div class="col-12 col-md-4">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1" style="width: 15%;">Cód.</span>
-                    @if(!ingreso.id_cliente){
+                    @if(!devolucion.id_cliente){
                     <input type="text" class="form-control" placeholder="Código" aria-label="Código"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.codigo"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.codigo"
                         (keyup.enter)="buscarClientePorCodigo()">
                     } @else {
-                    <span class="input-group-text" id="basic-addon1" style="width: 84%;">{{ingreso.codigo}}</span>
+                    <span class="input-group-text" id="basic-addon1" style="width: 84%;">{{devolucion.codigo}}</span>
                     }
                 </div>
             </div>
@@ -487,7 +487,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Razon Social</span>
                     <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.razon_social" readonly>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.razon_social" readonly>
                 </div>
             </div>
         </div>
@@ -502,17 +502,17 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
                         aria-label="Descripcion" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.autorizado_descripcion" disabled>
+                        [(ngModel)]="devolucion.autorizado_descripcion" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">N° Doc</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Documento" aria-label="Documento"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_documento" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.autorizado_documento" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Contacto</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Contacto" aria-label="Contacto"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_contacto" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.autorizado_contacto" disabled>
                 </div>
             </div>
             <div class="col-12 col-md-4">
@@ -524,19 +524,19 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Transp</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Transporte"
                         aria-label="Transporte" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.transporte_transporte" disabled>
+                        [(ngModel)]="devolucion.transporte_transporte" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Chofer</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chofer" aria-label="Chofer"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_chofer" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.transporte_chofer" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Patentes</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chasis" aria-label="Chasis"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_chasis" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.transporte_patente_chasis" disabled>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Acoplado" aria-label="Acoplado"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_acoplado" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.transporte_patente_acoplado" disabled>
                 </div>
             </div>
             <div class="col-12 col-md-4">
@@ -548,17 +548,17 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
                         aria-label="Descripcion" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.establecimiento_descripcion" disabled>
+                        [(ngModel)]="devolucion.establecimiento_descripcion" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Loc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Localidad" aria-label="Localidad"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_localidad" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.establecimiento_localidad" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Prov.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Provincia" aria-label="Provincia"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.establecimiento_provincia" disabled>
                 </div>
             </div>
         </div>
@@ -567,11 +567,11 @@
 
     @if(pestActiva == 'documentos'){
     <div style="min-height: 180px;">
-        @for (doc of ingreso.datos.documentos; track $index) {
+        @for (doc of devolucion.datos.documentos; track $index) {
         <div class="row mb-2">
             <div class="col-3">
                 <div class="input-group">
-                    <select class="input-group-text" [(ngModel)]="doc.tipo" [disabled]="ingreso.id != ''">
+                    <select class="input-group-text" [(ngModel)]="doc.tipo" [disabled]="devolucion.id != ''">
                         <option value=remito>REMITO</option>
                         <option value=factura>FACTURA</option>
                         <option value=ticket_balanza>TICKET BALANZA</option>
@@ -581,7 +581,7 @@
             </div>
             <div class="col-3">
                 <div class="input-group">
-                    <select class="input-group-text" [(ngModel)]="doc.letra" [disabled]="ingreso.id != ''">
+                    <select class="input-group-text" [(ngModel)]="doc.letra" [disabled]="devolucion.id != ''">
                         <option value=A>A</option>
                         <option value=B>B</option>
                         <option value=C>C</option>
@@ -590,28 +590,28 @@
                     </select>
 
                     <input type="number" class="form-control m-0 p-0 px-3" placeholder="Punto" aria-label="Punto"
-                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto" [readonly]="ingreso.id != ''">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto" [readonly]="devolucion.id != ''">
 
                     <input type="number" class="form-control m-0 p-0 px-3" placeholder="Numero" aria-label="Numero"
-                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero" [readonly]="ingreso.id != ''">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero" [readonly]="devolucion.id != ''">
                 </div>
             </div>
             <div class="col-3">
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon1">FECHA</span>
                     <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
-                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha" [disabled]="ingreso.id != ''">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha" [disabled]="devolucion.id != ''">
                 </div>
             </div>
             <div class="col-3">
-                @if(!ingreso.id){
+                @if(!devolucion.id){
                 <button type="button" class="btn btn-warning p-1 mx-3"
                     (click)="eliminarDocumento(doc.id)">ELIMINAR</button>
                 }
             </div>
         </div>
         }
-        @if(!ingreso.id){
+        @if(!devolucion.id){
         <button type="button" class="btn btn-warning px-3" (click)="agregarDocumento()">Agregar</button>
         }
     </div>
@@ -624,22 +624,22 @@
                 <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Sale en
                     Remito</p-divider>
 
-                <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones"
-                    [readonly]="ingreso.id != ''" class="p-2">
+                <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="devolucion.observaciones"
+                    [readonly]="devolucion.id != ''" class="p-2">
                 </textarea>
 
                 <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Total Unidades:</p-divider>
 
-                <textarea rows="1" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.total_unidades"
-                    [readonly]="ingreso.id != ''" class="p-0">
+                <textarea rows="1" pInputTextarea style="width: 100%;" [(ngModel)]="devolucion.total_unidades"
+                    [readonly]="devolucion.id != ''" class="p-0">
                 </textarea>
             </div>
             <div class="col-12 col-md-6">
                 <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Para
                     sistema</p-divider>
 
-                <textarea rows="5" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones_sistema"
-                    [readonly]="ingreso.id != ''">
+                <textarea rows="5" pInputTextarea style="width: 100%;" [(ngModel)]="devolucion.observaciones_sistema"
+                    [readonly]="devolucion.id != ''">
                 </textarea>
             </div>
         </div>
@@ -680,15 +680,15 @@
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
                             [(ngModel)]="art.cantidad" (keyup)="calcularUnidadFundamental(art)"
-                            [readonly]="ingreso.id != ''"></td>
+                            [readonly]="devolucion.id != ''"></td>
                     <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.id_unidadMedida ?
                         obtenerDescripcionUnidadMedida(art.id_unidadMedida) : '-'}}</td>
                     <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
-                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="ingreso.id != ''"></td>
+                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="devolucion.id != ''"></td>
                     <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.unidadFundamental ?
                         art.unidadFundamental : '-'}}</td>
                     <td class="text-nowrap p-0">
-                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="ingreso.id != ''">
+                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="devolucion.id != ''">
                             @for (dep of depositos; track $index) {
                             <option value={{dep.id}}>{{dep.alias}}</option>
                             }
@@ -696,17 +696,17 @@
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
                         @if (art.solicitaLote) {
-                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="ingreso.id != ''">
+                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="devolucion.id != ''">
                         }
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
                         @if (art.solicitaVencimiento) {
                         <input class="input_tabla" type="date" [(ngModel)]="art.vencimiento"
-                            [readonly]="ingreso.id != ''">
+                            [readonly]="devolucion.id != ''">
                         }
                     </td>
                     <td class="text-nowrap p-0">
-                        @if(art.id_articulo && ingreso.id == ''){
+                        @if(art.id_articulo && devolucion.id == ''){
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
                             (click)="eliminarArticulo(art.id)"><i class="pi pi-trash"></i></button>
                         }
@@ -716,7 +716,7 @@
             </tbody>
         </table>
 
-        @if (ingreso.id == '') {
+        @if (devolucion.id == '') {
         <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="agregarArticulos()">Agregar nuevo</button>
         @if (permite_secuencia_lote) {
         AGREGAR
@@ -734,14 +734,14 @@
         <div class="col text-end">
             <button type="button" class="btn btn-warning m-2" (click)="verTotalesArticulosIngreso()">VER
                 TOTALES</button>
-            <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
-            @if (!ingreso.id) {
+            <button type="button" class="btn btn-warning m-2" (click)="visible_devolucion = false">CERRAR</button>
+            @if (!devolucion.id) {
             <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('M')">GUARDAR Y MOSTRAR</button>
             <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('D')">GUARDAR Y DESCARGAR</button>
             <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR</button>
             } @else {
-            <button type="button" class="btn btn-success m-2" (click)="verIngreso(ingreso.id)">VER PDF</button>
-            <button type="button" class="btn btn-success m-2" (click)="descargarIngreso(ingreso.id)">DESCARGAR
+            <button type="button" class="btn btn-success m-2" (click)="verIngreso(devolucion.id)">VER PDF</button>
+            <button type="button" class="btn btn-success m-2" (click)="descargarIngreso(devolucion.id)">DESCARGAR
                 PDF</button>
             }
 

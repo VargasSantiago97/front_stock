@@ -107,7 +107,51 @@ export class IngresosComponent {
         updatedAt: ''
     }
     ingresos: Remito[] = []
-
+    devolucion: Remito = {
+        id: '',
+        fecha: '',
+        numero: 0,
+        punto: 0,
+        modelo: '',
+        id_cliente: '',
+        codigo: '',
+        razon_social: '',
+        cuit: 0,
+        alias: '',
+        direccion: '',
+        localidad: '',
+        provincia: '',
+        codigo_postal: '',
+        telefono: '',
+        correo: '',
+        id_autorizado: '',
+        autorizado_descripcion: '',
+        autorizado_documento: '',
+        autorizado_contacto: '',
+        id_transporte: '',
+        transporte_transporte: '',
+        transporte_cuit_transporte: 0,
+        transporte_chofer: '',
+        transporte_cuit_chofer: 0,
+        transporte_patente_chasis: '',
+        transporte_patente_acoplado: '',
+        id_establecimiento: '',
+        establecimiento_descripcion: '',
+        establecimiento_localidad: '',
+        establecimiento_provincia: '',
+        observaciones: '',
+        observaciones_sistema: '',
+        total_unidades: '',
+        datos: {
+            documentos: []
+        },
+        estado: 1,
+        createdBy: '',
+        updatedBy: '',
+        createdAt: '',
+        updatedAt: ''
+    }
+    devoluciones: Remito[] = []
 
     clientes: Cliente[] = []
     clientesFiltrados: Cliente[] = []
@@ -176,6 +220,8 @@ export class IngresosComponent {
     articulosIngreso: ArticuloAsociado[] = []
     articuloProvisorio: ArticuloAsociado | undefined
 
+    articulosDevolucion: ArticuloAsociado[] = []
+
     rubros: Rubro[] = []
     subRubros: SubRubro[] = []
 
@@ -194,11 +240,13 @@ export class IngresosComponent {
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
         this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
         this.cs.getAll('subRubros', (data: SubRubro[]) => { this.subRubros = data })
-        this.cs.getAll('clientes', (data: Cliente[]) => {this.clientesTodos = data })
+        this.cs.getAll('clientes', (data: Cliente[]) => { this.clientesTodos = data })
+
+        this.cs.getAll('articulosAsociados', (data: any[]) => { console.log(data) })
 
         this.route.paramMap.subscribe(params => {
             var id_cliente = params.get('id_cliente');
-            if(id_cliente){
+            if (id_cliente) {
                 this.mostrarModalIngreso()
                 this.buscarClientePorId(id_cliente)
             }
@@ -243,11 +291,11 @@ export class IngresosComponent {
     mostrarModalIngreso(id: any = undefined) {
         this.pestActiva = 'cliente'
         if (id) {
-            this.cs.getAll('ingresos/' + id, (dato:Remito) => {
+            this.cs.getAll('ingresos/' + id, (dato: Remito) => {
                 this.ingreso = dato
             })
 
-            this.cs.getAll('articulosAsociados/buscar/' + id, (datos:ArticuloAsociado[]) => {
+            this.cs.getAll('articulosAsociados/buscar/' + id, (datos: ArticuloAsociado[]) => {
                 this.articulosIngreso = datos
                 console.log(datos)
             })
@@ -304,16 +352,16 @@ export class IngresosComponent {
     guardarIngreso(tipo: 'D' | 'M' | null = null) {
         var cantidadRegistros = this.articulosIngreso.length
         var cantidadRegistrosId = this.articulosIngreso.filter((e: ArticuloAsociado) => e.id_articulo).length
-        if(!this.ingreso.id_cliente){
+        if (!this.ingreso.id_cliente) {
             return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'No asignó un cliente' })
         }
-        if(!cantidadRegistros){
+        if (!cantidadRegistros) {
             return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
         }
-        if(!cantidadRegistrosId){
+        if (!cantidadRegistrosId) {
             return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
         }
-        if ((cantidadRegistros > cantidadRegistrosId) && this.avisarRegistrosVacios ) {
+        if ((cantidadRegistros > cantidadRegistrosId) && this.avisarRegistrosVacios) {
             this.avisarRegistrosVacios = false
             setTimeout(() => {
                 this.avisarRegistrosVacios = true
@@ -323,18 +371,18 @@ export class IngresosComponent {
         }
 
         this.cs.getAll('ingresos/buscar/ultimo/' + this.ingreso.punto, (ultNum: number) => {
-            this.ingreso.numero = ultNum+1
+            this.ingreso.numero = ultNum + 1
 
             this.cs.create('ingresos', this.ingreso, (id_ingreso_creado: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id_ingreso_creado })
                 this.ingreso.id = id_ingreso_creado
 
-                var artIngs = this.articulosIngreso.map((artIng:ArticuloAsociado) => {
+                var artIngs = this.articulosIngreso.map((artIng: ArticuloAsociado) => {
                     const { id, ...resto } = artIng;
 
                     return {
                         ...resto,
-                        id_documento: id_ingreso_creado 
+                        id_documento: id_ingreso_creado
                     }
                 })
 
@@ -342,11 +390,11 @@ export class IngresosComponent {
                     this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
                     this.actualizarDatosTabla()
 
-                    if(tipo == 'D'){
+                    if (tipo == 'D') {
                         this.descargarIngreso(id_ingreso_creado)
                         this.visible_ingreso = false
                     }
-                    if(tipo == 'M'){
+                    if (tipo == 'M') {
                         this.verIngreso(id_ingreso_creado)
                         this.visible_ingreso = false
                     }
@@ -359,10 +407,75 @@ export class IngresosComponent {
         })
     }
 
-    buscarClientePorId(id: string){
+
+    mostrarModalDevolucion(id: any = undefined) {
+        this.pestActiva = 'cliente'
+        if (id) {
+            this.cs.getAll('ingresos/' + id, (dato: Remito) => {
+                this.devolucion = {
+                    ...dato,
+                    id: ''
+                }
+
+                this.cs.getAll('articulosAsociados/devolucion/' + id, (datos: any) => {
+                    //this.articulosDevolucion = datos
+                    console.log(datos)
+                })
+            })
+        } else {
+            this.devolucion = {
+                id: '',
+                numero: 0,
+                punto: this.puntosVenta[0].punto,
+                datos: { documentos: [] },
+                fecha: this.fechaHoy(),
+                modelo: this.modelosRemitos[0].alias,
+                id_cliente: '',
+                codigo: '',
+                razon_social: '',
+                cuit: 0,
+                alias: '',
+                direccion: '',
+                localidad: '',
+                provincia: '',
+                codigo_postal: '',
+                telefono: '',
+                correo: '',
+                id_autorizado: '',
+                autorizado_descripcion: '',
+                autorizado_documento: '',
+                autorizado_contacto: '',
+                id_transporte: '',
+                transporte_transporte: '',
+                transporte_cuit_transporte: 0,
+                transporte_chofer: '',
+                transporte_cuit_chofer: 0,
+                transporte_patente_chasis: '',
+                transporte_patente_acoplado: '',
+                id_establecimiento: '',
+                establecimiento_descripcion: '',
+                establecimiento_localidad: '',
+                establecimiento_provincia: '',
+                observaciones: '',
+                observaciones_sistema: '',
+                total_unidades: '',
+                estado: 1,
+                createdBy: '',
+                updatedBy: '',
+                createdAt: '',
+                updatedAt: ''
+            }
+
+            this.articulosIngreso = []
+        }
+        this.visible_devolucion = true
+        this.id_cliente = ''
+    }
+
+    buscarClientePorId(id: string) {
         this.cs.getAll('clientes/' + id, (data: Cliente) => {
             this.asignarCliente(data)
-        })    
+        })
     }
     buscarClientePorCodigo() {
         if (!this.ingreso.codigo) {
@@ -645,6 +758,7 @@ export class IngresosComponent {
 
         this.articulosIngreso.push({
             id: (ultimoId + 1).toString(),
+            id_original: '',
             id_articulo: '',
             id_documento: '',
             id_rubro: '',
@@ -721,6 +835,7 @@ export class IngresosComponent {
                 } else {
                     art = {
                         id: art.id,
+                        id_original: '',
                         id_articulo: '',
                         id_documento: '',
                         id_rubro: '',
@@ -919,17 +1034,17 @@ export class IngresosComponent {
 
             cantidad += item.cantidad
 
-            if(item.unidadFundamental == 'kilos'){
+            if (item.unidadFundamental == 'kilos') {
                 kilos += item.cantidadUnidadFundamental
-            } else if(item.unidadFundamental == 'litros'){
+            } else if (item.unidadFundamental == 'litros') {
                 litros += item.cantidadUnidadFundamental
-            } else if(item.unidadFundamental == 'unidades'){
+            } else if (item.unidadFundamental == 'unidades') {
                 unidades += item.cantidadUnidadFundamental
             }
 
         });
 
-        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~'+kilos+' kilos.' : ''}${litros ? ' ~'+litros+' litros.' : ''}${unidades ? ' ~'+unidades+' unidades.' : ''}`
+        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
     }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
