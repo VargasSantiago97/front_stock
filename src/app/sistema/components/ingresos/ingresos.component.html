@@ -658,10 +658,10 @@
                     <th scope="col" class="text-center">#</th>
                     <th scope="col" class="text-center">Cód</th>
                     <th scope="col" class="text-center">Descripción</th>
-                    <th scope="col" class="text-center">Cant.</th>
-                    <th scope="col" class="text-center">U.M.</th>
-                    <th scope="col" class="text-center" style="color: rgb(175, 28, 28);">Cant</th>
-                    <th scope="col" class="text-center" style="color: rgb(175, 28, 28);">U.F.</th>
+                    <th scope="col" class="text-center">Cant. Inic.</th>
+                    <th scope="col" class="text-center">Entradas</th>
+                    <th scope="col" class="text-center">Salidas</th>
+
                     <th scope="col" class="text-center">Deposito</th>
                     <th scope="col" class="text-center">Lote</th>
                     <th scope="col" class="text-center">Vto</th>
@@ -669,46 +669,44 @@
                 </tr>
             </thead>
             <tbody>
-                @for (art of articulosIngreso; track $index) {
+                @for (artDev of articulosDevolucion; track $index) {
                 <tr>
                     <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
                         {{$index + 1}})</th>
                     <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
-                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)"
-                            [readOnly]="art.id_articulo"></th>
-                    <td class="text-nowrap p-0" style="min-width: 500px;">{{art.descripcion ? art.descripcion : '-'}}
+                            [(ngModel)]="artDev.codigo" disabled></th>
+                    <td class="text-nowrap p-0" style="min-width: 500px;">{{artDev.descripcion ? artDev.descripcion : '-'}}
                     </td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
-                            [(ngModel)]="art.cantidad" (keyup)="calcularUnidadFundamental(art)"
-                            [readonly]="devolucion.id != ''"></td>
-                    <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.id_unidadMedida ?
-                        obtenerDescripcionUnidadMedida(art.id_unidadMedida) : '-'}}</td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
-                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="devolucion.id != ''"></td>
-                    <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.unidadFundamental ?
-                        art.unidadFundamental : '-'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.cantidad}}{{artDev.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}} / {{artDev.cantidadUnidadFundamental}}{{artDev.unidadFundamental ?
+                            artDev.unidadFundamental : '[*]'}}</td>
+
+                    <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{artDev.salidas_uf}}</td>
+
+
+                    <td class="text-nowrap p-0 text-center" style="min-width: 90px;"></td>
                     <td class="text-nowrap p-0">
-                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="devolucion.id != ''">
+                        <select class="input_tabla p-1" [(ngModel)]="artDev.id_deposito" [disabled]="devolucion.id != ''">
                             @for (dep of depositos; track $index) {
                             <option value={{dep.id}}>{{dep.alias}}</option>
                             }
                         </select>
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
-                        @if (art.solicitaLote) {
-                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="devolucion.id != ''">
+                        @if (artDev.solicitaLote) {
+                        <input class="input_tabla" type="text" [(ngModel)]="artDev.lote" [readonly]="devolucion.id != ''">
                         }
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
-                        @if (art.solicitaVencimiento) {
-                        <input class="input_tabla" type="date" [(ngModel)]="art.vencimiento"
+                        @if (artDev.solicitaVencimiento) {
+                        <input class="input_tabla" type="date" [(ngModel)]="artDev.vencimiento"
                             [readonly]="devolucion.id != ''">
                         }
                     </td>
                     <td class="text-nowrap p-0">
-                        @if(art.id_articulo && devolucion.id == ''){
+                        @if(artDev.id_articulo && devolucion.id == ''){
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
-                            (click)="eliminarArticulo(art.id)"><i class="pi pi-trash"></i></button>
+                            (click)="eliminarArticulo(artDev.id)"><i class="pi pi-trash"></i></button>
                         }
                     </td>
                 </tr>

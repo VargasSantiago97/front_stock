@@ -24,6 +24,7 @@ export interface ArticuloAsociado {
     unidadFundamental: string;
     cantidadPorUnidadFundamental: number;
     ajuste: 'positivo' | 'negativo';
+    documento: 'ingreso' | 'remito' | 'ingreso_devolucion' | 'remito_devolucion' | 'operaciones';
 
     datos: {};
     estado: number;

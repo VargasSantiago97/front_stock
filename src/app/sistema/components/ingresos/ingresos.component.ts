@@ -220,7 +220,7 @@ export class IngresosComponent {
     articulosIngreso: ArticuloAsociado[] = []
     articuloProvisorio: ArticuloAsociado | undefined
 
-    articulosDevolucion: ArticuloAsociado[] = []
+    articulosDevolucion: any[] = []
 
     rubros: Rubro[] = []
     subRubros: SubRubro[] = []
@@ -418,8 +418,9 @@ export class IngresosComponent {
                 }
 
                 this.cs.getAll('articulosAsociados/devolucion/' + id, (datos: any) => {
-                    //this.articulosDevolucion = datos
-                    console.log(datos)
+                    this.articulosDevolucion = datos
+
+                    console.log(this.articulosDevolucion)
                 })
             })
         } else {
@@ -778,6 +779,7 @@ export class IngresosComponent {
             unidadFundamental: '',
             cantidadPorUnidadFundamental: 0,
             ajuste: 'positivo',
+            documento: 'ingreso',
             datos: {},
             estado: 1,
             createdBy: '',
@@ -855,6 +857,7 @@ export class IngresosComponent {
                         unidadFundamental: '',
                         cantidadPorUnidadFundamental: 0,
                         ajuste: 'positivo',
+                        documento: 'ingreso',
                         datos: {},
                         estado: 1,
                         createdBy: '',
