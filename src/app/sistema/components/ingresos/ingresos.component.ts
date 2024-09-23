@@ -23,13 +23,14 @@ import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { PdfService } from '../../services/pdf.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ActivatedRoute } from '@angular/router';
+import { ListboxModule } from 'primeng/listbox';
 
 declare var vars: any;
 
 @Component({
     selector: 'app-ingresos',
     standalone: true,
-    imports: [TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, FormsModule, ProgressSpinnerModule, InputTextModule, InputGroupModule, InputGroupAddonModule, InputTextareaModule, TagModule, MultiSelectModule],
+    imports: [ListboxModule, TableModule, ButtonModule, DialogModule, CommonModule, DropdownModule, DividerModule, FormsModule, ProgressSpinnerModule, InputTextModule, InputGroupModule, InputGroupAddonModule, InputTextareaModule, TagModule, MultiSelectModule],
     templateUrl: './ingresos.component.html',
     styleUrl: './ingresos.component.css'
 })
@@ -51,6 +52,8 @@ export class IngresosComponent {
     datosTotales: any = []
 
     visible_devolucion: boolean = false
+    visible_filtros: boolean = false
+
 
     permite_secuencia_lote: boolean = false
     cantidad_secuencia_lote: number = 1
@@ -159,7 +162,7 @@ export class IngresosComponent {
     clientes: Cliente[] = []
     clientesFiltrados: Cliente[] = []
     clientesTodos: Cliente[] = []
-    selectedClientes: Cliente[] = []
+    selectedClientes: string[] = []
 
     id_cliente: string = ''
 
@@ -228,6 +231,11 @@ export class IngresosComponent {
     rubros: Rubro[] = []
     subRubros: SubRubro[] = []
 
+    documentosAsociados: Remito[] | RemitoDevolucion[] = []
+
+    fechaFiltroDesde: string = this.fechaHoy(31)
+    fechaFiltroHasta: string = this.fechaHoy()
+
     constructor(
         private padron: PadronService,
         private ms: MessageService,
@@ -237,25 +245,25 @@ export class IngresosComponent {
     ) { }
 
     ngOnInit() {
-        this.actualizarDatosTabla()
-
         this.cs.getAll('depositos', (data: Deposito[]) => { this.depositos = data })
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
         this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
         this.cs.getAll('subRubros', (data: SubRubro[]) => { this.subRubros = data })
-        this.cs.getAll('clientes', (data: Cliente[]) => { this.clientesTodos = data })
+        this.cs.getAll('clientes', (data: Cliente[]) => { this.clientesTodos = data, this.clientesFiltrados = data })
 
-        this.cs.getAll('articulosAsociados', (data: any[]) => { console.log(data) })
+        const esNuevo = this.route.snapshot.url.some(segment => segment.path === 'nuevo');
 
         this.route.paramMap.subscribe(params => {
             var id_cliente = params.get('id_cliente');
-            if (id_cliente) {
+            if (id_cliente && esNuevo) {
                 this.mostrarModalIngreso()
                 this.buscarClientePorId(id_cliente)
+            } else if(id_cliente) {
+                this.selectedClientes = [id_cliente]
             }
+            this.actualizarDatosTabla()
         });
     }
-
 
 
     verIngreso(id: string) {
@@ -269,19 +277,23 @@ export class IngresosComponent {
     }
     descargarIngreso(id: string) {
         this.pdf.ingreso(id, 1).subscribe((blob: any) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `remito_${id}.pdf`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+
+            this.cs.getAll('ingresos/' + id, (ingreso: Remito) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `INGRESO DE MERCADERIA ${this.mostrarDocumento(ingreso.punto, ingreso.numero)} - ${ingreso.razon_social}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
         }, error => {
             console.error('Error al obtener el PDF', error);
         });
     }
 
     verDevolucion(id: string) {
-        this.pdf.ingreso(id, 3).subscribe((blob: any) => {
+        this.pdf.devolucion(id, 3).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
             window.open(url, '_blank', windowFeatures);
@@ -290,13 +302,17 @@ export class IngresosComponent {
         });
     }
     descargarDevolucion(id: string) {
-        this.pdf.ingreso(id, 1).subscribe((blob: any) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `remito_${id}.pdf`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+        this.pdf.devolucion(id, 1).subscribe((blob: any) => {
+
+            this.cs.getAll('devoluciones/' + id, (devolucion: RemitoDevolucion) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `DEVOLUCION DE MERCADERIA ${this.mostrarDocumento(devolucion.punto, devolucion.numero)} - ${devolucion.razon_social}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
         }, error => {
             console.error('Error al obtener el PDF', error);
         });
@@ -309,12 +325,11 @@ export class IngresosComponent {
 
     actualizarDatosTabla() {
         this.dataTabla = []
-        this.cs.getAll('ingresos', (dataIngresos: Remito[]) => {
-            this.cs.getAll('devoluciones', (dataDevoluciones: RemitoDevolucion[]) => {
-                dataIngresos.forEach((ing:Remito) => this.dataTabla.push({ ...ing, tipo:'INGRESO' }))
-                dataDevoluciones.forEach((dev:Remito) => this.dataTabla.push({ ...dev, tipo:'DEVOLUCION' }))
-            })
+
+        this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, {clientes: this.selectedClientes}, (e:any) => {
+            this.dataTabla = e
         })
+
     }
 
 
@@ -329,6 +344,10 @@ export class IngresosComponent {
 
             this.cs.getAll('articulosAsociados/buscar/' + id, (datos: ArticuloAsociado[]) => {
                 this.articulosIngreso = datos
+            })
+
+            this.cs.getAll(`devoluciones/buscar/asociado/${id}`, (datos: RemitoDevolucion[]) => {
+                this.documentosAsociados = datos
             })
         } else {
             this.ingreso = {
@@ -504,7 +523,7 @@ export class IngresosComponent {
                         ajuste: 'negativo',
                         documento: 'ingreso_devolucion'
                     }
-                })
+                },)
 
                 this.cs.createMultiple('articulosAsociados', artDevs, (mensaje: any) => {
                     this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
@@ -525,6 +544,10 @@ export class IngresosComponent {
         }, (err: any) => {
             this.ms.add({ severity: 'error', summary: 'Error obteniendo numero de devolucion', detail: err.message })
         })
+    }
+
+    mostrarModalFiltro(){
+        this.visible_filtros = true
     }
 
     buscarClientePorId(id: string) {
@@ -923,6 +946,8 @@ export class IngresosComponent {
 
             })
         }
+
+        this.ingreso.total_unidades = this.totalesArticulosIngreso()
     }
     buscarArticuloPorCodigo(art: ArticuloAsociado) {
         if (!art.codigo) {
@@ -1132,6 +1157,7 @@ export class IngresosComponent {
             })
         }
 
+        this.devolucion.total_unidades = this.totalesArticulosDevolucion()
     }
 
     //HELPERS
@@ -1148,8 +1174,13 @@ export class IngresosComponent {
     //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
     //}
 
-    fechaHoy() {
+    fechaHoy(dias:number = 0) {
         const fechaActual = new Date();
+
+        if(dias){
+            fechaActual.setDate(fechaActual.getDate() - dias)
+        }
+
         const ano = fechaActual.getFullYear();
         const mes = ('0' + (fechaActual.getMonth() + 1)).slice(-2);
         const dia = ('0' + fechaActual.getDate()).slice(-2);
@@ -1194,27 +1225,25 @@ export class IngresosComponent {
         return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
     }
     totalesArticulosDevolucion(): string {
-        //var cantidad = 0
-        //var kilos = 0
-        //var litros = 0
-        //var unidades = 0
+        var cantidad = 0
+        var kilos = 0
+        var litros = 0
+        var unidades = 0
 
-        //this.articulosIngreso.map((item: ArticuloAsociado) => {
+        this.articulosDevolucion.map((item: any) => {
 
-        //    cantidad += item.cantidad
+            cantidad += (item.cantidadDevolver ? item.cantidadDevolver : 0)
 
-        //    if (item.unidadFundamental == 'kilos') {
-        //        kilos += item.cantidadUnidadFundamental
-        //    } else if (item.unidadFundamental == 'litros') {
-        //        litros += item.cantidadUnidadFundamental
-        //    } else if (item.unidadFundamental == 'unidades') {
-        //        unidades += item.cantidadUnidadFundamental
-        //    }
+            if (item.unidadFundamental == 'kilos') {
+                kilos += (item.cantidadDevolverUnidadFundamental ? item.cantidadDevolverUnidadFundamental : 0)
+            } else if (item.unidadFundamental == 'litros') {
+                litros += (item.cantidadDevolverUnidadFundamental ? item.cantidadDevolverUnidadFundamental : 0)
+            } else if (item.unidadFundamental == 'unidades') {
+                unidades += (item.cantidadDevolverUnidadFundamental ? item.cantidadDevolverUnidadFundamental : 0)
+            }
+        });
 
-        //});
-
-        //return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
-        return ``
+        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
     }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
@@ -1227,8 +1256,6 @@ export class IngresosComponent {
 
         this.verificarMax(art)
         this.verificarMaxUF(art)
-
-        this.devolucion.total_unidades = this.totalesArticulosDevolucion()
     }
     verificarMax(a: any) {
         var cantidadDisponible = a.cantidad - a.salidas + a.entradas
@@ -1237,7 +1264,7 @@ export class IngresosComponent {
             this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver es: ' + cantidadDisponible })
             a.cantidadDevolver = cantidadDisponible
         }
-        if(a.cantidadDevolver < 0){
+        if (a.cantidadDevolver < 0) {
             a.cantidadDevolver = 0
         }
     }
@@ -1248,8 +1275,23 @@ export class IngresosComponent {
             this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver (UF) es: ' + cantidadUFDisponible })
             a.cantidadDevolverUnidadFundamental = cantidadUFDisponible
         }
-        if(a.cantidadDevolverUnidadFundamental < 0){
+        if (a.cantidadDevolverUnidadFundamental < 0) {
             a.cantidadDevolverUnidadFundamental = 0
         }
+
+        this.devolucion.total_unidades = this.totalesArticulosDevolucion()
+    }
+
+    fechaFiltro(dias:number){
+        this.fechaFiltroDesde = this.fechaHoy(dias)
+        this.fechaFiltroHasta = this.fechaHoy()
+    }
+    clienteFiltro() {
+        this.clientesFiltrados = this.clientesTodos.filter((cliente: Cliente) => { return cliente.razon_social.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) || cliente.alias.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) })
+    }
+
+    filtrar(){
+        this.actualizarDatosTabla()
+        this.visible_filtros = false
     }
 }

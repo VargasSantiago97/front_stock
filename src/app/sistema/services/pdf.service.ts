@@ -24,4 +24,14 @@ export class PdfService {
 
         return this.http.get(`${this.PDF_URI}/pdf/ingresos/${id}/${cantidad_copias}`, { headers, responseType: 'blob' })
     }
+    
+    devolucion(id: string, cantidad_copias: number): Observable<Blob> {
+        let token = sessionStorage.getItem('stock_token');
+
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+
+        return this.http.get(`${this.PDF_URI}/pdf/devoluciones/${id}/${cantidad_copias}`, { headers, responseType: 'blob' })
+    }
 }

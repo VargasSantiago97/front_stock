@@ -25,9 +25,11 @@ export const routes: Routes = [
 
             { path: 'ingresos', component: IngresosComponent, canActivate: [AuthGuard] },
             { path: 'ingresos/:id_cliente', component: IngresosComponent, canActivate: [AuthGuard] },
+            { path: 'ingresos/nuevo/:id_cliente', component: IngresosComponent, canActivate: [AuthGuard] },
 
             { path: 'egresos', component: EgresosComponent, canActivate: [AuthGuard] },
             { path: 'egresos/:id_cliente', component: EgresosComponent, canActivate: [AuthGuard] },
+            { path: 'egresos/nuevo/:id_cliente', component: EgresosComponent, canActivate: [AuthGuard] },
 
             { path: 'stock', component: StockComponent, canActivate: [AuthGuard] },
             { path: 'stock/:id_cliente', component: StockComponent, canActivate: [AuthGuard] },

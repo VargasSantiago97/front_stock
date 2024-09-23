@@ -65,10 +65,16 @@
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1" title="VER STOCK"
                             (click)="navigate('stock/' + cliente.id)"><i class="pi pi-box"></i></button>
                         <button type="button" class="btn btn-sm btn-success m-0 mx-1 p-0 px-1 pt-1"
-                            title="NUEVO INGRESO DE MERCADERIA" (click)="navigate('ingresos/' + cliente.id)"><i
+                            title="VER INGRESOS DE MERCADERIA" (click)="navigate('ingresos/' + cliente.id)"><i
+                                class="pi pi-download"></i></button>
+                        <button type="button" class="btn btn-sm btn-success m-0 mx-1 p-0 px-1 pt-1"
+                            title="NUEVO INGRESO DE MERCADERIA" (click)="navigate('ingresos/nuevo/' + cliente.id)"><i
                                 class="pi pi-plus-circle"></i></button>
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1"
-                            title="NUEVO REMITO DE SALIDA" (click)="navigate('egresos/' + cliente.id)"><i
+                            title="VER REMITOS DE SALIDA" (click)="navigate('egresos/' + cliente.id)"><i
+                                class="pi pi-upload"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1"
+                            title="NUEVO REMITO DE SALIDA" (click)="navigate('egresos/nuevo/' + cliente.id)"><i
                                 class="pi pi-minus-circle"></i></button>
                     </td>
                 </tr>

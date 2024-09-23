@@ -26,6 +26,15 @@ export class ConsultasService {
 
         return this.http.get(`${this.API_URI}/${tabla}`, { headers })
     }
+    private api_getAllPost(tabla: string, datos: any) {
+        let token = sessionStorage.getItem('stock_token');
+
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+
+        return this.http.post(`${this.API_URI}/${tabla}`, datos, { headers })
+    }
     private api_create(tabla: string, datos: any) {
         let token = sessionStorage.getItem('stock_token');
 
@@ -65,6 +74,26 @@ export class ConsultasService {
     public getAll(tabla: string, fn_ok: any, fn_error: any = null) {
 
         this.api_getAll(tabla).subscribe(
+            (res: any) => {
+                if (res.mensaje) {
+                    fn_ok(res.mensaje)
+                } else {
+                    this.ms.add({ severity: 'error', summary: 'Error!', detail: 'El servidor envio respuesta incorrecta' })
+                }
+            },
+            (err: any) => {
+                if (fn_error) {
+                    fn_error(err)
+                } else {
+                    this.ms.add({ severity: 'error', summary: 'Error!', detail: err.message })
+                    console.error(err)
+                }
+            }
+        )
+    }
+    public getAllPost(tabla: string, datos:any, fn_ok: any, fn_error: any = null) {
+
+        this.api_getAllPost(tabla, datos).subscribe(
             (res: any) => {
                 if (res.mensaje) {
                     fn_ok(res.mensaje)
