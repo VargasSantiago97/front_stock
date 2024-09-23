@@ -17,7 +17,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { Deposito, UnidadMedida } from '../../interfaces/variables';
-import { ArticuloAsociado, Remito } from '../../interfaces/remitos';
+import { ArticuloAsociado, Remito, RemitoDevolucion } from '../../interfaces/remitos';
 import { TagModule } from 'primeng/tag';
 import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { PdfService } from '../../services/pdf.service';
@@ -107,7 +107,7 @@ export class IngresosComponent {
         updatedAt: ''
     }
     ingresos: Remito[] = []
-    devolucion: Remito = {
+    devolucion: RemitoDevolucion = {
         id: '',
         fecha: '',
         numero: 0,
@@ -149,9 +149,12 @@ export class IngresosComponent {
         createdBy: '',
         updatedBy: '',
         createdAt: '',
-        updatedAt: ''
+        updatedAt: '',
+        id_asociado: ''
     }
-    devoluciones: Remito[] = []
+    devoluciones: RemitoDevolucion[] = []
+
+    dataTabla: any = []
 
     clientes: Cliente[] = []
     clientesFiltrados: Cliente[] = []
@@ -264,8 +267,29 @@ export class IngresosComponent {
             console.error('Error al obtener el PDF', error);
         });
     }
-
     descargarIngreso(id: string) {
+        this.pdf.ingreso(id, 1).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `remito_${id}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+    verDevolucion(id: string) {
+        this.pdf.ingreso(id, 3).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+    descargarDevolucion(id: string) {
         this.pdf.ingreso(id, 1).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -284,20 +308,27 @@ export class IngresosComponent {
     }
 
     actualizarDatosTabla() {
-        this.cs.getAll('ingresos', (data: Remito[]) => { this.ingresos = data })
+        this.dataTabla = []
+        this.cs.getAll('ingresos', (dataIngresos: Remito[]) => {
+            this.cs.getAll('devoluciones', (dataDevoluciones: RemitoDevolucion[]) => {
+                dataIngresos.forEach((ing:Remito) => this.dataTabla.push({ ...ing, tipo:'INGRESO' }))
+                dataDevoluciones.forEach((dev:Remito) => this.dataTabla.push({ ...dev, tipo:'DEVOLUCION' }))
+            })
+        })
     }
 
 
     mostrarModalIngreso(id: any = undefined) {
         this.pestActiva = 'cliente'
         if (id) {
+            this.articulosIngreso = []
+
             this.cs.getAll('ingresos/' + id, (dato: Remito) => {
                 this.ingreso = dato
             })
 
             this.cs.getAll('articulosAsociados/buscar/' + id, (datos: ArticuloAsociado[]) => {
                 this.articulosIngreso = datos
-                console.log(datos)
             })
         } else {
             this.ingreso = {
@@ -408,69 +439,92 @@ export class IngresosComponent {
     }
 
 
-    mostrarModalDevolucion(id: any = undefined) {
+    mostrarModalDevolucion({ id_ingreso = '', id_devolucion = '' } = {}) {
         this.pestActiva = 'cliente'
-        if (id) {
-            this.cs.getAll('ingresos/' + id, (dato: Remito) => {
+        if (id_ingreso) {
+            this.cs.getAll('ingresos/' + id_ingreso, (dato: Remito) => {
                 this.devolucion = {
                     ...dato,
-                    id: ''
+                    id: '',
+                    id_asociado: id_ingreso,
+                    fecha: this.fechaHoy(),
+                    numero: 0,
+                    total_unidades: '',
+                    observaciones_sistema: '',
+                    observaciones: '',
+                    datos: { documentos: [] }
                 }
 
-                this.cs.getAll('articulosAsociados/devolucion/' + id, (datos: any) => {
-                    this.articulosDevolucion = datos
+                this.id_cliente = dato.id_cliente
 
-                    console.log(this.articulosDevolucion)
+                this.cs.getAll('articulosAsociados/devolucion/' + id_ingreso, (datos: any) => {
+                    this.articulosDevolucion = datos
                 })
             })
-        } else {
-            this.devolucion = {
-                id: '',
-                numero: 0,
-                punto: this.puntosVenta[0].punto,
-                datos: { documentos: [] },
-                fecha: this.fechaHoy(),
-                modelo: this.modelosRemitos[0].alias,
-                id_cliente: '',
-                codigo: '',
-                razon_social: '',
-                cuit: 0,
-                alias: '',
-                direccion: '',
-                localidad: '',
-                provincia: '',
-                codigo_postal: '',
-                telefono: '',
-                correo: '',
-                id_autorizado: '',
-                autorizado_descripcion: '',
-                autorizado_documento: '',
-                autorizado_contacto: '',
-                id_transporte: '',
-                transporte_transporte: '',
-                transporte_cuit_transporte: 0,
-                transporte_chofer: '',
-                transporte_cuit_chofer: 0,
-                transporte_patente_chasis: '',
-                transporte_patente_acoplado: '',
-                id_establecimiento: '',
-                establecimiento_descripcion: '',
-                establecimiento_localidad: '',
-                establecimiento_provincia: '',
-                observaciones: '',
-                observaciones_sistema: '',
-                total_unidades: '',
-                estado: 1,
-                createdBy: '',
-                updatedBy: '',
-                createdAt: '',
-                updatedAt: ''
-            }
+        } else if (id_devolucion) {
+            //BUSCAMOS Y MOSTRAMOS LA DEVOLUCION
+            this.articulosDevolucion = []
 
-            this.articulosIngreso = []
+            this.cs.getAll('devoluciones/' + id_devolucion, (dato: RemitoDevolucion) => {
+                this.devolucion = dato
+            })
+
+            this.cs.getAll('articulosAsociados/buscar/' + id_devolucion, (datos: ArticuloAsociado[]) => {
+                this.articulosDevolucion = datos
+            })
+        } else {
+            //creamos nueva devolucion, para esto habria que seleccionar el cliente y el ingreso a devolver
         }
         this.visible_devolucion = true
-        this.id_cliente = ''
+
+    }
+    guardarDevolucion(tipo: 'D' | 'M' | null = null) {
+        var cantidadRegistros = this.articulosDevolucion.filter((artDev) => artDev.cantidadDevolver).length
+
+        if (!cantidadRegistros) {
+            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar cantidad a al menos un articulo' })
+        }
+
+        this.cs.getAll('devoluciones/buscar/ultimo/' + this.devolucion.punto, (ultNum: number) => {
+            this.devolucion.numero = ultNum + 1
+
+            this.cs.create('devoluciones', this.devolucion, (id_devolucion_creado: any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Devolucion creada con ID: ' + id_devolucion_creado })
+                this.devolucion.id = id_devolucion_creado
+
+                var artDevs = this.articulosDevolucion.filter((artDev) => artDev.cantidadDevolver).map((artDev: any) => {
+                    const { id, ...resto } = artDev;
+
+                    return {
+                        ...resto,
+                        cantidad: artDev.cantidadDevolver,
+                        cantidadUnidadFundamental: artDev.cantidadDevolverUnidadFundamental,
+                        id_documento: id_devolucion_creado,
+                        id_original: id,
+                        ajuste: 'negativo',
+                        documento: 'ingreso_devolucion'
+                    }
+                })
+
+                this.cs.createMultiple('articulosAsociados', artDevs, (mensaje: any) => {
+                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
+                    this.actualizarDatosTabla()
+
+                    if (tipo == 'D') {
+                        this.descargarDevolucion(id_devolucion_creado)
+                        this.visible_devolucion = false
+                    }
+                    if (tipo == 'M') {
+                        this.verDevolucion(id_devolucion_creado)
+                        this.visible_devolucion = false
+                    }
+                })
+
+            })
+
+        }, (err: any) => {
+            this.ms.add({ severity: 'error', summary: 'Error obteniendo numero de devolucion', detail: err.message })
+        })
     }
 
     buscarClientePorId(id: string) {
@@ -529,6 +583,21 @@ export class IngresosComponent {
             this.ingreso.autorizado_descripcion = autorizado?.descripcion
             this.ingreso.autorizado_documento = autorizado?.documento
             this.ingreso.autorizado_contacto = autorizado?.contacto
+
+            this.devolucion.id_autorizado = autorizado?.id
+            this.devolucion.autorizado_descripcion = autorizado?.descripcion
+            this.devolucion.autorizado_documento = autorizado?.documento
+            this.devolucion.autorizado_contacto = autorizado?.contacto
+        } else {
+            this.ingreso.id_autorizado = ''
+            this.ingreso.autorizado_descripcion = ''
+            this.ingreso.autorizado_documento = ''
+            this.ingreso.autorizado_contacto = ''
+
+            this.devolucion.id_autorizado = ''
+            this.devolucion.autorizado_descripcion = ''
+            this.devolucion.autorizado_documento = ''
+            this.devolucion.autorizado_contacto = ''
         }
 
         this.visible_autorizado = false
@@ -546,6 +615,30 @@ export class IngresosComponent {
             this.ingreso.transporte_cuit_chofer = transporte?.cuit_chofer
             this.ingreso.transporte_patente_chasis = transporte?.patente_chasis
             this.ingreso.transporte_patente_acoplado = transporte?.patente_acoplado
+
+            this.devolucion.id_transporte = transporte?.id
+            this.devolucion.transporte_transporte = transporte?.transporte
+            this.devolucion.transporte_cuit_transporte = transporte?.cuit_transporte
+            this.devolucion.transporte_chofer = transporte?.chofer
+            this.devolucion.transporte_cuit_chofer = transporte?.cuit_chofer
+            this.devolucion.transporte_patente_chasis = transporte?.patente_chasis
+            this.devolucion.transporte_patente_acoplado = transporte?.patente_acoplado
+        } else {
+            this.ingreso.id_transporte = ''
+            this.ingreso.transporte_transporte = ''
+            this.ingreso.transporte_cuit_transporte = 0
+            this.ingreso.transporte_chofer = ''
+            this.ingreso.transporte_cuit_chofer = 0
+            this.ingreso.transporte_patente_chasis = ''
+            this.ingreso.transporte_patente_acoplado = ''
+
+            this.devolucion.id_transporte = ''
+            this.devolucion.transporte_transporte = ''
+            this.devolucion.transporte_cuit_transporte = 0
+            this.devolucion.transporte_chofer = ''
+            this.devolucion.transporte_cuit_chofer = 0
+            this.devolucion.transporte_patente_chasis = ''
+            this.devolucion.transporte_patente_acoplado = ''
         }
 
 
@@ -561,6 +654,21 @@ export class IngresosComponent {
             this.ingreso.establecimiento_descripcion = establecimiento?.descripcion
             this.ingreso.establecimiento_localidad = establecimiento?.localidad
             this.ingreso.establecimiento_provincia = establecimiento?.provincia
+
+            this.devolucion.id_establecimiento = establecimiento?.id
+            this.devolucion.establecimiento_descripcion = establecimiento?.descripcion
+            this.devolucion.establecimiento_localidad = establecimiento?.localidad
+            this.devolucion.establecimiento_provincia = establecimiento?.provincia
+        } else {
+            this.ingreso.id_establecimiento = ''
+            this.ingreso.establecimiento_descripcion = ''
+            this.ingreso.establecimiento_localidad = ''
+            this.ingreso.establecimiento_provincia = ''
+
+            this.devolucion.id_establecimiento = ''
+            this.devolucion.establecimiento_descripcion = ''
+            this.devolucion.establecimiento_localidad = ''
+            this.devolucion.establecimiento_provincia = ''
         }
 
         this.visible_establecimiento = false
@@ -983,11 +1091,47 @@ export class IngresosComponent {
             numero: 1,
             fecha: this.fechaHoy()
         })
+
+        let ultimoIdDev = this.devolucion.datos.documentos?.reduce((max: number, curr: any) => {
+            return curr.id > max ? curr.id : max
+        }, 0)
+
+        this.devolucion.datos.documentos?.push({
+            id: ultimoIdDev ? ultimoIdDev + 1 : 1,
+            tipo: 'remito',
+            letra: 'R',
+            punto: 1,
+            numero: 1,
+            fecha: this.fechaHoy()
+        })
     }
     eliminarDocumento(id: any) {
         if (this.ingreso.datos.documentos?.length) {
             this.ingreso.datos.documentos = this.ingreso.datos.documentos.filter((e: any) => e.id != id)
         }
+        if (this.devolucion.datos.documentos?.length) {
+            this.devolucion.datos.documentos = this.devolucion.datos.documentos.filter((e: any) => e.id != id)
+        }
+    }
+
+    //DEVOLUCIONES
+    seleccionarDevolverTodo(art: any = null) {
+        if (art) {
+            var cantidadDisponible = art.cantidad - art.salidas + art.entradas
+            art.cantidadDevolver = cantidadDisponible
+
+            var cantidadUFDisponible = art.cantidadUnidadFundamental - art.salidas_uf + art.entradas_uf
+            art.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+        } else {
+            this.articulosDevolucion.forEach((art: any) => {
+                var cantidadDisponible = art.cantidad - art.salidas + art.entradas
+                art.cantidadDevolver = cantidadDisponible
+
+                var cantidadUFDisponible = art.cantidadUnidadFundamental - art.salidas_uf + art.entradas_uf
+                art.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+            })
+        }
+
     }
 
     //HELPERS
@@ -1049,10 +1193,63 @@ export class IngresosComponent {
 
         return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
     }
+    totalesArticulosDevolucion(): string {
+        //var cantidad = 0
+        //var kilos = 0
+        //var litros = 0
+        //var unidades = 0
+
+        //this.articulosIngreso.map((item: ArticuloAsociado) => {
+
+        //    cantidad += item.cantidad
+
+        //    if (item.unidadFundamental == 'kilos') {
+        //        kilos += item.cantidadUnidadFundamental
+        //    } else if (item.unidadFundamental == 'litros') {
+        //        litros += item.cantidadUnidadFundamental
+        //    } else if (item.unidadFundamental == 'unidades') {
+        //        unidades += item.cantidadUnidadFundamental
+        //    }
+
+        //});
+
+        //return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
+        return ``
+    }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
         art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
 
         this.ingreso.total_unidades = this.totalesArticulosIngreso()
+    }
+    calcularUnidadFundamentalDevolucion(art: any) {
+        art.cantidadDevolverUnidadFundamental = Math.round(art.cantidadDevolver * art.cantidadPorUnidadFundamental * 100) / 100
+
+        this.verificarMax(art)
+        this.verificarMaxUF(art)
+
+        this.devolucion.total_unidades = this.totalesArticulosDevolucion()
+    }
+    verificarMax(a: any) {
+        var cantidadDisponible = a.cantidad - a.salidas + a.entradas
+
+        if (a.cantidadDevolver > cantidadDisponible) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver es: ' + cantidadDisponible })
+            a.cantidadDevolver = cantidadDisponible
+        }
+        if(a.cantidadDevolver < 0){
+            a.cantidadDevolver = 0
+        }
+    }
+    verificarMaxUF(a: any) {
+        var cantidadUFDisponible = a.cantidadUnidadFundamental - a.salidas_uf + a.entradas_uf
+
+        if (a.cantidadDevolverUnidadFundamental > cantidadUFDisponible) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver (UF) es: ' + cantidadUFDisponible })
+            a.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+        }
+        if(a.cantidadDevolverUnidadFundamental < 0){
+            a.cantidadDevolverUnidadFundamental = 0
+        }
     }
 }

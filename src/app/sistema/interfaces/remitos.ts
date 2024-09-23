@@ -96,3 +96,7 @@ export interface Remito {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface RemitoDevolucion extends Remito {
+    id_asociado: string;
+}
