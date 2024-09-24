@@ -24,6 +24,7 @@ import { PdfService } from '../../services/pdf.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ActivatedRoute } from '@angular/router';
 import { ListboxModule } from 'primeng/listbox';
+import { XlsxService } from '../../services/xlsx.service';
 
 declare var vars: any;
 
@@ -236,12 +237,16 @@ export class IngresosComponent {
     fechaFiltroDesde: string = this.fechaHoy(31)
     fechaFiltroHasta: string = this.fechaHoy()
 
+    fechasFiltradas: string = ''
+    clienteFiltrados: string = ''
+
     constructor(
         private padron: PadronService,
         private ms: MessageService,
         private cs: ConsultasService,
         private pdf: PdfService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private xlsx: XlsxService
     ) { }
 
     ngOnInit() {
@@ -249,20 +254,24 @@ export class IngresosComponent {
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
         this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
         this.cs.getAll('subRubros', (data: SubRubro[]) => { this.subRubros = data })
-        this.cs.getAll('clientes', (data: Cliente[]) => { this.clientesTodos = data, this.clientesFiltrados = data })
 
-        const esNuevo = this.route.snapshot.url.some(segment => segment.path === 'nuevo');
+        this.cs.getAll('clientes', (data: Cliente[]) => {
+            this.clientesTodos = data
+            this.clientesFiltrados = data 
 
-        this.route.paramMap.subscribe(params => {
-            var id_cliente = params.get('id_cliente');
-            if (id_cliente && esNuevo) {
-                this.mostrarModalIngreso()
-                this.buscarClientePorId(id_cliente)
-            } else if(id_cliente) {
-                this.selectedClientes = [id_cliente]
-            }
-            this.actualizarDatosTabla()
-        });
+            const esNuevo = this.route.snapshot.url.some(segment => segment.path === 'nuevo');
+
+            this.route.paramMap.subscribe(params => {
+                var id_cliente = params.get('id_cliente');
+                if (id_cliente && esNuevo) {
+                    this.mostrarModalIngreso()
+                    this.buscarClientePorId(id_cliente)
+                } else if (id_cliente) {
+                    this.selectedClientes = [id_cliente]
+                }
+                this.filtrar()
+            });
+        })
     }
 
 
@@ -326,7 +335,7 @@ export class IngresosComponent {
     actualizarDatosTabla() {
         this.dataTabla = []
 
-        this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, {clientes: this.selectedClientes}, (e:any) => {
+        this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
             this.dataTabla = e
         })
 
@@ -546,7 +555,7 @@ export class IngresosComponent {
         })
     }
 
-    mostrarModalFiltro(){
+    mostrarModalFiltro() {
         this.visible_filtros = true
     }
 
@@ -1174,10 +1183,10 @@ export class IngresosComponent {
     //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
     //}
 
-    fechaHoy(dias:number = 0) {
+    fechaHoy(dias: number = 0) {
         const fechaActual = new Date();
 
-        if(dias){
+        if (dias) {
             fechaActual.setDate(fechaActual.getDate() - dias)
         }
 
@@ -1282,7 +1291,7 @@ export class IngresosComponent {
         this.devolucion.total_unidades = this.totalesArticulosDevolucion()
     }
 
-    fechaFiltro(dias:number){
+    fechaFiltro(dias: number) {
         this.fechaFiltroDesde = this.fechaHoy(dias)
         this.fechaFiltroHasta = this.fechaHoy()
     }
@@ -1290,8 +1299,34 @@ export class IngresosComponent {
         this.clientesFiltrados = this.clientesTodos.filter((cliente: Cliente) => { return cliente.razon_social.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) || cliente.alias.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) })
     }
 
-    filtrar(){
+    filtrar() {
         this.actualizarDatosTabla()
         this.visible_filtros = false
+
+        this.fechasFiltradas = this.fechaFiltroDesde
+        if (this.fechaFiltroDesde != this.fechaFiltroHasta) {
+            this.fechasFiltradas = `Desde ${this.fechaFiltroDesde} hasta ${this.fechaFiltroHasta}`
+        }
+
+        this.clienteFiltrados = '[TODOS]'
+        if (this.selectedClientes.length) {
+            if (this.selectedClientes.length != this.clientesTodos.length) {
+                var clientesSeleccionados: any = []
+                this.selectedClientes.forEach((client: string) => {
+                    var cliente = this.clientesTodos.find((e: Cliente) => e.id == client)!
+                    clientesSeleccionados.push(cliente.razon_social)
+                })
+                this.clienteFiltrados = clientesSeleccionados.join('; ')
+            }
+        }
+    }
+
+
+    //INFORMES
+    listadoXLSX() {
+        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
+    }
+    detalleXLSX() {
+        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
     }
 }

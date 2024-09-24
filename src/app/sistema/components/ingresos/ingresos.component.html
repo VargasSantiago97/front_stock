@@ -4,10 +4,18 @@
             <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()">NUEVO REMITO DE
                 INGRESO</button>
             <button type="button" class="btn btn-success m-2" (click)="mostrarModalFiltro()">FILTROS</button>
+            <button type="button" class="btn btn-success m-2" (click)="listadoXLSX()"><i
+                    class="pi pi-file-excel me-2"></i>LISTADO</button>
+            <button type="button" class="btn btn-success m-2" (click)="detalleXLSX()"><i
+                    class="pi pi-file-excel me-2"></i>REPORTE</button>
             <!--button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
                 MERCADERIA</button-->
         </div>
     </div>
+
+    <p>
+        Mostrando {{dataTabla.length}} registros. Fecha: <strong>{{fechasFiltradas}}</strong>. Clientes: <strong>{{clienteFiltrados}}</strong>
+    </p>
 
 
     <div class="table-responsive">
@@ -1198,15 +1206,16 @@
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
 
     <div class="row py-2">
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-xl-6">
             <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '5px 0px'}">
                 <b>Selecciona uno o varios clientes:</b> (Todos: CTRL + A)
             </p-divider>
-        
+
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="Alias / Razon Social" aria-label="Alias / Razon Social"
-                    aria-describedby="basic-addon1" [(ngModel)]="searchValue_cliente" (change)="clienteFiltro()" (keyup)="clienteFiltro()">
+                <input type="text" class="form-control" placeholder="Alias / Razon Social"
+                    aria-label="Alias / Razon Social" aria-describedby="basic-addon1" [(ngModel)]="searchValue_cliente"
+                    (change)="clienteFiltro()" (keyup)="clienteFiltro()">
             </div>
             <div class="form-group">
                 <select id="clientes" class="form-control" multiple [(ngModel)]="selectedClientes"
@@ -1217,7 +1226,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-xl-6">
             <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '5px 0px'}">
                 <b>Fecha:</b>
             </p-divider>
@@ -1226,21 +1235,24 @@
                 <div class="col text-center">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(0)">HOY</button>
-                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(7)">ULTIMA SEMANA</button>
-                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(31)">ULTIMO MES</button>
-                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(365)">ULTIMO AÑO</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(7)">ULTIMA
+                            SEMANA</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(31)">ULTIMO
+                            MES</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(365)">ULTIMO
+                            AÑO</button>
                     </div>
                 </div>
             </div>
             <div class="row my-5">
-                <div class="col">
+                <div class="col mb-2">
                     <div class="input-group">
                         <span class="input-group-text" id="basic-addon1">DESDE</span>
                         <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
                             aria-describedby="basic-addon1" [(ngModel)]="fechaFiltroDesde">
                     </div>
                 </div>
-                <div class="col">
+                <div class="col mb-2">
                     <div class="input-group">
                         <span class="input-group-text" id="basic-addon1">HASTA</span>
                         <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
