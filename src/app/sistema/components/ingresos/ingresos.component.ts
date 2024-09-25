@@ -25,6 +25,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ActivatedRoute } from '@angular/router';
 import { ListboxModule } from 'primeng/listbox';
 import { XlsxService } from '../../services/xlsx.service';
+import { AuthService } from '../../../login/services/auth.service';
 
 declare var vars: any;
 
@@ -244,6 +245,7 @@ export class IngresosComponent {
         private padron: PadronService,
         private ms: MessageService,
         private cs: ConsultasService,
+        private as: AuthService,
         private pdf: PdfService,
         private route: ActivatedRoute,
         private xlsx: XlsxService
@@ -1327,6 +1329,10 @@ export class IngresosComponent {
         this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
     }
     detalleXLSX() {
-        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
+        var user = this.as.isUser()
+        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion });
+    }
+    datosXLSX() {
+        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
     }
 }
