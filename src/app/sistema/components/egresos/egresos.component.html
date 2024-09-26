@@ -1,1 +1,1339 @@
-<p>egresos works!</p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col text-center">
+            <h4 class="bg-success text-white" style="border-radius: 6px;">EGRESOS</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-5">
+            <button type="button" class="btn btn-success m-2" (click)="mostrarModalIngreso()"><i
+                    class="pi pi-plus me-2"></i> NUEVO REMITO</button>
+            <button type="button" class="btn btn-success m-2" (click)="mostrarModalFiltro()">FILTROS</button>
+        </div>
+        <div class="col-12 col-md-7 text-md-end">
+            <button type="button" class="btn btn-success m-2" (click)="listadoXLSX()"><i
+                    class="pi pi-file-excel me-2"></i>LISTADO</button>
+            <button type="button" class="btn btn-success m-2" (click)="detalleXLSX()"><i
+                    class="pi pi-file-excel me-2"></i>REPORTE</button>
+            <button type="button" class="btn btn-success m-2" (click)="datosXLSX()"><i
+                    class="pi pi-file-excel me-2"></i>DATOS</button>
+            <!--button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
+                MERCADERIA</button-->
+        </div>
+    </div>
+
+    <p>
+        Mostrando {{dataTabla.length}} registros. Fecha: <strong>{{fechasFiltradas}}</strong>. Clientes:
+        <strong>{{clienteFiltrados}}</strong>
+    </p>
+
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col" (click)="ordenarTabla('tipo')">TIPO
+                        @if (ordenarTablaPor == 'tipo') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('numeroMostrar')">NUMERO
+                        @if (ordenarTablaPor == 'numeroMostrar') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('fecha')">FECHA
+                        @if (ordenarTablaPor == 'fecha') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('alias')">CLIENTE
+                        @if (ordenarTablaPor == 'alias') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('cuit')">CUIT
+                        @if (ordenarTablaPor == 'cuit') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('autorizado_descripcion')">AUTORIZADO
+                        @if (ordenarTablaPor == 'autorizado_descripcion') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('transporte_transporte')">TRANSPORTE
+                        @if (ordenarTablaPor == 'transporte_transporte') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('establecimiento_descripcion')">EST/ORIGEN
+                        @if (ordenarTablaPor == 'establecimiento_descripcion') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('observaciones_sistema')">OBSERVACIONES
+                        @if (ordenarTablaPor == 'observaciones_sistema') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col">#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (registro of dataTabla; track $index) {
+                <tr
+                    (dblclick)="registro.tipo == 'INGRESO' ? mostrarModalIngreso(registro.id) : mostrarModalDevolucion({id_devolucion: registro.id})">
+                    <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
+                            [severity]="registro.tipo == 'INGRESO' ? 'success' : 'danger'" /></th>
+                    <th class="text-nowrap" scope="row">{{registro.numeroMostrar}}</th>
+                    <td class="text-nowrap">{{registro.fecha}}</td>
+                    <td class="text-nowrap">{{registro.alias}}</td>
+                    <td class="text-nowrap">{{registro.cuit}}</td>
+                    <td class="text-nowrap">{{registro.autorizado_descripcion}}</td>
+                    <td class="text-nowrap">{{registro.transporte_transporte}}</td>
+                    <td class="text-nowrap">{{registro.establecimiento_descripcion}}</td>
+                    <td class="text-nowrap">{{registro.observaciones_sistema}}</td>
+                    @if (registro.tipo == 'INGRESO') {
+                    <td class="text-nowrap"><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="mostrarModalIngreso(registro.id)" title="Ver Ingreso"><i
+                                class="pi pi-bars"></i></button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verIngreso(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarIngreso(registro.id)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR"
+                            (click)="mostrarModalDevolucion({id_ingreso: registro.id})"><i
+                                class="pi pi-ban"></i></button>
+                    </td>
+                    } @else {
+                    <td class="text-nowrap"><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="mostrarModalDevolucion({id_devolucion: registro.id})" title="Ver Devolucion"><i
+                                class="pi pi-bars"></i></button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verDevolucion(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarDevolucion(registro.id)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<p-dialog header="{{ingreso.id ? 'VER INGRESO' : 'NUEVO INGRESO DE MERCADERIA'}}" [modal]="true"
+    [(visible)]="visible_ingreso" [style]="{ width: '85rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [maximizable]="true" [closeOnEscape]="ingreso.id != ''">
+
+    <!-- HEADERS -->
+    <div class="row py-2" style="background-color: rgba(176, 245, 187, 0.555); border-radius: 6px;">
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Modelo</span>
+
+                <select class="input-group-text" [(ngModel)]="ingreso.modelo" [disabled]="ingreso.id != ''">
+                    @for (modRem of modelosRemitos; track $index) {
+                    <option value={{modRem.alias}}>{{modRem.descripcion}}</option>
+                    }
+                </select>
+
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
+                <select class="input-group-text" [(ngModel)]="ingreso.punto" style="width: 50%;"
+                    [disabled]="ingreso.id != ''">
+                    @for (ptoVta of puntosVenta; track $index) {
+                    <option value={{ptoVta.punto}}>{{ptoVta.descripcion}}</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">N°</span>
+                <input type="number" class="form-control" placeholder="Numero" aria-label="Numero"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.numero" disabled="">
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">FECHA</span>
+                <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha" [disabled]="ingreso.id != ''">
+            </div>
+        </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <ul class="nav nav-tabs my-2">
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'cliente' ? 'active' : ''}}" href=""
+                (click)="pestana('cliente', $event)">CLIENTE</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'documentos' ? 'active' : ''}}" href=""
+                (click)="pestana('documentos', $event)">DOCUMENTOS</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'observaciones' ? 'active' : ''}}" href=""
+                (click)="pestana('observaciones', $event)">OBSERVACIONES</a>
+        </li>
+    </ul>
+
+
+    @if(pestActiva == 'cliente'){
+    <div style="min-height: 180px;">
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1" style="width: 15%;">Cód.</span>
+                    @if(!ingreso.id_cliente){
+                    <input type="text" class="form-control" placeholder="Código" aria-label="Código"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.codigo"
+                        (keyup.enter)="buscarClientePorCodigo()">
+                    } @else {
+                    <span class="input-group-text" id="basic-addon1" style="width: 84%;">{{ingreso.codigo}}</span>
+                    }
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Razon Social</span>
+                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.razon_social" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarAutorizados(true)">
+                    <b>Autorizado</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
+                        aria-label="Descripcion" aria-describedby="basic-addon1"
+                        [(ngModel)]="ingreso.autorizado_descripcion" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">N° Doc</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Documento" aria-label="Documento"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_documento" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Contacto</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Contacto" aria-label="Contacto"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_contacto" disabled>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarTransportes(true)">
+                    <b>Transporte</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Transp</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Transporte"
+                        aria-label="Transporte" aria-describedby="basic-addon1"
+                        [(ngModel)]="ingreso.transporte_transporte" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Chofer</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chofer" aria-label="Chofer"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_chofer" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Patentes</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chasis" aria-label="Chasis"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_chasis" disabled>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Acoplado" aria-label="Acoplado"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_acoplado" disabled>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarEstablecimientos(true)">
+                    <b>Origen</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
+                        aria-label="Descripcion" aria-describedby="basic-addon1"
+                        [(ngModel)]="ingreso.establecimiento_descripcion" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Loc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Localidad" aria-label="Localidad"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_localidad" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Prov.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Provincia" aria-label="Provincia"
+                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if(pestActiva == 'documentos'){
+    <div style="min-height: 180px;">
+        @for (doc of ingreso.datos.documentos; track $index) {
+        <div class="row mb-2">
+            <div class="col-3">
+                <div class="input-group">
+                    <select class="input-group-text" [(ngModel)]="doc.tipo" [disabled]="ingreso.id != ''">
+                        <option value=remito>REMITO</option>
+                        <option value=factura>FACTURA</option>
+                        <option value=ticket_balanza>TICKET BALANZA</option>
+                        <option value=otros>OTROS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <select class="input-group-text" [(ngModel)]="doc.letra" [disabled]="ingreso.id != ''">
+                        <option value=A>A</option>
+                        <option value=B>B</option>
+                        <option value=C>C</option>
+                        <option value=R>R</option>
+                        <option value=X>X</option>
+                    </select>
+
+                    <input type="number" class="form-control m-0 p-0 px-3" placeholder="Punto" aria-label="Punto"
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto" [readonly]="ingreso.id != ''">
+
+                    <input type="number" class="form-control m-0 p-0 px-3" placeholder="Numero" aria-label="Numero"
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero" [readonly]="ingreso.id != ''">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">FECHA</span>
+                    <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha" [disabled]="ingreso.id != ''">
+                </div>
+            </div>
+            <div class="col-3">
+                @if(!ingreso.id){
+                <button type="button" class="btn btn-warning p-1 mx-3"
+                    (click)="eliminarDocumento(doc.id)">ELIMINAR</button>
+                }
+            </div>
+        </div>
+        }
+        @if(!ingreso.id){
+        <button type="button" class="btn btn-warning px-3" (click)="agregarDocumento()">Agregar</button>
+        }
+    </div>
+    }
+
+    @if(pestActiva == 'observaciones'){
+    <div style="min-height: 180px;">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Sale en
+                    Remito</p-divider>
+
+                <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones"
+                    [readonly]="ingreso.id != ''" class="p-2">
+                </textarea>
+
+                <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Total Unidades:</p-divider>
+
+                <textarea rows="1" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.total_unidades"
+                    [readonly]="ingreso.id != ''" class="p-0">
+                </textarea>
+            </div>
+            <div class="col-12 col-md-6">
+                <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Para
+                    sistema</p-divider>
+
+                <textarea rows="5" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones_sistema"
+                    [readonly]="ingreso.id != ''">
+                </textarea>
+            </div>
+        </div>
+    </div>
+    }
+
+    <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '20px 0px'}">
+        <b>Artículos</b>
+    </p-divider>
+
+    <!-- TABLA ARTICULOS -->
+    <div class="table-responsive" style="max-height: 400px;">
+        <table class="table table-striped table-hover table-sm">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col" class="text-center">Cód</th>
+                    <th scope="col" class="text-center">Descripción</th>
+                    <th scope="col" class="text-center">Cant.</th>
+                    <th scope="col" class="text-center">U.M.</th>
+                    <th scope="col" class="text-center" style="color: rgb(175, 28, 28);">Cant</th>
+                    <th scope="col" class="text-center" style="color: rgb(175, 28, 28);">U.F.</th>
+                    <th scope="col" class="text-center">Deposito</th>
+                    <th scope="col" class="text-center">Lote</th>
+                    <th scope="col" class="text-center">Vto</th>
+                    <th scope="col" class="text-center">#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (art of articulosIngreso; track $index) {
+                <tr>
+                    <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
+                        {{$index + 1}})</th>
+                    <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
+                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)"
+                            [readOnly]="art.id_articulo"></th>
+                    <td class="text-nowrap p-0" style="min-width: 500px;">{{art.descripcion ? art.descripcion : '-'}}
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
+                            [(ngModel)]="art.cantidad" (keyup)="calcularUnidadFundamental(art)"
+                            (change)="calcularUnidadFundamental(art)" [readonly]="ingreso.id != ''"></td>
+                    <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(art.id_unidadMedida) : '-'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
+                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="ingreso.id != ''"
+                            (change)="ingreso.total_unidades = totalesArticulosIngreso()"></td>
+                    <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.unidadFundamental ?
+                        art.unidadFundamental : '-'}}</td>
+                    <td class="text-nowrap p-0">
+                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="ingreso.id != ''">
+                            @for (dep of depositos; track $index) {
+                            <option value={{dep.id}}>{{dep.alias}}</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        @if (art.solicitaLote) {
+                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="ingreso.id != ''">
+                        }
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        @if (art.solicitaVencimiento) {
+                        <input class="input_tabla" type="date" [(ngModel)]="art.vencimiento"
+                            [readonly]="ingreso.id != ''">
+                        }
+                    </td>
+                    <td class="text-nowrap p-0">
+                        @if(art.id_articulo && ingreso.id == ''){
+                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
+                            (click)="eliminarArticulo(art.id)"><i class="pi pi-trash"></i></button>
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (ingreso.id == '') {
+        <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="agregarArticulos()">Agregar nuevo</button>
+        @if (permite_secuencia_lote) {
+        AGREGAR
+        <input type="number" step="1" class="input_tabla" [(ngModel)]="cantidad_secuencia_lote" style="width: 60px;">
+        ARTICULOS TOMANDO LOS ULTIMOS
+        <input type="number" step="1" class="input_tabla" [(ngModel)]="digitos_secuencia_lote" style="width: 60px;">
+        DIGITOS DEL LOTE.
+        <button type="button" class="btn btn-primary m-2 p-0 px-2" (click)="agregarArticulosSecuencia()">Agregar
+            {{cantidad_secuencia_lote}}</button>
+        }
+        }
+    </div>
+
+    @if (documentosAsociados.length) {
+    <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '20px 0px'}">
+        <b>Documentos asociados</b>
+    </p-divider>
+
+    @for (docAsoc of documentosAsociados; track $index) {
+    <div class="card mb-1 p-1">
+        <div class="row">
+            <div class="col">
+                <strong>DEVOLUCION</strong>
+            </div>
+            <div class="col">
+                <strong>{{mostrarDocumento(docAsoc.punto, docAsoc.numero)}}</strong>
+            </div>
+            <div class="col">
+                {{docAsoc.fecha}}
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                    (click)="mostrarModalDevolucion({id_devolucion: docAsoc.id})" title="Ver Devolucion"><i
+                        class="pi pi-bars"></i></button>
+                <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                    (click)="verDevolucion(docAsoc.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                    (click)="descargarDevolucion(docAsoc.id)" title="Descargar PDF"><i
+                        class="pi pi-download"></i></button>
+            </div>
+        </div>
+    </div>
+    }
+    }
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="verTotalesArticulosIngreso()">VER
+                TOTALES</button>
+            <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
+            @if (!ingreso.id) {
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('M')">GUARDAR Y
+                MOSTRAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('D')">GUARDAR Y
+                DESCARGAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR</button>
+            } @else {
+            <button type="button" class="btn btn-success m-2" (click)="verIngreso(ingreso.id)">VER PDF</button>
+            <button type="button" class="btn btn-success m-2" (click)="descargarIngreso(ingreso.id)">DESCARGAR
+                PDF</button>
+            }
+
+        </div>
+    </div>
+</p-dialog>
+
+
+<p-dialog header="{{devolucion.id ? 'VER DEVOLUCION' : 'NUEVA DEVOLUCION DE MERCADERIA'}}" [modal]="true"
+    [(visible)]="visible_devolucion" [style]="{ width: '95rem', height: '95rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true" [closeOnEscape]="devolucion.id != ''">
+
+    <!-- HEADERS -->
+    <div class="row py-2" style="background-color: rgba(255, 183, 183, 0.555); border-radius: 6px;">
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Modelo</span>
+
+                <select class="input-group-text" [(ngModel)]="devolucion.modelo" [disabled]="devolucion.id != ''">
+                    @for (modRem of modelosRemitos; track $index) {
+                    <option value={{modRem.alias}}>{{modRem.descripcion}}</option>
+                    }
+                </select>
+
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
+                <select class="input-group-text" [(ngModel)]="devolucion.punto" style="width: 50%;"
+                    [disabled]="devolucion.id != ''">
+                    @for (ptoVta of puntosVenta; track $index) {
+                    <option value={{ptoVta.punto}}>{{ptoVta.descripcion}}</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">N°</span>
+                <input type="number" class="form-control" placeholder="Numero" aria-label="Numero"
+                    aria-describedby="basic-addon1" [(ngModel)]="devolucion.numero" disabled="">
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">FECHA</span>
+                <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                    aria-describedby="basic-addon1" [(ngModel)]="devolucion.fecha" [disabled]="devolucion.id != ''">
+            </div>
+        </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <ul class="nav nav-tabs my-2">
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'cliente' ? 'active' : ''}}" href=""
+                (click)="pestana('cliente', $event)">CLIENTE</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'documentos' ? 'active' : ''}}" href=""
+                (click)="pestana('documentos', $event)">DOCUMENTOS</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link p-1 px-3 {{pestActiva == 'observaciones' ? 'active' : ''}}" href=""
+                (click)="pestana('observaciones', $event)">OBSERVACIONES</a>
+        </li>
+    </ul>
+
+
+    @if(pestActiva == 'cliente'){
+    <div style="min-height: 180px;">
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1" style="width: 15%;">Cód.</span>
+                    <span class="input-group-text" id="basic-addon1" style="width: 84%;">{{devolucion.codigo}}</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Razon Social</span>
+                    <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.razon_social" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarAutorizados(true)">
+                    <b>Autorizado</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
+                        aria-label="Descripcion" aria-describedby="basic-addon1"
+                        [(ngModel)]="devolucion.autorizado_descripcion" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">N° Doc</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Documento" aria-label="Documento"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.autorizado_documento" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Contacto</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Contacto" aria-label="Contacto"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.autorizado_contacto" disabled>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarTransportes(true)">
+                    <b>Transporte</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Transp</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Transporte"
+                        aria-label="Transporte" aria-describedby="basic-addon1"
+                        [(ngModel)]="devolucion.transporte_transporte" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Chofer</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chofer" aria-label="Chofer"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.transporte_chofer" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Patentes</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chasis" aria-label="Chasis"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.transporte_patente_chasis" disabled>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Acoplado" aria-label="Acoplado"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.transporte_patente_acoplado" disabled>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <p-divider align="center" type="solid" class="m-0 p-0" [style]="{'margin': '0px'}"
+                    (click)="buscarEstablecimientos(true)">
+                    <b>Origen</b>
+                </p-divider>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
+                        aria-label="Descripcion" aria-describedby="basic-addon1"
+                        [(ngModel)]="devolucion.establecimiento_descripcion" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Loc.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Localidad" aria-label="Localidad"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.establecimiento_localidad" disabled>
+                </div>
+                <div class="input-group m-1 p-0">
+                    <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Prov.</span>
+                    <input type="text" class="form-control m-0 p-0 px-3" placeholder="Provincia" aria-label="Provincia"
+                        aria-describedby="basic-addon1" [(ngModel)]="devolucion.establecimiento_provincia" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if(pestActiva == 'documentos'){
+    <div style="min-height: 180px;">
+        @for (doc of devolucion.datos.documentos; track $index) {
+        <div class="row mb-2">
+            <div class="col-3">
+                <div class="input-group">
+                    <select class="input-group-text" [(ngModel)]="doc.tipo" [disabled]="devolucion.id != ''">
+                        <option value=remito>REMITO</option>
+                        <option value=factura>FACTURA</option>
+                        <option value=ticket_balanza>TICKET BALANZA</option>
+                        <option value=otros>OTROS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <select class="input-group-text" [(ngModel)]="doc.letra" [disabled]="devolucion.id != ''">
+                        <option value=A>A</option>
+                        <option value=B>B</option>
+                        <option value=C>C</option>
+                        <option value=R>R</option>
+                        <option value=X>X</option>
+                    </select>
+
+                    <input type="number" class="form-control m-0 p-0 px-3" placeholder="Punto" aria-label="Punto"
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto" [readonly]="devolucion.id != ''">
+
+                    <input type="number" class="form-control m-0 p-0 px-3" placeholder="Numero" aria-label="Numero"
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero" [readonly]="devolucion.id != ''">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">FECHA</span>
+                    <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha" [disabled]="devolucion.id != ''">
+                </div>
+            </div>
+            <div class="col-3">
+                @if(!devolucion.id){
+                <button type="button" class="btn btn-warning p-1 mx-3"
+                    (click)="eliminarDocumento(doc.id)">ELIMINAR</button>
+                }
+            </div>
+        </div>
+        }
+        @if(!devolucion.id){
+        <button type="button" class="btn btn-warning px-3" (click)="agregarDocumento()">Agregar</button>
+        }
+    </div>
+    }
+
+    @if(pestActiva == 'observaciones'){
+    <div style="min-height: 180px;">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Sale en
+                    Remito</p-divider>
+
+                <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="devolucion.observaciones"
+                    [readonly]="devolucion.id != ''" class="p-2">
+                </textarea>
+
+                <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Total Unidades:</p-divider>
+
+                <textarea rows="1" pInputTextarea style="width: 100%;" [(ngModel)]="devolucion.total_unidades"
+                    [readonly]="devolucion.id != ''" class="p-0">
+                </textarea>
+            </div>
+            <div class="col-12 col-md-6">
+                <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Para
+                    sistema</p-divider>
+
+                <textarea rows="5" pInputTextarea style="width: 100%;" [(ngModel)]="devolucion.observaciones_sistema"
+                    [readonly]="devolucion.id != ''">
+                </textarea>
+            </div>
+        </div>
+    </div>
+    }
+
+    <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '20px 0px'}">
+        <b>Artículos</b>
+    </p-divider>
+
+    <!-- TABLA ARTICULOS -->
+    <div class="table-responsive" style="max-height: 400px;">
+        <table class="table table-striped table-hover table-sm">
+            @if(devolucion.id){
+            <thead>
+                <tr class="table-bordered">
+                    <th scope="col" rowspan="2" class="text-center bord">#</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Cód</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Descripción</th>
+                    <th scope="col" colspan="4" class="text-center bord">Cant. Devuelta</th>
+
+                    <th scope="col" rowspan="2" class="text-center bord">Deposito</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Lote</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Vto</th>
+                </tr>
+                <tr class="table-bordered">
+                    <th scope="col" colspan="2" class="text-center bord">Unidades</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (artDev of articulosDevolucion; track $index) {
+                <tr>
+                    <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
+                        {{$index + 1}})</th>
+                    <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
+                            [(ngModel)]="artDev.codigo" disabled></th>
+                    <td class="text-nowrap p-0" style="min-width: 500px;">{{artDev.descripcion ? artDev.descripcion :
+                        '-'}}
+                    </td>
+
+
+
+                    <!-- CANTIDAD DEVULETA -->
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.cantidad}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        {{artDev.cantidadUnidadFundamental}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
+                        artDev.unidadFundamental : '[*]'}}</td>
+
+
+
+
+
+                    <td class="text-nowrap p-0">
+                        <select class="input_tabla p-1" [(ngModel)]="artDev.id_deposito" disabled>
+                            @for (dep of depositos; track $index) {
+                            <option value={{dep.id}}>{{dep.alias}}</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.lote ?
+                        artDev.lote : '-'}}
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        @if (artDev.solicitaVencimiento) {
+                        <input class="input_tabla" type="date" [(ngModel)]="artDev.vencimiento" [readonly]="true">
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+            } @else {
+            <thead>
+                <tr class="table-bordered">
+                    <th scope="col" rowspan="2" class="text-center bord">#</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Cód</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Descripción</th>
+                    <th scope="col" colspan="4" class="text-center bord">Cant. Inic.</th>
+                    <th scope="col" colspan="4" class="text-center bord">Entradas</th>
+                    <th scope="col" colspan="4" class="text-center bord">Salidas</th>
+                    <th scope="col" colspan="4" class="text-center bord">A DEVOLVER</th>
+
+                    <th scope="col" rowspan="2" class="text-center bord">Deposito</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Lote</th>
+                    <th scope="col" rowspan="2" class="text-center bord">Vto</th>
+                    <th scope="col" rowspan="2" class="text-center bord">#</th>
+                </tr>
+                <tr class="table-bordered">
+                    <th scope="col" colspan="2" class="text-center bord">Unidades</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidades</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidades</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidades</th>
+                    <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (artDev of articulosDevolucion; track $index) {
+                <tr>
+                    <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
+                        {{$index + 1}})</th>
+                    <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
+                            [(ngModel)]="artDev.codigo" disabled></th>
+                    <td class="text-nowrap p-0" style="min-width: 500px;">{{artDev.descripcion ? artDev.descripcion :
+                        '-'}}
+                    </td>
+
+
+
+                    <!-- CANTIDAD INICIAL -->
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.cantidad}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        {{artDev.cantidadUnidadFundamental}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
+                        artDev.unidadFundamental : '[*]'}}</td>
+
+
+
+                    <!-- ENTRADAS -->
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.entradas}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        {{artDev.entradas_uf}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
+                        artDev.unidadFundamental : '[*]'}}</td>
+
+
+                    <!-- SALIDAS -->
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.salidas}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        {{artDev.salidas_uf}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
+                        artDev.unidadFundamental : '[*]'}}</td>
+
+
+                    <!-- CANTIDAD A DEVOLVER -->
+                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
+                            [(ngModel)]="artDev.cantidadDevolver" (keyup)="calcularUnidadFundamentalDevolucion(artDev)"
+                            (change)="calcularUnidadFundamentalDevolucion(artDev)" min="0"></td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
+                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
+                            [(ngModel)]="artDev.cantidadDevolverUnidadFundamental" (keyup)="verificarMaxUF(artDev)"
+                            (change)="verificarMaxUF(artDev)" min="0"></td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
+                        artDev.unidadFundamental : '[*]'}}</td>
+
+
+
+                    <td class="text-nowrap p-0">
+                        <select class="input_tabla p-1" [(ngModel)]="artDev.id_deposito" disabled>
+                            @for (dep of depositos; track $index) {
+                            <option value={{dep.id}}>{{dep.alias}}</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.lote ?
+                        artDev.lote : '-'}}
+                    </td>
+                    <td class="text-nowrap p-0" style="min-width: 80px;">
+                        @if (artDev.solicitaVencimiento) {
+                        <input class="input_tabla" type="date" [(ngModel)]="artDev.vencimiento" [readonly]="true">
+                        }
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
+                            (click)="seleccionarDevolverTodo(artDev)"><i class="pi pi-list-check"></i></button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            }
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_devolucion = false">CERRAR</button>
+            @if (!devolucion.id) {
+            <button type="button" class="btn btn-warning m-2" (click)="seleccionarDevolverTodo()">SELECCIONAR
+                TODO</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarDevolucion('M')">GUARDAR Y
+                MOSTRAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarDevolucion('D')">GUARDAR Y
+                DESCARGAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarDevolucion()">GUARDAR</button>
+            } @else {
+            <button type="button" class="btn btn-success m-2" (click)="verDevolucion(devolucion.id)">VER PDF</button>
+            <button type="button" class="btn btn-success m-2" (click)="descargarDevolucion(devolucion.id)">DESCARGAR
+                PDF</button>
+            }
+
+        </div>
+    </div>
+</p-dialog>
+
+
+
+<p-dialog header="SELECCIONAR CLIENTE" [modal]="true" [(visible)]="visible_cliente" [style]="{ width: '50rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_cliente" (keyup)="filtroCliente()"
+                [ngStyle]="{'background-color':searchValue_cliente == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (client of clientesFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarCliente(client)"><strong>{{client.alias}}</strong> - CUIT
+                    {{client.cuit}} ({{client.razon_social}})</div>
+                }
+            </div>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR AUTORIZADO" [modal]="true" [(visible)]="visible_autorizado" [style]="{ width: '30rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_autorizado" (keyup)="filtroAutorizado()"
+                [ngStyle]="{'background-color':searchValue_autorizado == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (autorizado of autorizadosFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarAutorizado(autorizado)">
+                    <strong>{{autorizado.descripcion}}</strong> - DOC {{autorizado.documento}}
+                </div>
+                }
+                <div class="listbox-item" (click)="asignarAutorizado(undefined)"><strong>NINGUNO</strong></div>
+            </div>
+        </div>
+
+        @if (autorizado.id) {
+        <div class="card shadow p-2 py-4 my-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">NOMBRE/APELLIDO</span>
+                        <input type="text" class="form-control" placeholder="Nombre" aria-label="Nombre"
+                            aria-describedby="basic-addon1" [(ngModel)]="autorizado.descripcion">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">DNI</span>
+                        <input type="text" class="form-control" placeholder="N° Documento" aria-label="N° Documento"
+                            aria-describedby="basic-addon1" [(ngModel)]="autorizado.documento">
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CARGO</span>
+                        <input type="text" class="form-control" placeholder="Cargo en la empresa"
+                            aria-label="Cargo en la empresa" aria-describedby="basic-addon1"
+                            [(ngModel)]="autorizado.cargo">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CONTACTO</span>
+                        <input type="text" class="form-control" placeholder="Teléfono/Correo"
+                            aria-label="Teléfono/Correo" aria-describedby="basic-addon1"
+                            [(ngModel)]="autorizado.contacto">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 text-end">
+                    <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                        (click)="guardarAutorizado()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn-sm btn-success m-2 my-5" (click)="agregarAutorizado()">AGREGAR
+            AUTORIZADO</button>
+        }
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR TRANSPORTE" [modal]="true" [(visible)]="visible_transporte" [style]="{ width: '30rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_transporte" (keyup)="filtroTransporte()"
+                [ngStyle]="{'background-color':searchValue_transporte == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (transp of transportesFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarTransporte(transp)">T: {{transp.transporte}} - C:
+                    {{transp.chofer}} - P: {{transp.patente_chasis}} / {{transp.patente_acoplado}}</div>
+                }
+                <div class="listbox-item" (click)="asignarTransporte(undefined)"><strong>NINGUNO</strong></div>
+            </div>
+        </div>
+
+        @if (transporte.id) {
+        <div class="card shadow p-2 py-4 my-3">
+            <div class="row mb-4 mb-md-0">
+                <div class="col-12 col-md-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">TRANSPORTE</span>
+                        <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.transporte">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CUIT</span>
+                        <input type="text" class="form-control" placeholder="CUIT Transportista"
+                            aria-label="CUIT Transportista" aria-describedby="basic-addon1"
+                            [(ngModel)]="transporte.cuit_transporte">
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4 mb-md-0">
+                <div class="col-12 col-md-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CHOFER</span>
+                        <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.chofer">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">CUIT</span>
+                        <input type="text" class="form-control" placeholder="CUIT Chofer" aria-label="CUIT Chofer"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.cuit_chofer">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">PAT CH.</span>
+                        <input type="text" class="form-control" placeholder="Patente chasis" aria-label="Patente chasis"
+                            aria-describedby="basic-addon1" [(ngModel)]="transporte.patente_chasis">
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">PAT AC.</span>
+                        <input type="text" class="form-control" placeholder="Patente acoplado"
+                            aria-label="Patente acoplado" aria-describedby="basic-addon1"
+                            [(ngModel)]="transporte.patente_acoplado">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 text-end">
+                    <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                        (click)="guardarTransporte()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn-sm btn-success m-2 my-5" (click)="agregarTransporte()">AGREGAR
+            TRANSPORTE</button>
+        }
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR ESTABLECIMIENTO/ORIGEN" [modal]="true" [(visible)]="visible_establecimiento"
+    [style]="{ width: '30rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_establecimiento" (keyup)="filtroEstablecimiento()"
+                [ngStyle]="{'background-color':searchValue_establecimiento == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (est of establecimientosFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarEstablecimiento(est)">{{est.descripcion}}</div>
+                }
+                <div class="listbox-item" (click)="asignarEstablecimiento(undefined)"><strong>NINGUNO</strong></div>
+            </div>
+        </div>
+
+        @if (establecimiento.id) {
+        <div class="card shadow p-2 py-4 my-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">DESCRIPCION</span>
+                        <input type="text" class="form-control" placeholder="Descripcion" aria-label="Descripcion"
+                            aria-describedby="basic-addon1" [(ngModel)]="establecimiento.descripcion">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">LOCALIDAD</span>
+                        <input type="text" class="form-control" placeholder="Localidad" aria-label="Localidad"
+                            aria-describedby="basic-addon1" [(ngModel)]="establecimiento.localidad">
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">PROVINCIA</span>
+                        <input type="text" class="form-control" placeholder="Provincia" aria-label="Provincia"
+                            aria-describedby="basic-addon1" [(ngModel)]="establecimiento.provincia">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-end">
+                    <button type="button" class="btn btn-sm btn-warning py-2 me-2"
+                        (click)="guardarEstablecimiento()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn-sm btn-success m-2 my-5" (click)="agregarEstablecimiento()">AGREGAR
+            ESTABLECIMIENTO</button>
+        }
+    </div>
+</p-dialog>
+
+<p-dialog header="SELECCIONAR ARTICULO" [modal]="true" [(visible)]="visible_articulo" [style]="{ width: '30rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="card m-1 p-2 shadow">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
+                [(ngModel)]="searchValue_articulo" (keyup)="filtroArticulo()"
+                [ngStyle]="{'background-color':searchValue_articulo == '' ? '' : 'rgb(202, 253, 202)'}">
+
+            <div class="listbox-container" id="listbox">
+                @for (est of articulosFiltrados; track $index) {
+                <div class="listbox-item" (click)="asignarArticulo(articuloProvisorio!, est)">{{est.descripcion}}</div>
+                }
+            </div>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="TOTALES" [modal]="true" [(visible)]="visible_totales" [style]="{ width: '70rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        @for (rub of datosTotales; track $index) {
+        <div class="card m-2 p-2 shadow">
+            <h4>RUBRO: {{rub.rubro}}</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Sub Rubro / Articulo</th>
+                        <th>Cantidad</th>
+                        <th>U.M.</th>
+                        <th class="table-light">~ KILOS</th>
+                        <th class="table-light">~ LITROS</th>
+                        <th class="table-light">~ UN.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (subRub of rub.datos; track $index) {
+                    <tr class="table-secondary">
+                        <td>{{subRub.subRubro}}</td>
+                        <td class="text-end">{{mostrarNumero(subRub.totales)}}</td>
+                        <td></td>
+                        <td class="text-end">{{mostrarNumero(subRub.kilos)}}</td>
+                        <td class="text-end">{{mostrarNumero(subRub.litros)}}</td>
+                        <td class="text-end">{{mostrarNumero(subRub.unidades)}}</td>
+                    </tr>
+                    @for (art of subRub.datos; track $index) {
+                    <tr>
+                        <td style="padding-left: 50px;">{{art.descripcion}}</td>
+                        <td class="text-end">{{mostrarNumero(art.cantidad)}}</td>
+                        <td>{{art.unidadMedida}}</td>
+                        <td class="text-end">{{mostrarNumero(art.kilos)}}</td>
+                        <td class="text-end">{{mostrarNumero(art.litros)}}</td>
+                        <td class="text-end">{{mostrarNumero(art.unidades)}}</td>
+                    </tr>
+                    }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-secondary">
+                        <td><strong>TOTALES</strong></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.totales)}}</strong></td>
+                        <td></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.kilos)}}</strong></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.litros)}}</strong></td>
+                        <td class="text-end"><strong>{{mostrarNumero(rub.unidades)}}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        }
+    </div>
+</p-dialog>
+
+
+<p-dialog header="FILTRAR" [modal]="true" [(visible)]="visible_filtros" [style]="{ width: '70rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="row py-2">
+        <div class="col-12 col-xl-6">
+            <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '5px 0px'}">
+                <b>Selecciona uno o varios clientes:</b> (Todos: CTRL + A)
+            </p-divider>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
+                <input type="text" class="form-control" placeholder="Alias / Razon Social"
+                    aria-label="Alias / Razon Social" aria-describedby="basic-addon1" [(ngModel)]="searchValue_cliente"
+                    (change)="clienteFiltro()" (keyup)="clienteFiltro()">
+            </div>
+            <div class="form-group">
+                <select id="clientes" class="form-control" multiple [(ngModel)]="selectedClientes"
+                    style="height: 400px;">
+                    @for (item of clientesFiltrados; track $index) {
+                    <option value="{{item.id}}">{{item.alias}} ({{item.razon_social}})</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-12 col-xl-6">
+            <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '5px 0px'}">
+                <b>Fecha:</b>
+            </p-divider>
+
+            <div class="row my-2">
+                <div class="col text-center">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(0)">HOY</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(7)">ULTIMA
+                            SEMANA</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(31)">ULTIMO
+                            MES</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="fechaFiltro(365)">ULTIMO
+                            AÑO</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-5">
+                <div class="col mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1">DESDE</span>
+                        <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                            aria-describedby="basic-addon1" [(ngModel)]="fechaFiltroDesde">
+                    </div>
+                </div>
+                <div class="col mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1">HASTA</span>
+                        <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
+                            aria-describedby="basic-addon1" [(ngModel)]="fechaFiltroHasta">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-info m-2" (click)="guardarFechas()">GUARDAR FECHAS</button>
+
+            <button type="button" class="btn btn-warning m-2" (click)="visible_filtros = false">CERRAR</button>
+
+            <button type="button" class="btn btn-success m-2" (click)="filtrar()">APLICAR</button>
+        </div>
+    </div>
+</p-dialog>

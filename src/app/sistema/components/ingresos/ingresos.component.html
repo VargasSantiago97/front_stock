@@ -1,17 +1,24 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col">
-            <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()">NUEVO REMITO DE
-                INGRESO</button>
-            <button type="button" class="btn btn-success m-2" (click)="mostrarModalFiltro()">FILTROS</button>
-            <button type="button" class="btn btn-success m-2" (click)="listadoXLSX()"><i
+        <div class="col text-center">
+            <h4 class="bg-primary text-white" style="border-radius: 6px;">INGRESOS</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-5">
+            <button type="button" class="btn btn-primary m-2" (click)="mostrarModalIngreso()"><i
+                    class="pi pi-plus me-2"></i> NUEVO INGRESO</button>
+            <button type="button" class="btn btn-primary m-2" (click)="mostrarModalFiltro()">FILTROS</button>
+        </div>
+        <div class="col-12 col-md-7 text-md-end">
+            <button type="button" class="btn btn-primary m-2" (click)="listadoXLSX()"><i
                     class="pi pi-file-excel me-2"></i>LISTADO</button>
-            <button type="button" class="btn btn-success m-2" (click)="detalleXLSX()"><i
+            <button type="button" class="btn btn-primary m-2" (click)="detalleXLSX()"><i
                     class="pi pi-file-excel me-2"></i>REPORTE</button>
-            <button type="button" class="btn btn-success m-2" (click)="datosXLSX()"><i
+            <button type="button" class="btn btn-primary m-2" (click)="datosXLSX()"><i
                     class="pi pi-file-excel me-2"></i>DATOS</button>
             <!--button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
-                MERCADERIA</button-->
+                    MERCADERIA</button-->
         </div>
     </div>
 
@@ -21,19 +28,73 @@
     </p>
 
 
-    <div class="table-responsive">
+    <div class="table-responsive d-inline-table">
         <table class="table table-striped table-hover table-sm table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">TIPO</th>
-                    <th scope="col">NUMERO</th>
-                    <th scope="col">FECHA</th>
-                    <th scope="col">CLIENTE</th>
-                    <th scope="col">CUIT</th>
-                    <th scope="col">AUTORIZADO</th>
-                    <th scope="col">TRANSPORTE</th>
-                    <th scope="col">EST/ORIGEN</th>
-                    <th scope="col">OBSERVACIONES</th>
+                    <th scope="col" (click)="ordenarTabla('tipo')">TIPO
+                        @if (ordenarTablaPor == 'tipo') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('numeroMostrar')">NUMERO
+                        @if (ordenarTablaPor == 'numeroMostrar') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('fecha')">FECHA
+                        @if (ordenarTablaPor == 'fecha') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('alias')">CLIENTE
+                        @if (ordenarTablaPor == 'alias') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('cuit')">CUIT
+                        @if (ordenarTablaPor == 'cuit') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('autorizado_descripcion')">AUTORIZADO
+                        @if (ordenarTablaPor == 'autorizado_descripcion') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('transporte_transporte')">TRANSPORTE
+                        @if (ordenarTablaPor == 'transporte_transporte') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('establecimiento_descripcion')">EST/ORIGEN
+                        @if (ordenarTablaPor == 'establecimiento_descripcion') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('observaciones_sistema')">OBSERVACIONES
+                        @if (ordenarTablaPor == 'observaciones_sistema') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
                     <th scope="col">#</th>
                 </tr>
             </thead>
@@ -41,18 +102,18 @@
                 @for (registro of dataTabla; track $index) {
                 <tr
                     (dblclick)="registro.tipo == 'INGRESO' ? mostrarModalIngreso(registro.id) : mostrarModalDevolucion({id_devolucion: registro.id})">
-                    <th scope="row"><p-tag [value]="registro.tipo"
+                    <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
                             [severity]="registro.tipo == 'INGRESO' ? 'success' : 'danger'" /></th>
-                    <th scope="row">{{mostrarDocumento(registro.punto, registro.numero)}}</th>
-                    <td>{{registro.fecha}}</td>
-                    <td>{{registro.alias}}</td>
-                    <td>{{registro.cuit}}</td>
-                    <td>{{registro.autorizado_descripcion}}</td>
-                    <td>{{registro.transporte_transporte}}</td>
-                    <td>{{registro.establecimiento_descripcion}}</td>
-                    <td>{{registro.observaciones_sistema}}</td>
+                    <th class="text-nowrap" scope="row">{{registro.numeroMostrar}}</th>
+                    <td class="text-nowrap">{{registro.fecha}}</td>
+                    <td class="text-nowrap">{{registro.alias}}</td>
+                    <td class="text-nowrap">{{registro.cuit}}</td>
+                    <td class="text-nowrap">{{registro.autorizado_descripcion}}</td>
+                    <td class="text-nowrap">{{registro.transporte_transporte}}</td>
+                    <td class="text-nowrap">{{registro.establecimiento_descripcion}}</td>
+                    <td class="text-nowrap">{{registro.observaciones_sistema}}</td>
                     @if (registro.tipo == 'INGRESO') {
-                    <td><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                    <td class="text-nowrap"><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="mostrarModalIngreso(registro.id)" title="Ver Ingreso"><i
                                 class="pi pi-bars"></i></button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
@@ -66,7 +127,7 @@
                                 class="pi pi-ban"></i></button>
                     </td>
                     } @else {
-                    <td><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                    <td class="text-nowrap"><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="mostrarModalDevolucion({id_devolucion: registro.id})" title="Ver Devolucion"><i
                                 class="pi pi-bars"></i></button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
@@ -91,7 +152,7 @@
     [maximizable]="true" [closeOnEscape]="ingreso.id != ''">
 
     <!-- HEADERS -->
-    <div class="row py-2" style="background-color: rgba(176, 245, 187, 0.555); border-radius: 6px;">
+    <div class="row py-2" style="background-color: rgba(74, 142, 243, 0.397); border-radius: 6px;">
         <div class="col-6 col-md-3 mb-2 mb-md-0">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">Modelo</span>
@@ -1268,6 +1329,8 @@
 
     <div class="row">
         <div class="col text-end">
+            <button type="button" class="btn btn-info m-2" (click)="guardarFechas()">GUARDAR FECHAS</button>
+
             <button type="button" class="btn btn-warning m-2" (click)="visible_filtros = false">CERRAR</button>
 
             <button type="button" class="btn btn-success m-2" (click)="filtrar()">APLICAR</button>

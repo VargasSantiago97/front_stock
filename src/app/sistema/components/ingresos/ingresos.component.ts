@@ -241,6 +241,10 @@ export class IngresosComponent {
     fechasFiltradas: string = ''
     clienteFiltrados: string = ''
 
+    ordenarTablaOrden: boolean = false
+    ordenarTablaPorAnterior: string = ''
+    ordenarTablaPor: string = ''
+
     constructor(
         private padron: PadronService,
         private ms: MessageService,
@@ -252,6 +256,14 @@ export class IngresosComponent {
     ) { }
 
     ngOnInit() {
+        if(localStorage.getItem('stock_ingresosFechaFiltroDesde')){
+            this.fechaFiltroDesde = localStorage.getItem('stock_ingresosFechaFiltroDesde')!
+        }
+        if(localStorage.getItem('stock_ingresosFechaFiltroHasta')){
+            this.fechaFiltroHasta = localStorage.getItem('stock_ingresosFechaFiltroHasta')!
+        }
+
+        this.fechaFiltroDesde
         this.cs.getAll('depositos', (data: Deposito[]) => { this.depositos = data })
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
         this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
@@ -259,7 +271,7 @@ export class IngresosComponent {
 
         this.cs.getAll('clientes', (data: Cliente[]) => {
             this.clientesTodos = data
-            this.clientesFiltrados = data 
+            this.clientesFiltrados = data
 
             const esNuevo = this.route.snapshot.url.some(segment => segment.path === 'nuevo');
 
@@ -1322,7 +1334,28 @@ export class IngresosComponent {
             }
         }
     }
+    ordenarTabla(ordenaPor: string) {
 
+        if (this.ordenarTablaPorAnterior == ordenaPor) {
+            this.ordenarTablaOrden = !this.ordenarTablaOrden
+        }
+
+        this.ordenarTablaPor = ordenaPor
+
+        this.dataTabla.sort((a: any, b: any) => {
+            if (typeof a[ordenaPor] === 'string') {
+                return this.ordenarTablaOrden ? b[ordenaPor].localeCompare(a[ordenaPor]) : a[ordenaPor].localeCompare(b[ordenaPor]);
+            }
+            return this.ordenarTablaOrden ? (a[ordenaPor] - b[ordenaPor]) : (b[ordenaPor] - a[ordenaPor]);
+        });
+
+        this.ordenarTablaPorAnterior = ordenaPor
+    }
+    guardarFechas(){
+        localStorage.setItem('stock_ingresosFechaFiltroDesde', this.fechaFiltroDesde)
+        localStorage.setItem('stock_ingresosFechaFiltroHasta', this.fechaFiltroHasta)
+        this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Fechas guardadas' })
+    }
 
     //INFORMES
     listadoXLSX() {
