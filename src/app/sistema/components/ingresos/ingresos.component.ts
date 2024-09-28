@@ -263,7 +263,6 @@ export class IngresosComponent {
             this.fechaFiltroHasta = localStorage.getItem('stock_ingresosFechaFiltroHasta')!
         }
 
-        this.fechaFiltroDesde
         this.cs.getAll('depositos', (data: Deposito[]) => { this.depositos = data })
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
         this.cs.getAll('rubros', (data: Rubro[]) => { this.rubros = data })
@@ -443,8 +442,8 @@ export class IngresosComponent {
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Existes articulos que están vacíos. Presione nuevamente para confirmar' })
         }
 
-        this.cs.getAll('ingresos/buscar/ultimo/' + this.ingreso.punto, (ultNum: number) => {
-            this.ingreso.numero = ultNum + 1
+        this.cs.getAll('ingresos/buscar/siguiente/' + this.ingreso.punto, (ultNum: number) => {
+            this.ingreso.numero = ultNum
 
             this.cs.create('ingresos', this.ingreso, (id_ingreso_creado: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id_ingreso_creado })
@@ -527,8 +526,8 @@ export class IngresosComponent {
             return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar cantidad a al menos un articulo' })
         }
 
-        this.cs.getAll('devoluciones/buscar/ultimo/' + this.devolucion.punto, (ultNum: number) => {
-            this.devolucion.numero = ultNum + 1
+        this.cs.getAll('devoluciones/buscar/siguiente/' + this.devolucion.punto, (ultNum: number) => {
+            this.devolucion.numero = ultNum
 
             this.cs.create('devoluciones', this.devolucion, (id_devolucion_creado: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Devolucion creada con ID: ' + id_devolucion_creado })

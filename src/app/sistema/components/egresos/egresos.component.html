@@ -6,7 +6,7 @@
     </div>
     <div class="row">
         <div class="col-12 col-md-5">
-            <button type="button" class="btn btn-success m-2" (click)="mostrarModalIngreso()"><i
+            <button type="button" class="btn btn-success m-2" (click)="mostrarModalRemito()"><i
                     class="pi pi-plus me-2"></i> NUEVO REMITO</button>
             <button type="button" class="btn btn-success m-2" (click)="mostrarModalFiltro()">FILTROS</button>
         </div>
@@ -17,8 +17,6 @@
                     class="pi pi-file-excel me-2"></i>REPORTE</button>
             <button type="button" class="btn btn-success m-2" (click)="datosXLSX()"><i
                     class="pi pi-file-excel me-2"></i>DATOS</button>
-            <!--button type="button" class="btn btn-primary m-2" (click)="totalesArticulosIngreso()">NUEVA DEVOLUCION DE
-                MERCADERIA</button-->
         </div>
     </div>
 
@@ -101,9 +99,9 @@
             <tbody>
                 @for (registro of dataTabla; track $index) {
                 <tr
-                    (dblclick)="registro.tipo == 'INGRESO' ? mostrarModalIngreso(registro.id) : mostrarModalDevolucion({id_devolucion: registro.id})">
+                    (dblclick)="registro.tipo == 'REMITO' ? mostrarModalRemito(registro.id) : mostrarModalDevolucion({id_devolucion: registro.id})">
                     <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
-                            [severity]="registro.tipo == 'INGRESO' ? 'success' : 'danger'" /></th>
+                            [severity]="registro.tipo == 'REMITO' ? 'success' : 'danger'" /></th>
                     <th class="text-nowrap" scope="row">{{registro.numeroMostrar}}</th>
                     <td class="text-nowrap">{{registro.fecha}}</td>
                     <td class="text-nowrap">{{registro.alias}}</td>
@@ -112,18 +110,18 @@
                     <td class="text-nowrap">{{registro.transporte_transporte}}</td>
                     <td class="text-nowrap">{{registro.establecimiento_descripcion}}</td>
                     <td class="text-nowrap">{{registro.observaciones_sistema}}</td>
-                    @if (registro.tipo == 'INGRESO') {
+                    @if (registro.tipo == 'REMITO') {
                     <td class="text-nowrap"><button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="mostrarModalIngreso(registro.id)" title="Ver Ingreso"><i
+                            (click)="mostrarModalRemito(registro.id)" title="Ver Remito"><i
                                 class="pi pi-bars"></i></button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verIngreso(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            (click)="verRemito(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="descargarIngreso(registro.id)" title="Descargar PDF"><i
+                            (click)="descargarRemito(registro.id)" title="Descargar PDF"><i
                                 class="pi pi-download"></i></button>
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR"
-                            (click)="mostrarModalDevolucion({id_ingreso: registro.id})"><i
+                            (click)="mostrarModalDevolucion({id_remito: registro.id})"><i
                                 class="pi pi-ban"></i></button>
                     </td>
                     } @else {
@@ -147,9 +145,9 @@
 </div>
 
 
-<p-dialog header="{{ingreso.id ? 'VER INGRESO' : 'NUEVO INGRESO DE MERCADERIA'}}" [modal]="true"
-    [(visible)]="visible_ingreso" [style]="{ width: '85rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-    [maximizable]="true" [closeOnEscape]="ingreso.id != ''">
+<p-dialog header="{{remito.id ? 'VER REMITO' : 'NUEVO REMITO'}}" [modal]="true" [(visible)]="visible_remito"
+    [style]="{ width: '85rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true"
+    [closeOnEscape]="remito.id != ''">
 
     <!-- HEADERS -->
     <div class="row py-2" style="background-color: rgba(176, 245, 187, 0.555); border-radius: 6px;">
@@ -157,7 +155,7 @@
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">Modelo</span>
 
-                <select class="input-group-text" [(ngModel)]="ingreso.modelo" [disabled]="ingreso.id != ''">
+                <select class="input-group-text" [(ngModel)]="remito.modelo" [disabled]="remito.id != ''">
                     @for (modRem of modelosRemitos; track $index) {
                     <option value={{modRem.alias}}>{{modRem.descripcion}}</option>
                     }
@@ -168,8 +166,8 @@
         <div class="col-6 col-md-3 mb-2 mb-md-0">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1" style="width: 50%;">P. Venta</span>
-                <select class="input-group-text" [(ngModel)]="ingreso.punto" style="width: 50%;"
-                    [disabled]="ingreso.id != ''">
+                <select class="input-group-text" [(ngModel)]="remito.punto" style="width: 50%;"
+                    [disabled]="remito.id != ''">
                     @for (ptoVta of puntosVenta; track $index) {
                     <option value={{ptoVta.punto}}>{{ptoVta.descripcion}}</option>
                     }
@@ -180,14 +178,14 @@
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">N°</span>
                 <input type="number" class="form-control" placeholder="Numero" aria-label="Numero"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.numero" disabled="">
+                    aria-describedby="basic-addon1" [(ngModel)]="remito.numero" disabled="">
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">FECHA</span>
                 <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
-                    aria-describedby="basic-addon1" [(ngModel)]="ingreso.fecha" [disabled]="ingreso.id != ''">
+                    aria-describedby="basic-addon1" [(ngModel)]="remito.fecha" [disabled]="remito.id != ''">
             </div>
         </div>
     </div>
@@ -215,12 +213,12 @@
             <div class="col-12 col-md-4">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1" style="width: 15%;">Cód.</span>
-                    @if(!ingreso.id_cliente){
+                    @if(!remito.id_cliente){
                     <input type="text" class="form-control" placeholder="Código" aria-label="Código"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.codigo"
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.codigo"
                         (keyup.enter)="buscarClientePorCodigo()">
                     } @else {
-                    <span class="input-group-text" id="basic-addon1" style="width: 84%;">{{ingreso.codigo}}</span>
+                    <span class="input-group-text" id="basic-addon1" style="width: 84%;">{{remito.codigo}}</span>
                     }
                 </div>
             </div>
@@ -228,7 +226,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Razon Social</span>
                     <input type="text" class="form-control" placeholder="Razon Social" aria-label="Razon Social"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.razon_social" readonly>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.razon_social" readonly>
                 </div>
             </div>
         </div>
@@ -243,17 +241,17 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
                         aria-label="Descripcion" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.autorizado_descripcion" disabled>
+                        [(ngModel)]="remito.autorizado_descripcion" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">N° Doc</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Documento" aria-label="Documento"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_documento" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.autorizado_documento" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Contacto</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Contacto" aria-label="Contacto"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.autorizado_contacto" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.autorizado_contacto" disabled>
                 </div>
             </div>
             <div class="col-12 col-md-4">
@@ -265,19 +263,19 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Transp</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Transporte"
                         aria-label="Transporte" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.transporte_transporte" disabled>
+                        [(ngModel)]="remito.transporte_transporte" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Chofer</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chofer" aria-label="Chofer"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_chofer" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.transporte_chofer" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Patentes</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Chasis" aria-label="Chasis"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_chasis" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.transporte_patente_chasis" disabled>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Acoplado" aria-label="Acoplado"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.transporte_patente_acoplado" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.transporte_patente_acoplado" disabled>
                 </div>
             </div>
             <div class="col-12 col-md-4">
@@ -289,17 +287,17 @@
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Desc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Descripcion"
                         aria-label="Descripcion" aria-describedby="basic-addon1"
-                        [(ngModel)]="ingreso.establecimiento_descripcion" disabled>
+                        [(ngModel)]="remito.establecimiento_descripcion" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Loc.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Localidad" aria-label="Localidad"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_localidad" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.establecimiento_localidad" disabled>
                 </div>
                 <div class="input-group m-1 p-0">
                     <span class="input-group-text m-0 p-0 px-2" id="basic-addon1">Prov.</span>
                     <input type="text" class="form-control m-0 p-0 px-3" placeholder="Provincia" aria-label="Provincia"
-                        aria-describedby="basic-addon1" [(ngModel)]="ingreso.establecimiento_provincia" disabled>
+                        aria-describedby="basic-addon1" [(ngModel)]="remito.establecimiento_provincia" disabled>
                 </div>
             </div>
         </div>
@@ -308,11 +306,11 @@
 
     @if(pestActiva == 'documentos'){
     <div style="min-height: 180px;">
-        @for (doc of ingreso.datos.documentos; track $index) {
+        @for (doc of remito.datos.documentos; track $index) {
         <div class="row mb-2">
             <div class="col-3">
                 <div class="input-group">
-                    <select class="input-group-text" [(ngModel)]="doc.tipo" [disabled]="ingreso.id != ''">
+                    <select class="input-group-text" [(ngModel)]="doc.tipo" [disabled]="remito.id != ''">
                         <option value=remito>REMITO</option>
                         <option value=factura>FACTURA</option>
                         <option value=ticket_balanza>TICKET BALANZA</option>
@@ -322,7 +320,7 @@
             </div>
             <div class="col-3">
                 <div class="input-group">
-                    <select class="input-group-text" [(ngModel)]="doc.letra" [disabled]="ingreso.id != ''">
+                    <select class="input-group-text" [(ngModel)]="doc.letra" [disabled]="remito.id != ''">
                         <option value=A>A</option>
                         <option value=B>B</option>
                         <option value=C>C</option>
@@ -331,28 +329,28 @@
                     </select>
 
                     <input type="number" class="form-control m-0 p-0 px-3" placeholder="Punto" aria-label="Punto"
-                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto" [readonly]="ingreso.id != ''">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.punto" [readonly]="remito.id != ''">
 
                     <input type="number" class="form-control m-0 p-0 px-3" placeholder="Numero" aria-label="Numero"
-                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero" [readonly]="ingreso.id != ''">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.numero" [readonly]="remito.id != ''">
                 </div>
             </div>
             <div class="col-3">
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon1">FECHA</span>
                     <input type="date" class="form-control" placeholder="FECHA" aria-label="FECHA"
-                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha" [disabled]="ingreso.id != ''">
+                        aria-describedby="basic-addon1" [(ngModel)]="doc.fecha" [disabled]="remito.id != ''">
                 </div>
             </div>
             <div class="col-3">
-                @if(!ingreso.id){
+                @if(!remito.id){
                 <button type="button" class="btn btn-warning p-1 mx-3"
                     (click)="eliminarDocumento(doc.id)">ELIMINAR</button>
                 }
             </div>
         </div>
         }
-        @if(!ingreso.id){
+        @if(!remito.id){
         <button type="button" class="btn btn-warning px-3" (click)="agregarDocumento()">Agregar</button>
         }
     </div>
@@ -365,22 +363,22 @@
                 <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Sale en
                     Remito</p-divider>
 
-                <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones"
-                    [readonly]="ingreso.id != ''" class="p-2">
+                <textarea rows="3" pInputTextarea style="width: 100%;" [(ngModel)]="remito.observaciones"
+                    [readonly]="remito.id != ''" class="p-2">
                 </textarea>
 
                 <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Total Unidades:</p-divider>
 
-                <textarea rows="1" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.total_unidades"
-                    [readonly]="ingreso.id != ''" class="p-0">
+                <textarea rows="1" pInputTextarea style="width: 100%;" [(ngModel)]="remito.total_unidades"
+                    [readonly]="remito.id != ''" class="p-0">
                 </textarea>
             </div>
             <div class="col-12 col-md-6">
                 <p-divider align="left" type="solid" [style]="{'margin': '0px'}">Observaciones / Para
                     sistema</p-divider>
 
-                <textarea rows="5" pInputTextarea style="width: 100%;" [(ngModel)]="ingreso.observaciones_sistema"
-                    [readonly]="ingreso.id != ''">
+                <textarea rows="5" pInputTextarea style="width: 100%;" [(ngModel)]="remito.observaciones_sistema"
+                    [readonly]="remito.id != ''">
                 </textarea>
             </div>
         </div>
@@ -410,7 +408,7 @@
                 </tr>
             </thead>
             <tbody>
-                @for (art of articulosIngreso; track $index) {
+                @for (art of articulosRemito; track $index) {
                 <tr>
                     <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
                         {{$index + 1}})</th>
@@ -421,16 +419,16 @@
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
                             [(ngModel)]="art.cantidad" (keyup)="calcularUnidadFundamental(art)"
-                            (change)="calcularUnidadFundamental(art)" [readonly]="ingreso.id != ''"></td>
+                            (change)="calcularUnidadFundamental(art)" [readonly]="remito.id != ''"></td>
                     <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.id_unidadMedida ?
                         obtenerDescripcionUnidadMedida(art.id_unidadMedida) : '-'}}</td>
                     <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
-                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="ingreso.id != ''"
-                            (change)="ingreso.total_unidades = totalesArticulosIngreso()"></td>
+                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="remito.id != ''"
+                            (change)="remito.total_unidades = totalesArticulosIngreso()"></td>
                     <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.unidadFundamental ?
                         art.unidadFundamental : '-'}}</td>
                     <td class="text-nowrap p-0">
-                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="ingreso.id != ''">
+                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="remito.id != ''">
                             @for (dep of depositos; track $index) {
                             <option value={{dep.id}}>{{dep.alias}}</option>
                             }
@@ -438,17 +436,17 @@
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
                         @if (art.solicitaLote) {
-                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="ingreso.id != ''">
+                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="remito.id != ''">
                         }
                     </td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
                         @if (art.solicitaVencimiento) {
                         <input class="input_tabla" type="date" [(ngModel)]="art.vencimiento"
-                            [readonly]="ingreso.id != ''">
+                            [readonly]="remito.id != ''">
                         }
                     </td>
                     <td class="text-nowrap p-0">
-                        @if(art.id_articulo && ingreso.id == ''){
+                        @if(art.id_articulo && remito.id == ''){
                         <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
                             (click)="eliminarArticulo(art.id)"><i class="pi pi-trash"></i></button>
                         }
@@ -457,20 +455,11 @@
                 }
             </tbody>
         </table>
-
-        @if (ingreso.id == '') {
-        <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="agregarArticulos()">Agregar nuevo</button>
-        @if (permite_secuencia_lote) {
-        AGREGAR
-        <input type="number" step="1" class="input_tabla" [(ngModel)]="cantidad_secuencia_lote" style="width: 60px;">
-        ARTICULOS TOMANDO LOS ULTIMOS
-        <input type="number" step="1" class="input_tabla" [(ngModel)]="digitos_secuencia_lote" style="width: 60px;">
-        DIGITOS DEL LOTE.
-        <button type="button" class="btn btn-primary m-2 p-0 px-2" (click)="agregarArticulosSecuencia()">Agregar
-            {{cantidad_secuencia_lote}}</button>
-        }
-        }
     </div>
+
+    @if (remito.id == '') {
+    <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="mostrarModalArticulos()">Agregar nuevo</button>
+    }
 
     @if (documentosAsociados.length) {
     <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '20px 0px'}">
@@ -507,18 +496,18 @@
 
     <div class="row">
         <div class="col text-end">
-            <button type="button" class="btn btn-warning m-2" (click)="verTotalesArticulosIngreso()">VER
+            <button type="button" class="btn btn-warning m-2" (click)="verTotalesArticulosRemito()">VER
                 TOTALES</button>
-            <button type="button" class="btn btn-warning m-2" (click)="visible_ingreso = false">CERRAR</button>
-            @if (!ingreso.id) {
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('M')">GUARDAR Y
+            <button type="button" class="btn btn-warning m-2" (click)="visible_remito = false">CERRAR</button>
+            @if (!remito.id) {
+            <button type="button" class="btn btn-success m-2" (click)="guardarRemito('M')">GUARDAR Y
                 MOSTRAR</button>
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso('D')">GUARDAR Y
+            <button type="button" class="btn btn-success m-2" (click)="guardarRemito('D')">GUARDAR Y
                 DESCARGAR</button>
-            <button type="button" class="btn btn-success m-2" (click)="guardarIngreso()">GUARDAR</button>
+            <button type="button" class="btn btn-success m-2" (click)="guardarRemito()">GUARDAR</button>
             } @else {
-            <button type="button" class="btn btn-success m-2" (click)="verIngreso(ingreso.id)">VER PDF</button>
-            <button type="button" class="btn btn-success m-2" (click)="descargarIngreso(ingreso.id)">DESCARGAR
+            <button type="button" class="btn btn-success m-2" (click)="verRemito(remito.id)">VER PDF</button>
+            <button type="button" class="btn btn-success m-2" (click)="descargarRemito(remito.id)">DESCARGAR
                 PDF</button>
             }
 
@@ -527,7 +516,7 @@
 </p-dialog>
 
 
-<p-dialog header="{{devolucion.id ? 'VER DEVOLUCION' : 'NUEVA DEVOLUCION DE MERCADERIA'}}" [modal]="true"
+<p-dialog header="{{devolucion.id ? 'VER DEVOLUCION DE REMITO' : 'NUEVA DEVOLUCION DE REMITO'}}" [modal]="true"
     [(visible)]="visible_devolucion" [style]="{ width: '95rem', height: '95rem'}"
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true" [closeOnEscape]="devolucion.id != ''">
 
@@ -1191,20 +1180,176 @@
     </div>
 </p-dialog>
 
-<p-dialog header="SELECCIONAR ARTICULO" [modal]="true" [(visible)]="visible_articulo" [style]="{ width: '30rem'}"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+<p-dialog header="SELECCIONAR ARTICULOS A REMITAR" [modal]="true" [(visible)]="visible_articulo"
+    [style]="{ width: '95rem', height: '95rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
 
     <div class="row py-2">
-        <div class="card m-1 p-2 shadow">
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..."
-                [(ngModel)]="searchValue_articulo" (keyup)="filtroArticulo()"
-                [ngStyle]="{'background-color':searchValue_articulo == '' ? '' : 'rgb(202, 253, 202)'}">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" (click)="ordenarTablaArticulos('fecha')">FECHA
+                            @if (ordenarTablaPor_art == 'fecha') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('ingreso')">INGRESO
+                            @if (ordenarTablaPor_art == 'ingreso') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('numero')">NUMERO
+                            @if (ordenarTablaPor_art == 'numero') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('dueno')">DUEÑO
+                            @if (ordenarTablaPor_art == 'dueno') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('codigo')">COD
+                            @if (ordenarTablaPor_art == 'codigo') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('articulo')">ARTICULO
+                            @if (ordenarTablaPor_art == 'articulo') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('deposito')">DEPOSITO
+                            @if (ordenarTablaPor_art == 'deposito') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('cantidadDisponible')">CANT. DISP.
+                            @if (ordenarTablaPor_art == 'cantidadDisponible') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('serie')">LOTE/SERIE
+                            @if (ordenarTablaPor_art == 'serie') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('vencimiento')">VENCIMIENTO
+                            @if (ordenarTablaPor_art == 'vencimiento') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('cantidad')">CANTIDAD
+                            @if (ordenarTablaPor_art == 'cantidad') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('unidadMedida')">U.M.
+                            @if (ordenarTablaPor_art == 'unidadMedida') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('cantidadUF')">CANT F.
+                            @if (ordenarTablaPor_art == 'cantidad') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col" (click)="ordenarTablaArticulos('unidadMedidaUF')">U.M.F.
+                            @if (ordenarTablaPor_art == 'unidadMedida') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th scope="col">#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (registro of dataTablaArticulos; track $index) {
+                    <tr
+                        (dblclick)="registro.tipo == 'REMITO' ? mostrarModalRemito(registro.id) : mostrarModalDevolucion({id_devolucion: registro.id})">
+                        <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
+                                [severity]="registro.tipo == 'REMITO' ? 'success' : 'danger'" /></th>
+                        <th class="text-nowrap" scope="row">{{registro.numeroMostrar}}</th>
+                        <td class="text-nowrap">{{registro.fecha}}</td>
+                        <td class="text-nowrap">{{registro.alias}}</td>
+                        <td class="text-nowrap">{{registro.cuit}}</td>
+                        <td class="text-nowrap">{{registro.autorizado_descripcion}}</td>
+                        <td class="text-nowrap">{{registro.transporte_transporte}}</td>
+                        <td class="text-nowrap">{{registro.establecimiento_descripcion}}</td>
+                        <td class="text-nowrap">{{registro.observaciones_sistema}}</td>
+                        @if (registro.tipo == 'REMITO') {
+                        <td class="text-nowrap"><button type="button"
+                                class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                                (click)="mostrarModalRemito(registro.id)" title="Ver Remito"><i
+                                    class="pi pi-bars"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                                (click)="verRemito(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                                (click)="descargarRemito(registro.id)" title="Descargar PDF"><i
+                                    class="pi pi-download"></i></button>
+                            <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR"
+                                (click)="mostrarModalDevolucion({id_remito: registro.id})"><i
+                                    class="pi pi-ban"></i></button>
+                        </td>
+                        } @else {
+                        <td class="text-nowrap"><button type="button"
+                                class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                                (click)="mostrarModalDevolucion({id_devolucion: registro.id})" title="Ver Devolucion"><i
+                                    class="pi pi-bars"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                                (click)="verDevolucion(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                                (click)="descargarDevolucion(registro.id)" title="Descargar PDF"><i
+                                    class="pi pi-download"></i></button>
+                        </td>
+                        }
 
-            <div class="listbox-container" id="listbox">
-                @for (est of articulosFiltrados; track $index) {
-                <div class="listbox-item" (click)="asignarArticulo(articuloProvisorio!, est)">{{est.descripcion}}</div>
-                }
-            </div>
+                    </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </p-dialog>
