@@ -1184,6 +1184,21 @@
     [style]="{ width: '95rem', height: '95rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
 
     <div class="row py-2">
+        <div class="col text-end">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Dueño</span>
+
+                <p-multiSelect [options]="cities" [(ngModel)]="selectedCities" optionLabel="name"
+                    placeholder="Select Cities" [style]="{'border-radius': '0px 6px 6px 0px'}" />
+
+            </div>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-success m-2" (click)="mostrarModalRemito()"><i
+                class="pi pi-plus me-2"></i> NUEVO REMITO</button>
+        </div>
+    </div>
+    <div class="row py-2">
         <div class="table-responsive">
             <table class="table table-striped table-hover table-sm table-bordered">
                 <thead>

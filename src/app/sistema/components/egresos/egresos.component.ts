@@ -38,6 +38,16 @@ declare var vars: any;
 })
 export class EgresosComponent {
 
+    cities = [
+        {name: 'New York', code: 'NY'},
+        {name: 'Rome', code: 'RM'},
+        {name: 'London', code: 'LDN'},
+        {name: 'Istanbul', code: 'IST'},
+        {name: 'Paris', code: 'PRS'}
+    ]
+
+    selectedCities:any = []
+
     modelosRemitos = vars.modelosRemitos;
     puntosVenta = vars.puntosVenta;
     depositoSeleccionado = vars.depositoSeleccionado;
