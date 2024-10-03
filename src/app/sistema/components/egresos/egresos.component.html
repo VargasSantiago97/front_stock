@@ -1181,21 +1181,32 @@
 </p-dialog>
 
 <p-dialog header="SELECCIONAR ARTICULOS A REMITAR" [modal]="true" [(visible)]="visible_articulo"
-    [style]="{ width: '95rem', height: '95rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+    [style]="{ width: '95rem', height: '95rem'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [maximizable]="true">
 
     <div class="row py-2">
-        <div class="col text-end">
+        <div class="col-12 col-xl-5">
             <div class="input-group">
-                <span class="input-group-text" id="basic-addon1">Dueño</span>
+                <span class="input-group-text" id="basic-addon1">DUEÑO</span>
 
-                <p-multiSelect [options]="cities" [(ngModel)]="selectedCities" optionLabel="name"
-                    placeholder="Select Cities" [style]="{'border-radius': '0px 6px 6px 0px'}" />
+                <p-multiSelect [options]="clientesTodos" [(ngModel)]="selectedClientesArticulos" optionLabel="alias"
+                    placeholder="Seleccionar dueño" [style]="{'border-radius': '0px', 'margin':'0px'}">
+                </p-multiSelect>
 
+                <button class="btn btn-success" type="button" id="basic-addon1"
+                    (click)="buscarArticulosParaRemitar()">BUSCAR</button>
             </div>
         </div>
-        <div class="col">
-            <button type="button" class="btn btn-success m-2" (click)="mostrarModalRemito()"><i
-                class="pi pi-plus me-2"></i> NUEVO REMITO</button>
+
+        <div class="col-12 col-xl-7">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Filtrar</span>
+
+                <input type="text" class="form-control" placeholder="Articulo / Lote / Serie"
+                    aria-label="Articulo / Lote / Serie" aria-describedby="basic-addon1"
+                    [(ngModel)]="searchValue_cliente" (change)="clienteFiltro()" (keyup)="clienteFiltro()">
+
+            </div>
         </div>
     </div>
     <div class="row py-2">
@@ -1203,7 +1214,7 @@
             <table class="table table-striped table-hover table-sm table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col" (click)="ordenarTablaArticulos('fecha')">FECHA
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('fecha')">FECHA
                             @if (ordenarTablaPor_art == 'fecha') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1211,7 +1222,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('ingreso')">INGRESO
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('ingreso')">INGRESO
                             @if (ordenarTablaPor_art == 'ingreso') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1219,7 +1230,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('numero')">NUMERO
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('numero')">NUMERO
                             @if (ordenarTablaPor_art == 'numero') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1227,7 +1238,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('dueno')">DUEÑO
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('dueno')">DUEÑO
                             @if (ordenarTablaPor_art == 'dueno') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1235,7 +1246,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('codigo')">COD
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('codigo')">COD
                             @if (ordenarTablaPor_art == 'codigo') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1243,7 +1254,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('articulo')">ARTICULO
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('articulo')">ARTICULO
                             @if (ordenarTablaPor_art == 'articulo') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1251,7 +1262,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('deposito')">DEPOSITO
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('deposito')">DEPOSITO
                             @if (ordenarTablaPor_art == 'deposito') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1259,15 +1270,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('cantidadDisponible')">CANT. DISP.
-                            @if (ordenarTablaPor_art == 'cantidadDisponible') {
-                            <i
-                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
-                            } @else {
-                            <i class="pi pi-sort-alt"></i>
-                            }
-                        </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('serie')">LOTE/SERIE
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('serie')">LOTE/SERIE
                             @if (ordenarTablaPor_art == 'serie') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1275,7 +1278,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('vencimiento')">VENCIMIENTO
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('vencimiento')">VENCIMIENTO
                             @if (ordenarTablaPor_art == 'vencimiento') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1283,7 +1286,16 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('cantidad')">CANTIDAD
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidadDisponible')">CANT.
+                            DISP.
+                            @if (ordenarTablaPor_art == 'cantidadDisponible') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidad')">CANTIDAD
                             @if (ordenarTablaPor_art == 'cantidad') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1291,7 +1303,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('unidadMedida')">U.M.
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('unidadMedida')">U.M.
                             @if (ordenarTablaPor_art == 'unidadMedida') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1299,7 +1311,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('cantidadUF')">CANT F.
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidadUF')">CANT F.
                             @if (ordenarTablaPor_art == 'cantidad') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1307,7 +1319,7 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col" (click)="ordenarTablaArticulos('unidadMedidaUF')">U.M.F.
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('unidadMedidaUF')">U.M.F.
                             @if (ordenarTablaPor_art == 'unidadMedida') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
@@ -1315,52 +1327,46 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th scope="col">#</th>
+                        <th class="text-nowrap" scope="col">#</th>
                     </tr>
                 </thead>
                 <tbody>
                     @for (registro of dataTablaArticulos; track $index) {
-                    <tr
-                        (dblclick)="registro.tipo == 'REMITO' ? mostrarModalRemito(registro.id) : mostrarModalDevolucion({id_devolucion: registro.id})">
-                        <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
-                                [severity]="registro.tipo == 'REMITO' ? 'success' : 'danger'" /></th>
-                        <th class="text-nowrap" scope="row">{{registro.numeroMostrar}}</th>
-                        <td class="text-nowrap">{{registro.fecha}}</td>
-                        <td class="text-nowrap">{{registro.alias}}</td>
-                        <td class="text-nowrap">{{registro.cuit}}</td>
-                        <td class="text-nowrap">{{registro.autorizado_descripcion}}</td>
-                        <td class="text-nowrap">{{registro.transporte_transporte}}</td>
-                        <td class="text-nowrap">{{registro.establecimiento_descripcion}}</td>
-                        <td class="text-nowrap">{{registro.observaciones_sistema}}</td>
-                        @if (registro.tipo == 'REMITO') {
-                        <td class="text-nowrap"><button type="button"
-                                class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                                (click)="mostrarModalRemito(registro.id)" title="Ver Remito"><i
-                                    class="pi pi-bars"></i></button>
-                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                                (click)="verRemito(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                                (click)="descargarRemito(registro.id)" title="Descargar PDF"><i
-                                    class="pi pi-download"></i></button>
-                            <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1 pt-1" title="ANULAR"
-                                (click)="mostrarModalDevolucion({id_remito: registro.id})"><i
-                                    class="pi pi-ban"></i></button>
-                        </td>
-                        } @else {
-                        <td class="text-nowrap"><button type="button"
-                                class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                                (click)="mostrarModalDevolucion({id_devolucion: registro.id})" title="Ver Devolucion"><i
-                                    class="pi pi-bars"></i></button>
-                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                                (click)="verDevolucion(registro.id)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                                (click)="descargarDevolucion(registro.id)" title="Descargar PDF"><i
-                                    class="pi pi-download"></i></button>
-                        </td>
-                        }
+                    <tr>
+                        <td class="text-nowrap text-center">{{registro.fecha}}</td>
 
+                        <th class="text-nowrap text-center" scope="row"><p-tag [value]="registro.tipo"
+                                [severity]="registro.tipo == 'INGRESO' ? 'success' : 'info'" /></th>
+
+
+                        <td class="text-nowrap text-center">{{ mostrarDocumento(registro.punto, registro.numero)}}</td>
+                        <td class="text-nowrap">{{registro.razon_social}}</td>
+                        <td class="text-nowrap">{{registro.codigo}}</td>
+                        <td class="text-nowrap">{{registro.descripcion}}</td>
+                        <td class="text-nowrap">{{obtenerDescripcionDeposito(registro.id_deposito)}}</td>
+                        <td class="text-nowrap">{{registro.lote}}</td>
+                        <td class="text-nowrap">{{registro.vencimiento}}</td>
+                        <td class="text-nowrap"><strong>{{registro.cantidad}}</strong> | ~{{registro.cantidadUnidadFundamental}}</td>
+
+
+                        <td class="text-nowrap">
+                            <input class="input_tabla" type="number" [(ngModel)]="registro.cantidadRemitar"
+                                (keyup)="calcularUnidadFundamentalRemito(registro)"
+                                (change)="calcularUnidadFundamentalRemito(registro)" min="0">
+                        </td>
+                        <td class="text-nowrap">{{obtenerDescripcionUnidadMedida(registro.id_unidadMedida)}}</td>
+                        <td class="text-nowrap">
+                            <input class="input_tabla" type="number" [(ngModel)]="registro.cantidadRemitarUnidadFundamental"
+                                (keyup)="verificarMaxUFRemitar(registro)"
+                                (change)="verificarMaxUFRemitar(registro)" min="0">
+                        </td>
+                        <td class="text-nowrap">{{registro.unidadFundamental}}</td>
+
+
+                        <td class="text-nowrap">
+                            <button type="button" class="btn btn-sm btn-success m-0 mx-1 p-0 px-1" (click)="seleccionarDevolverTodoRemito(registro)"><i
+                                    class="pi pi-list-check"></i></button>
+                        </td>
                     </tr>
                     }
                 </tbody>

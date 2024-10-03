@@ -38,16 +38,6 @@ declare var vars: any;
 })
 export class EgresosComponent {
 
-    cities = [
-        {name: 'New York', code: 'NY'},
-        {name: 'Rome', code: 'RM'},
-        {name: 'London', code: 'LDN'},
-        {name: 'Istanbul', code: 'IST'},
-        {name: 'Paris', code: 'PRS'}
-    ]
-
-    selectedCities:any = []
-
     modelosRemitos = vars.modelosRemitos;
     puntosVenta = vars.puntosVenta;
     depositoSeleccionado = vars.depositoSeleccionado;
@@ -172,6 +162,7 @@ export class EgresosComponent {
     clientesFiltrados: Cliente[] = []
     clientesTodos: Cliente[] = []
     selectedClientes: string[] = []
+    selectedClientesArticulos: Cliente[] = []
 
     id_cliente: string = ''
 
@@ -580,6 +571,16 @@ export class EgresosComponent {
     mostrarModalArticulos(){
         this.visible_articulo = true
     }
+    buscarArticulosParaRemitar(){
+        const selectedClientes = this.selectedClientesArticulos.map((sc: Cliente) => {
+            return sc.id
+        })
+
+        this.cs.getAllPost(`operaciones/articulosRemito`, { id_clientes: selectedClientes }, (e: any) => {
+            console.table(e)
+            this.dataTablaArticulos = e
+        })
+    }
 
     mostrarModalFiltro() {
         this.visible_filtros = true
@@ -629,6 +630,9 @@ export class EgresosComponent {
         this.remito.correo = cliente.correo
 
         this.visible_cliente = false
+
+        this.selectedClientesArticulos = [ cliente ]
+        this.buscarArticulosParaRemitar()
 
         if (continua) {
             this.buscarAutorizados()
@@ -1104,6 +1108,13 @@ export class EgresosComponent {
     }
 
     //DEVOLUCIONES
+    seleccionarDevolverTodoRemito(art: any = null) {
+        if (art) {
+            art.cantidadRemitar = art.cantidad
+
+            art.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+        }
+    }
     seleccionarDevolverTodo(art: any = null) {
         if (art) {
             var cantidadDisponible = art.cantidad - art.salidas + art.entradas
@@ -1133,6 +1144,9 @@ export class EgresosComponent {
     }
     obtenerDescripcionUnidadMedida(id: string) {
         return this.unidadMedidas.find((unidadMedida: UnidadMedida) => { return unidadMedida.id == id })?.alias
+    }
+    obtenerDescripcionDeposito(id: string) {
+        return this.depositos.find((deposito: Deposito) => { return deposito.id == id })?.alias
     }
     //obtenerDescripcionLaboratorio(id: string) {
     //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
@@ -1221,6 +1235,20 @@ export class EgresosComponent {
         this.verificarMax(art)
         this.verificarMaxUF(art)
     }
+    calcularUnidadFundamentalRemito(art: any) {
+        art.cantidadRemitarUnidadFundamental = Math.round(art.cantidadRemitar * art.cantidadPorUnidadFundamental * 100) / 100
+
+        //verificar max
+        if (art.cantidadRemitar > art.cantidad) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a remitar es: ' + art.cantidad })
+            art.cantidadRemitar = art.cantidad
+        }
+        if (art.cantidadRemitar < 0) {
+            art.cantidadRemitar = 0
+        }
+
+        this.verificarMaxUFRemitar(art)
+    }
     verificarMax(a: any) {
         var cantidadDisponible = a.cantidad - a.salidas + a.entradas
 
@@ -1244,6 +1272,16 @@ export class EgresosComponent {
         }
 
         this.devolucion.total_unidades = this.totalesArticulosDevolucion()
+    }
+    verificarMaxUFRemitar(a: any) {
+
+        if (a.cantidadRemitarUnidadFundamental > a.cantidadUnidadFundamental) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a remitar (UF) es: ' + a.cantidadUnidadFundamental })
+            a.cantidadRemitarUnidadFundamental = a.cantidadUnidadFundamental
+        }
+        if (a.cantidadRemitarUnidadFundamental < 0) {
+            a.cantidadRemitarUnidadFundamental = 0
+        }
     }
 
     fechaFiltro(dias: number) {
