@@ -49,7 +49,7 @@ export class EgresosComponent {
     visible_autorizado: boolean = false
     visible_transporte: boolean = false
     visible_establecimiento: boolean = false
-    visible_articulo: boolean = true
+    visible_articulo: boolean = false
     visible_totales: boolean = false
     datosTotales: any = []
 
@@ -156,7 +156,9 @@ export class EgresosComponent {
     devoluciones: RemitoDevolucion[] = []
 
     dataTabla: any = []
+    dataArticulosRemitar: any = []
     dataTablaArticulos: any = []
+    dataTablaArticulosRemitar: any = []
 
     clientes: Cliente[] = []
     clientesFiltrados: Cliente[] = []
@@ -358,6 +360,10 @@ export class EgresosComponent {
 
     mostrarModalRemito(id: any = undefined) {
         this.pestActiva = 'cliente'
+        this.dataTablaArticulosRemitar = []
+        this.dataArticulosRemitar = []
+        this.dataTablaArticulos = []
+
         if (id) {
             this.articulosRemito = []
 
@@ -577,8 +583,16 @@ export class EgresosComponent {
         })
 
         this.cs.getAllPost(`operaciones/articulosRemito`, { id_clientes: selectedClientes }, (e: any) => {
-            console.table(e)
-            this.dataTablaArticulos = e
+            this.dataArticulosRemitar = e.map((f:any) => {
+                return {
+                    ...f,
+                    numeroDocumento: this.mostrarDocumento(f.punto, f.numero),
+                    deposito: this.obtenerDescripcionDeposito(f.id_deposito),
+                    unidadMedida: this.obtenerDescripcionUnidadMedida(f.id_unidadMedida)
+                }
+            })
+
+            this.filtroArticulo()
         })
     }
 
@@ -751,7 +765,7 @@ export class EgresosComponent {
         this.establecimientosFiltrados = this.establecimientos.filter((establecimiento: Establecimiento) => { return establecimiento.descripcion.toLocaleUpperCase().includes(this.searchValue_establecimiento.toLocaleUpperCase()) })
     }
     filtroArticulo() {
-        this.articulosFiltrados = this.articulos.filter((articulo: Articulo) => { return articulo.descripcion.toLocaleUpperCase().includes(this.searchValue_articulo.toLocaleUpperCase()) })
+        this.dataTablaArticulos = this.dataArticulosRemitar.filter((articulo: any) => { return articulo.codigo.toLocaleUpperCase().includes(this.searchValue_articulo.toLocaleUpperCase()) || articulo.descripcion.toLocaleUpperCase().includes(this.searchValue_articulo.toLocaleUpperCase()) || articulo.lote.toLocaleUpperCase().includes(this.searchValue_articulo.toLocaleUpperCase()) })
     }
 
 
@@ -919,60 +933,6 @@ export class EgresosComponent {
     }
 
 
-    buscarArticuloPorCodigo(art: ArticuloAsociado) {
-        if (!art.codigo) {
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ingrese un CODIGO' })
-        }
-
-        this.cs.getAll('articulos/buscar/codigo/' + art.codigo, (data: Articulo) => {
-            this.asignarArticulo(art, data)
-        }, (err: any) => {
-            this.cs.getAll('articulos/buscar/descripcion/' + art.codigo, (data: Articulo[]) => {
-                if (data.length == 1) {
-                    this.asignarArticulo(art, data[0])
-                }
-                else if (data.length > 1) {
-                    this.articulos = data
-                    this.searchValue_articulo = ''
-                    this.filtroArticulo()
-                    this.visible_articulo = true
-                    this.articuloProvisorio = art
-                } else {
-                    art = {
-                        id: art.id,
-                        id_original: '',
-                        id_articulo: '',
-                        id_documento: '',
-                        id_rubro: '',
-                        id_subRubro: '',
-                        id_laboratorio: '',
-                        id_unidadMedida: '',
-                        id_deposito: '',
-                        cantidad: 0,
-                        cantidadUnidadFundamental: 0,
-                        solicitaLote: false,
-                        solicitaVencimiento: false,
-                        lote: '',
-                        vencimiento: this.fechaHoy(),
-                        codigo: '',
-                        descripcion: '',
-                        observaciones: '',
-                        unidadFundamental: '',
-                        cantidadPorUnidadFundamental: 0,
-                        ajuste: 'negativo',
-                        documento: 'remito',
-                        datos: {},
-                        estado: 1,
-                        createdBy: '',
-                        updatedBy: '',
-                        createdAt: '',
-                        updatedAt: ''
-                    }
-                    this.ms.add({ severity: 'error', summary: 'Error!', detail: 'No se encontró ningún articulo con ese código o descripción' })
-                }
-            })
-        })
-    }
     asignarArticulo(art: ArticuloAsociado, datos: Articulo) {
 
         art.id_articulo = datos.id
@@ -996,17 +956,33 @@ export class EgresosComponent {
         console.log(datos)
 
     }
+    setearArticulosSeleccionados(){
+        this.dataTablaArticulosRemitar = this.dataArticulosRemitar.filter((e:any) => e.cantidadRemitar).map((e:any) => {
+            return {
+                ...e,
+                documento: 'remito',
+                ajuste: "negativo",
+                cantidad: e.cantidadRemitar,
+                cantidadUnidadFundamental: e.cantidadRemitarUnidadFundamental,
+                id_original: e.id
+            }
+        })
+        
+        console.log(this.dataTablaArticulosRemitar)
+
+        this.visible_articulo = false
+    }
 
 
     eliminarArticulo(id: string) {
         this.articulosRemito = this.articulosRemito.filter((art: ArticuloAsociado) => { return art.id != id });
     }
     verTotalesArticulosRemito() {
-        if (this.articulosRemito.length == 0) {
+        if (this.dataTablaArticulosRemitar.length == 0) {
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'No hay articulos' })
         }
 
-        this.datosTotales = Object.values(this.articulosRemito.reduce((rubroAcc: any, item: ArticuloAsociado) => {
+        this.datosTotales = Object.values(this.dataTablaArticulosRemitar.reduce((rubroAcc: any, item: ArticuloAsociado) => {
             // Si el rubro no existe en el acumulador, lo agregamos
             if (!rubroAcc.some((rub: any) => rub.id_rubro == item.id_rubro)) {
                 rubroAcc.push({
@@ -1110,9 +1086,23 @@ export class EgresosComponent {
     //DEVOLUCIONES
     seleccionarDevolverTodoRemito(art: any = null) {
         if (art) {
-            art.cantidadRemitar = art.cantidad
+            var articuloDB = this.dataArticulosRemitar.find((e:any) => e.id == art.id )
 
+            articuloDB.cantidadRemitar = art.cantidad
+            articuloDB.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+
+            art.cantidadRemitar = art.cantidad
             art.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+        } else {
+            this.dataTablaArticulos.forEach((art: any) => {
+                var articuloDB = this.dataArticulosRemitar.find((e:any) => e.id == art.id )
+
+                articuloDB.cantidadRemitar = art.cantidad
+                articuloDB.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+                
+                art.cantidadRemitar = art.cantidad
+                art.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+            })
         }
     }
     seleccionarDevolverTodo(art: any = null) {
@@ -1170,7 +1160,8 @@ export class EgresosComponent {
         try {
             numero = ent.toLocaleString('es-ES', {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
+                useGrouping: true
             })
         } catch {
             numero = ent
@@ -1179,28 +1170,6 @@ export class EgresosComponent {
     }
     mostrarDocumento(pto: number, nro: number) {
         return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
-    }
-    totalesArticulosIngreso() {
-        var cantidad = 0
-        var kilos = 0
-        var litros = 0
-        var unidades = 0
-
-        this.articulosRemito.map((item: ArticuloAsociado) => {
-
-            cantidad += item.cantidad
-
-            if (item.unidadFundamental == 'kilos') {
-                kilos += item.cantidadUnidadFundamental
-            } else if (item.unidadFundamental == 'litros') {
-                litros += item.cantidadUnidadFundamental
-            } else if (item.unidadFundamental == 'unidades') {
-                unidades += item.cantidadUnidadFundamental
-            }
-
-        });
-
-        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
     }
     totalesArticulosDevolucion(): string {
         var cantidad = 0
@@ -1224,11 +1193,6 @@ export class EgresosComponent {
         return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
     }
 
-    calcularUnidadFundamental(art: ArticuloAsociado) {
-        art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
-
-        this.remito.total_unidades = this.totalesArticulosIngreso()
-    }
     calcularUnidadFundamentalDevolucion(art: any) {
         art.cantidadDevolverUnidadFundamental = Math.round(art.cantidadDevolver * art.cantidadPorUnidadFundamental * 100) / 100
 

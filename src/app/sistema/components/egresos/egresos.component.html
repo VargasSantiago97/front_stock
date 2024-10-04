@@ -404,52 +404,40 @@
                     <th scope="col" class="text-center">Deposito</th>
                     <th scope="col" class="text-center">Lote</th>
                     <th scope="col" class="text-center">Vto</th>
-                    <th scope="col" class="text-center">#</th>
                 </tr>
             </thead>
             <tbody>
-                @for (art of articulosRemito; track $index) {
+                @for (art of dataTablaArticulosRemitar; track $index) {
                 <tr>
                     <th scope="row" class="p-0 text-end align-middle" style="font-size: small; color: rgb(88, 88, 88);">
                         {{$index + 1}})</th>
-                    <th scope="row" class="p-0" style="min-width: 100px;"><input class="input_tabla" type="text"
-                            [(ngModel)]="art.codigo" (keyup.enter)="buscarArticuloPorCodigo(art)"
-                            [readOnly]="art.id_articulo"></th>
+                    <th scope="row" class="p-0" style="min-width: 100px;">
+                        {{art.codigo}}
+                    </th>
                     <td class="text-nowrap p-0" style="min-width: 500px;">{{art.descripcion ? art.descripcion : '-'}}
                     </td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
-                            [(ngModel)]="art.cantidad" (keyup)="calcularUnidadFundamental(art)"
-                            (change)="calcularUnidadFundamental(art)" [readonly]="remito.id != ''"></td>
+                    <td class="text-nowrap p-0 text-end" style="min-width: 80px;">
+                        {{mostrarNumero(art.cantidad)}}
+                    </td>
                     <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.id_unidadMedida ?
                         obtenerDescripcionUnidadMedida(art.id_unidadMedida) : '-'}}</td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;"><input class="input_tabla" type="number"
-                            [(ngModel)]="art.cantidadUnidadFundamental" [readonly]="remito.id != ''"
-                            (change)="remito.total_unidades = totalesArticulosIngreso()"></td>
+                    <td class="text-nowrap p-0 text-end" style="min-width: 80px;">
+                        {{mostrarNumero(art.cantidadUnidadFundamental)}}
+                    </td>
                     <td class="text-nowrap p-0 text-center" style="min-width: 90px;">{{art.unidadFundamental ?
                         art.unidadFundamental : '-'}}</td>
                     <td class="text-nowrap p-0">
-                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="remito.id != ''">
+                        <select class="input_tabla p-1" [(ngModel)]="art.id_deposito" [disabled]="true">
                             @for (dep of depositos; track $index) {
                             <option value={{dep.id}}>{{dep.alias}}</option>
                             }
                         </select>
                     </td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;">
-                        @if (art.solicitaLote) {
-                        <input class="input_tabla" type="text" [(ngModel)]="art.lote" [readonly]="remito.id != ''">
-                        }
+                    <td class="text-nowrap p-0 text-end" style="min-width: 80px;">
+                        {{art.lote ? art.lote : '-'}}
                     </td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;">
-                        @if (art.solicitaVencimiento) {
-                        <input class="input_tabla" type="date" [(ngModel)]="art.vencimiento"
-                            [readonly]="remito.id != ''">
-                        }
-                    </td>
-                    <td class="text-nowrap p-0">
-                        @if(art.id_articulo && remito.id == ''){
-                        <button type="button" class="btn btn-sm btn-danger m-0 mx-1 p-0 px-1"
-                            (click)="eliminarArticulo(art.id)"><i class="pi pi-trash"></i></button>
-                        }
+                    <td class="text-nowrap p-0 text-end" style="min-width: 80px;">
+                        {{art.vencimiento ? art.vencimiento : '-'}}
                     </td>
                 </tr>
                 }
@@ -458,7 +446,7 @@
     </div>
 
     @if (remito.id == '') {
-    <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="mostrarModalArticulos()">Agregar nuevo</button>
+    <button type="button" class="btn btn-success m-2 p-0 px-5" (click)="mostrarModalArticulos()">ASOCIAR ARTICULOS</button>
     }
 
     @if (documentosAsociados.length) {
@@ -1204,7 +1192,7 @@
 
                 <input type="text" class="form-control" placeholder="Articulo / Lote / Serie"
                     aria-label="Articulo / Lote / Serie" aria-describedby="basic-addon1"
-                    [(ngModel)]="searchValue_cliente" (change)="clienteFiltro()" (keyup)="clienteFiltro()">
+                    [(ngModel)]="searchValue_articulo" (change)="filtroArticulo()" (keyup)="filtroArticulo()">
 
             </div>
         </div>
@@ -1222,24 +1210,24 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('ingreso')">INGRESO
-                            @if (ordenarTablaPor_art == 'ingreso') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('tipo')">INGRESO
+                            @if (ordenarTablaPor_art == 'tipo') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('numero')">NUMERO
-                            @if (ordenarTablaPor_art == 'numero') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('numeroDocumento')">NUMERO
+                            @if (ordenarTablaPor_art == 'numeroDocumento') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('dueno')">DUEÑO
-                            @if (ordenarTablaPor_art == 'dueno') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('razon_social')">DUEÑO
+                            @if (ordenarTablaPor_art == 'razon_social') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
@@ -1254,8 +1242,8 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('articulo')">ARTICULO
-                            @if (ordenarTablaPor_art == 'articulo') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('descripcion')">ARTICULO
+                            @if (ordenarTablaPor_art == 'descripcion') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
@@ -1270,8 +1258,8 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('serie')">LOTE/SERIE
-                            @if (ordenarTablaPor_art == 'serie') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('lote')">LOTE/SERIE
+                            @if (ordenarTablaPor_art == 'lote') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
@@ -1286,17 +1274,17 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidadDisponible')">CANT.
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidad')">CANT.
                             DISP.
-                            @if (ordenarTablaPor_art == 'cantidadDisponible') {
+                            @if (ordenarTablaPor_art == 'cantidad') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidad')">CANTIDAD
-                            @if (ordenarTablaPor_art == 'cantidad') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidadRemitar')">CANTIDAD
+                            @if (ordenarTablaPor_art == 'cantidadRemitar') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
@@ -1311,16 +1299,16 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidadUF')">CANT F.
-                            @if (ordenarTablaPor_art == 'cantidad') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidadRemitarUnidadFundamental')">CANT F.
+                            @if (ordenarTablaPor_art == 'cantidadRemitarUnidadFundamental') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
-                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('unidadMedidaUF')">U.M.F.
-                            @if (ordenarTablaPor_art == 'unidadMedida') {
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('unidadFundamental')">U.M.F.
+                            @if (ordenarTablaPor_art == 'unidadFundamental') {
                             <i
                                 class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                             } @else {
@@ -1339,11 +1327,11 @@
                                 [severity]="registro.tipo == 'INGRESO' ? 'success' : 'info'" /></th>
 
 
-                        <td class="text-nowrap text-center">{{ mostrarDocumento(registro.punto, registro.numero)}}</td>
+                        <td class="text-nowrap text-center">{{registro.numeroDocumento}}</td>
                         <td class="text-nowrap">{{registro.razon_social}}</td>
                         <td class="text-nowrap">{{registro.codigo}}</td>
                         <td class="text-nowrap">{{registro.descripcion}}</td>
-                        <td class="text-nowrap">{{obtenerDescripcionDeposito(registro.id_deposito)}}</td>
+                        <td class="text-nowrap">{{registro.deposito}}</td>
                         <td class="text-nowrap">{{registro.lote}}</td>
                         <td class="text-nowrap">{{registro.vencimiento}}</td>
                         <td class="text-nowrap"><strong>{{registro.cantidad}}</strong> | ~{{registro.cantidadUnidadFundamental}}</td>
@@ -1354,7 +1342,7 @@
                                 (keyup)="calcularUnidadFundamentalRemito(registro)"
                                 (change)="calcularUnidadFundamentalRemito(registro)" min="0">
                         </td>
-                        <td class="text-nowrap">{{obtenerDescripcionUnidadMedida(registro.id_unidadMedida)}}</td>
+                        <td class="text-nowrap">{{registro.unidadMedida}}</td>
                         <td class="text-nowrap">
                             <input class="input_tabla" type="number" [(ngModel)]="registro.cantidadRemitarUnidadFundamental"
                                 (keyup)="verificarMaxUFRemitar(registro)"
@@ -1371,6 +1359,18 @@
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col text-end">
+            <button type="button" class="btn btn-warning m-2" (click)="visible_articulo = false">CERRAR</button>
+
+            <button type="button" class="btn btn-warning m-2" (click)="seleccionarDevolverTodoRemito()">SELECCIONAR
+                TODO</button>
+            <button type="button" class="btn btn-success m-2" (click)="setearArticulosSeleccionados()">GUARDAR SELECCION</button>
+
         </div>
     </div>
 </p-dialog>
