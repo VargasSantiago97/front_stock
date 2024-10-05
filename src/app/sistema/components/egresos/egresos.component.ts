@@ -372,7 +372,7 @@ export class EgresosComponent {
             })
 
             this.cs.getAll('articulosAsociados/buscar/' + id, (datos: ArticuloAsociado[]) => {
-                this.articulosRemito = datos
+                this.dataTablaArticulosRemitar = datos
             })
 
             this.cs.getAll(`egresosDevoluciones/buscar/asociado/${id}`, (datos: RemitoDevolucion[]) => {
@@ -428,25 +428,15 @@ export class EgresosComponent {
         this.id_cliente = ''
     }
     guardarRemito(tipo: 'D' | 'M' | null = null) {
-        var cantidadRegistros = this.articulosRemito.length
-        var cantidadRegistrosId = this.articulosRemito.filter((e: ArticuloAsociado) => e.id_articulo).length
+        var cantidadRegistros = this.dataTablaArticulosRemitar.length
+
         if (!this.remito.id_cliente) {
             return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'No asignó un cliente' })
         }
         if (!cantidadRegistros) {
             return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
         }
-        if (!cantidadRegistrosId) {
-            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
-        }
-        if ((cantidadRegistros > cantidadRegistrosId) && this.avisarRegistrosVacios) {
-            this.avisarRegistrosVacios = false
-            setTimeout(() => {
-                this.avisarRegistrosVacios = true
-            }, 5000);
 
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Existes articulos que están vacíos. Presione nuevamente para confirmar' })
-        }
 
         this.cs.getAll('egresos/buscar/siguiente/' + this.remito.punto, (ultNum: number) => {
             this.remito.numero = ultNum
@@ -455,7 +445,7 @@ export class EgresosComponent {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Remito creado con ID: ' + id_ingreso_creado })
                 this.remito.id = id_ingreso_creado
 
-                var artRemitos = this.articulosRemito.map((artRemitos: ArticuloAsociado) => {
+                var artRemitos = this.dataTablaArticulosRemitar.map((artRemitos: ArticuloAsociado) => {
                     const { id, ...resto } = artRemitos;
 
                     return {
@@ -967,8 +957,6 @@ export class EgresosComponent {
                 id_original: e.id
             }
         })
-        
-        console.log(this.dataTablaArticulosRemitar)
 
         this.visible_articulo = false
     }
