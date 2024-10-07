@@ -812,9 +812,8 @@
                     <th scope="col" rowspan="2" class="text-center bord">#</th>
                     <th scope="col" rowspan="2" class="text-center bord">Cód</th>
                     <th scope="col" rowspan="2" class="text-center bord">Descripción</th>
-                    <th scope="col" colspan="4" class="text-center bord">Cant. Inic.</th>
-                    <th scope="col" colspan="4" class="text-center bord">Entradas</th>
-                    <th scope="col" colspan="4" class="text-center bord">Salidas</th>
+                    <th scope="col" colspan="4" class="text-center bord">CANTIDAD REMITADA</th>
+                    <th scope="col" colspan="4" class="text-center bord">CANTIDAD DISPONIBLE</th>
                     <th scope="col" colspan="4" class="text-center bord">A DEVOLVER</th>
 
                     <th scope="col" rowspan="2" class="text-center bord">Deposito</th>
@@ -823,8 +822,6 @@
                     <th scope="col" rowspan="2" class="text-center bord">#</th>
                 </tr>
                 <tr class="table-bordered">
-                    <th scope="col" colspan="2" class="text-center bord">Unidades</th>
-                    <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
                     <th scope="col" colspan="2" class="text-center bord">Unidades</th>
                     <th scope="col" colspan="2" class="text-center bord">Unidad Fund.</th>
                     <th scope="col" colspan="2" class="text-center bord">Unidades</th>
@@ -846,7 +843,7 @@
 
 
 
-                    <!-- CANTIDAD INICIAL -->
+                    <!-- CANTIDAD REMITADA -->
                     <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.cantidad}}</td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
                         obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
@@ -857,22 +854,12 @@
 
 
 
-                    <!-- ENTRADAS -->
-                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.entradas}}</td>
+                    <!-- DISPONIBLE A DEVOLVER -->
+                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.disponibleDevolver}}</td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
                         obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">
-                        {{artDev.entradas_uf}}</td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
-                        artDev.unidadFundamental : '[*]'}}</td>
-
-
-                    <!-- SALIDAS -->
-                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.salidas}}</td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.id_unidadMedida ?
-                        obtenerDescripcionUnidadMedida(artDev.id_unidadMedida) : '[*]'}}</td>
-                    <td class="text-nowrap p-0" style="min-width: 80px;">
-                        {{artDev.salidas_uf}}</td>
+                        {{artDev.disponibleDevolver_uf}}</td>
                     <td class="text-nowrap p-0" style="min-width: 80px;">{{artDev.unidadFundamental ?
                         artDev.unidadFundamental : '[*]'}}</td>
 

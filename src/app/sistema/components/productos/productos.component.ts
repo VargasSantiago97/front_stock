@@ -101,7 +101,7 @@ export class ProductosComponent {
     constructor(
         private cs: ConsultasService,
         private ms: MessageService
-    ){}
+    ) { }
 
     ngOnInit() {
         this.buscarRubros()
@@ -114,24 +114,24 @@ export class ProductosComponent {
         this.searchValue = ''
     }
     mostrarModalCliente(id: any) { } //ELIMINAR
-    buscarLaboratorios(){
-        this.cs.getAll('laboratorios', (data:Laboratorio[]) => {
+    buscarLaboratorios() {
+        this.cs.getAll('laboratorios', (data: Laboratorio[]) => {
             this.laboratorios = data
             this.filtroLaboratorio()
         })
     }
-    buscarUnidadMedidas(){
-        this.cs.getAll('unidadMedidas', (data:UnidadMedida[]) => {
+    buscarUnidadMedidas() {
+        this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => {
             this.unidadMedidas = data
             this.filtroUnidadMedida()
         })
     }
 
 
-    mostrarModalRubro(id:any = null) {
+    mostrarModalRubro(id: any = null) {
         this.visible_rubro = true
-        if(id){
-            this.rubro = this.rubros.find((rubro:Rubro) => { return rubro.id == id })!
+        if (id) {
+            this.rubro = this.rubros.find((rubro: Rubro) => { return rubro.id == id })!
         } else {
             this.rubro = {
                 id: '',
@@ -146,35 +146,43 @@ export class ProductosComponent {
             }
         }
     }
-    buscarRubros(){
-        this.cs.getAll('rubros', (data:Rubro[]) => {
+    buscarRubros() {
+        this.cs.getAll('rubros', (data: Rubro[]) => {
             this.rubros = data
             this.filtroRubro()
         })
     }
-    guardarRubro(rubro:Rubro){
-        if(rubro.id){
-            this.cs.update('rubros', rubro, (cant:any) => {
+    guardarRubro(rubro: Rubro) {
+        if (rubro.id) {
+            this.cs.update('rubros', rubro, (cant: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
                 this.visible_rubro = false
                 this.buscarRubros()
             })
         } else {
-            this.cs.create('rubros', rubro, (id:any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Rubro creado con ID: ' + id })
-                this.visible_rubro = false
-                this.buscarRubros()
+            if(!rubro.alias) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese un alias'});
+            if(!rubro.descripcion) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese una descripcion'});
+
+
+            this.cs.getAll('rubros/buscar/alias/' + rubro.alias, (data: Rubro) => {
+                this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ya existe un Rubro con el alias: ' + rubro.alias })
+            }, () => {
+                this.cs.create('rubros', rubro, (id: any) => {
+                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Rubro creado con ID: ' + id })
+                    this.visible_rubro = false
+                    this.buscarRubros()
+                })
             })
         }
     }
-    eliminarRubro(id:string){
-        this.cs.delete('rubros', id, (cant:any) => {
+    eliminarRubro(id: string) {
+        this.cs.delete('rubros', id, (cant: any) => {
             this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
             this.visible_rubro = false
             this.buscarRubros()
         })
     }
-    onChangeRubro(id:string){
+    onChangeRubro(id: string) {
         this.id_rubro = id
         this.id_subRubro = ''
         this.articulos = []
@@ -183,13 +191,13 @@ export class ProductosComponent {
     }
 
 
-    mostrarModalSubRubro(id:any = null){
-        if(!this.id_rubro){
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un RUBRO'})
+    mostrarModalSubRubro(id: any = null) {
+        if (!this.id_rubro) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un RUBRO' })
         }
 
-        if(id){
-            this.subRubro = this.subRubros.find((subRubro:SubRubro) => { return subRubro.id == id })!
+        if (id) {
+            this.subRubro = this.subRubros.find((subRubro: SubRubro) => { return subRubro.id == id })!
         } else {
             this.subRubro = {
                 id: '',
@@ -207,60 +215,67 @@ export class ProductosComponent {
 
         this.visible_subRubro = true
     }
-    buscarSubRubros(){
-        this.cs.getAll('subrubros/' + this.id_rubro, (data:SubRubro[]) => {
+    buscarSubRubros() {
+        this.cs.getAll('subrubros/' + this.id_rubro, (data: SubRubro[]) => {
             this.subRubros = data
             this.filtroSubRubro()
         })
     }
-    guardarSubRubro(subRubro:SubRubro){
-        if(subRubro.id){
-            this.cs.update('subrubros', subRubro, (cant:any) => {
+    guardarSubRubro(subRubro: SubRubro) {
+        if (subRubro.id) {
+            this.cs.update('subrubros', subRubro, (cant: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
                 this.visible_subRubro = false
                 this.buscarSubRubros()
             })
         } else {
-            this.cs.create('subrubros', subRubro, (id:any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'SubRubro creado con ID: ' + id })
-                this.visible_subRubro = false
-                this.buscarSubRubros()
+            if(!subRubro.alias) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese un alias'});
+            if(!subRubro.descripcion) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese una descripcion'});
+
+            this.cs.getAll('subrubros/buscar/alias/' + subRubro.alias, (data: SubRubro) => {
+                this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ya existe un SubRubro con el alias: ' + subRubro.alias })
+            }, () => {
+                this.cs.create('subrubros', subRubro, (id: any) => {
+                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'SubRubro creado con ID: ' + id })
+                    this.visible_subRubro = false
+                    this.buscarSubRubros()
+                })
             })
         }
     }
-    eliminarSubRubro(id:string){
-        this.cs.delete('subrubros', id, (cant:any) => {
+    eliminarSubRubro(id: string) {
+        this.cs.delete('subrubros', id, (cant: any) => {
             this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
             this.visible_subRubro = false
             this.buscarSubRubros()
         })
     }
-    onChangeSubRubro(id:string){
+    onChangeSubRubro(id: string) {
         this.id_subRubro = id
         this.buscarArticulos()
     }
 
 
-    filtroRubro(){
-        this.rubrosFiltrados = this.rubros.filter((rubro:Rubro) => { return rubro.descripcion.toLocaleUpperCase().includes(this.searchValue_rubro.toLocaleUpperCase()) })
+    filtroRubro() {
+        this.rubrosFiltrados = this.rubros.filter((rubro: Rubro) => { return rubro.descripcion.toLocaleUpperCase().includes(this.searchValue_rubro.toLocaleUpperCase()) })
     }
-    filtroSubRubro(){
-        this.subRubrosFiltrados = this.subRubros.filter((subRubro:SubRubro) => { return subRubro.descripcion.toLocaleUpperCase().includes(this.searchValue_subRubro.toLocaleUpperCase()) })
+    filtroSubRubro() {
+        this.subRubrosFiltrados = this.subRubros.filter((subRubro: SubRubro) => { return subRubro.descripcion.toLocaleUpperCase().includes(this.searchValue_subRubro.toLocaleUpperCase()) })
     }
-    filtroLaboratorio(){
-        this.laboratoriosFiltrados = this.laboratorios.filter((laboratorio:Laboratorio) => { return laboratorio.descripcion.toLocaleUpperCase().includes(this.searchValue_laboratorio.toLocaleUpperCase()) })  
+    filtroLaboratorio() {
+        this.laboratoriosFiltrados = this.laboratorios.filter((laboratorio: Laboratorio) => { return laboratorio.descripcion.toLocaleUpperCase().includes(this.searchValue_laboratorio.toLocaleUpperCase()) })
     }
-    filtroUnidadMedida(){
-        this.unidadMedidasFiltrados = this.unidadMedidas.filter((unidadMedida:UnidadMedida) => { return unidadMedida.descripcion.toLocaleUpperCase().includes(this.searchValue_unidadMedida.toLocaleUpperCase()) })  
+    filtroUnidadMedida() {
+        this.unidadMedidasFiltrados = this.unidadMedidas.filter((unidadMedida: UnidadMedida) => { return unidadMedida.descripcion.toLocaleUpperCase().includes(this.searchValue_unidadMedida.toLocaleUpperCase()) })
     }
 
 
-    mostrarModalArticulo(id:any = null){
-        if(! (this.id_rubro && this.id_subRubro) ){
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un RUBRO y SUBRUBRO'})
+    mostrarModalArticulo(id: any = null) {
+        if (!(this.id_rubro && this.id_subRubro)) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un RUBRO y SUBRUBRO' })
         }
-        if(id){
-            this.articulo = this.articulos.find((articulo:Articulo) => { return articulo.id == id })!
+        if (id) {
+            this.articulo = this.articulos.find((articulo: Articulo) => { return articulo.id == id })!
         } else {
             this.articulo = {
                 id: '',
@@ -287,30 +302,38 @@ export class ProductosComponent {
 
         this.visible_articulo = true
     }
-    buscarArticulos(){
-        this.cs.getAll(`articulos/${this.id_rubro}/${this.id_subRubro}`, (data:Articulo[]) => {
+    buscarArticulos() {
+        this.cs.getAll(`articulos/${this.id_rubro}/${this.id_subRubro}`, (data: Articulo[]) => {
             this.articulos = data
         })
     }
-    guardarArticulo(articulo:Articulo){
-        if(articulo.id){
-            this.cs.update('articulos', articulo, (cant:any) => {
+    guardarArticulo(articulo: Articulo) {
+        if (articulo.id) {
+            this.cs.update('articulos', articulo, (cant: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros editados: ' + cant[0] })
                 this.visible_articulo = false
                 this.buscarArticulos()
             })
         } else {
-            this.cs.create('articulos', articulo, (id:any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Articulo creado con ID: ' + id })
-                this.visible_articulo = false
-                this.buscarArticulos()
+            if(!articulo.codigo) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese un codigo'});
+            if(!articulo.descripcion) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese una descripcion'});
+
+
+            this.cs.getAll('articulos/buscar/codigo/' + articulo.codigo, (data: Articulo) => {
+                this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ya existe un articulo con el codigo: ' + articulo.codigo })
+            }, () => {
+                this.cs.create('articulos', articulo, (id: any) => {
+                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Articulo creado con ID: ' + id })
+                    this.visible_articulo = false
+                    this.buscarArticulos()
+                })
             })
         }
     }
-    eliminarArticulo(id:string){
-        this.cs.delete('articulos', id, (cant:any) => {
+    eliminarArticulo(id: string) {
+        this.cs.delete('articulos', id, (cant: any) => {
             this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
-            this.visible_subRubro = false
+            this.visible_articulo = false
             this.buscarArticulos()
         })
     }
@@ -318,16 +341,16 @@ export class ProductosComponent {
 
 
     //HELPERS
-    obtenerDescripcionRubro(id:string){
-        return this.rubros.find((rub:Rubro) => { return rub.id == id })?.descripcion
+    obtenerDescripcionRubro(id: string) {
+        return this.rubros.find((rub: Rubro) => { return rub.id == id })?.descripcion
     }
-    obtenerDescripcionSubRubro(id:string){
-        return this.subRubros.find((subRub:SubRubro) => { return subRub.id == id })?.descripcion
+    obtenerDescripcionSubRubro(id: string) {
+        return this.subRubros.find((subRub: SubRubro) => { return subRub.id == id })?.descripcion
     }
-    obtenerDescripcionUnidadMedida(id:string){
-        return this.unidadMedidas.find((unidadMedida:UnidadMedida) => { return unidadMedida.id == id })?.descripcion
+    obtenerDescripcionUnidadMedida(id: string) {
+        return this.unidadMedidas.find((unidadMedida: UnidadMedida) => { return unidadMedida.id == id })?.descripcion
     }
-    obtenerDescripcionLaboratorio(id:string){
-        return this.laboratorios.find((laboratorio:Laboratorio) => { return laboratorio.id == id })?.descripcion
+    obtenerDescripcionLaboratorio(id: string) {
+        return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
     }
 }

@@ -241,9 +241,9 @@ export class IngresosComponent {
     fechasFiltradas: string = ''
     clienteFiltrados: string = ''
 
-    ordenarTablaOrden: boolean = false
+    ordenarTablaOrden: boolean = true
     ordenarTablaPorAnterior: string = ''
-    ordenarTablaPor: string = ''
+    ordenarTablaPor: string = 'numeroMostrar'
 
     constructor(
         private padron: PadronService,
@@ -256,10 +256,10 @@ export class IngresosComponent {
     ) { }
 
     ngOnInit() {
-        if(localStorage.getItem('stock_ingresosFechaFiltroDesde')){
+        if (localStorage.getItem('stock_ingresosFechaFiltroDesde')) {
             this.fechaFiltroDesde = localStorage.getItem('stock_ingresosFechaFiltroDesde')!
         }
-        if(localStorage.getItem('stock_ingresosFechaFiltroHasta')){
+        if (localStorage.getItem('stock_ingresosFechaFiltroHasta')) {
             this.fechaFiltroHasta = localStorage.getItem('stock_ingresosFechaFiltroHasta')!
         }
 
@@ -350,6 +350,10 @@ export class IngresosComponent {
 
         this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
             this.dataTabla = e
+
+            //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
+            this.ordenarTablaPorAnterior = ''
+            this.ordenarTabla(this.ordenarTablaPor)
         })
 
     }
@@ -1350,7 +1354,7 @@ export class IngresosComponent {
 
         this.ordenarTablaPorAnterior = ordenaPor
     }
-    guardarFechas(){
+    guardarFechas() {
         localStorage.setItem('stock_ingresosFechaFiltroDesde', this.fechaFiltroDesde)
         localStorage.setItem('stock_ingresosFechaFiltroHasta', this.fechaFiltroHasta)
         this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Fechas guardadas' })
@@ -1358,13 +1362,13 @@ export class IngresosComponent {
 
     //INFORMES
     listadoXLSX() {
-        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
+        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS');
     }
     detalleXLSX() {
         var user = this.as.isUser()
-        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion });
+        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion }, 'INGRESOS');
     }
     datosXLSX() {
-        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
+        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS');
     }
 }

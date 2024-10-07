@@ -56,6 +56,8 @@ export class ClientesComponent {
     transportes: Transporte[] = []
     establecimientos: Establecimiento[] = []
 
+    avisarExisteCuit: boolean = true
+
     constructor(
         private padron: PadronService,
         private ms: MessageService,
@@ -69,7 +71,6 @@ export class ClientesComponent {
 
     actualizarDatosTabla(){
         this.cs.getAll('clientes', (clientes:Cliente[]) => { this.clientes = clientes })
-        this.visible = false
     }
 
 
@@ -136,7 +137,9 @@ export class ClientesComponent {
 
     mostrarModalCliente(id:any = undefined){
         if(id){
-            this.cliente = { ... this.clientes.find((e:any) => { return e.id == id })! }
+            this.cs.getAll('clientes/' + id, (cliente:Cliente) => {
+                this.cliente = cliente
+            })
 
             this.buscarAutorizados(id)
             this.buscarTransporte(id)
@@ -156,18 +159,36 @@ export class ClientesComponent {
                 this.actualizarDatosTabla()
             })
         } else {
-            if(this.clientes.some((clien:Cliente) => clien.codigo == this.cliente.codigo)){
-                return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ya existe un cliente con este codigo.' })
+            if(!this.cliente.codigo) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese un CODIGO'});
+            if(!this.cliente.alias) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese un ALIAS'});
+            if(!this.cliente.razon_social) return this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ingrese una RAZON SOCIAL'});
+
+            if(this.clientes.some((clien:Cliente) => clien.cuit == this.cliente.cuit) && this.avisarExisteCuit){
+                
+                this.avisarExisteCuit = false
+                setTimeout(() => {
+                    this.avisarExisteCuit = true
+                }, 10000)
+
+                return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ya existe un cliente con este CUIT. Para crearlo de todas formas, vuelva a presionar GUARDAR' })
             }
-            this.cs.create('clientes', this.cliente, (id:any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Cliente creado con ID: ' + id })
-                this.actualizarDatosTabla()
+
+            this.cs.getAll('clientes/codigo/' + this.cliente.codigo, (data: Cliente) => {
+                this.ms.add({ severity: 'error', summary: 'Error!', detail: 'Ya existe un cliente con el codigo: ' + this.cliente.codigo })
+            }, () => {
+                this.cs.create('clientes', this.cliente, (id:any) => {
+                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Cliente creado con ID: ' + id })
+                    this.actualizarDatosTabla()
+
+                    this.mostrarModalCliente(id)
+                })
             })
         }
     }
     eliminarCliente(id:string){
         this.cs.delete('clientes', id, (cant:any) => {
             this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Registros borrados: ' + cant[0] })
+            this.visible = false
             this.actualizarDatosTabla()
         })
     }

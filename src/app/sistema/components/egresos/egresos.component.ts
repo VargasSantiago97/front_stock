@@ -241,9 +241,9 @@ export class EgresosComponent {
     fechasFiltradas: string = ''
     clienteFiltrados: string = ''
 
-    ordenarTablaOrden: boolean = false
+    ordenarTablaOrden: boolean = true
     ordenarTablaPorAnterior: string = ''
-    ordenarTablaPor: string = ''
+    ordenarTablaPor: string = 'numeroMostrar'
 
     ordenarTablaOrden_art: boolean = false
     ordenarTablaPorAnterior_art: string = ''
@@ -303,7 +303,7 @@ export class EgresosComponent {
     descargarRemito(id: string) {
         this.pdf.remito(id, 1).subscribe((blob: any) => {
 
-            this.cs.getAll('remitos/' + id, (remito: Remito) => {
+            this.cs.getAll('egresos/' + id, (remito: Remito) => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -353,6 +353,10 @@ export class EgresosComponent {
 
         this.cs.getAllPost(`operaciones/egresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
             this.dataTabla = e
+
+            //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
+            this.ordenarTablaPorAnterior = ''
+            this.ordenarTabla(this.ordenarTablaPor)
         })
 
     }
@@ -363,6 +367,7 @@ export class EgresosComponent {
         this.dataTablaArticulosRemitar = []
         this.dataArticulosRemitar = []
         this.dataTablaArticulos = []
+        this.documentosAsociados = []
 
         if (id) {
             this.articulosRemito = []
@@ -494,8 +499,11 @@ export class EgresosComponent {
 
                 this.id_cliente = dato.id_cliente
 
-                this.cs.getAll('articulosAsociados/devolucion/' + id_remito, (datos: any) => {
+                this.cs.getAll('operaciones/egresos/devolucion/' + id_remito, (datos: any) => {
                     this.articulosDevolucion = datos
+                    console.group('DATOS DEVOLUCION')
+                    console.log(datos)
+                    console.groupEnd()
                 })
             })
         } else if (id_devolucion) {
@@ -530,14 +538,14 @@ export class EgresosComponent {
                 this.devolucion.id = id_devolucion_creado
 
                 var artDevs = this.articulosDevolucion.filter((artDev) => artDev.cantidadDevolver).map((artDev: any) => {
-                    const { id, ...resto } = artDev;
+                    const { id, id_original, ...resto } = artDev;
 
                     return {
                         ...resto,
                         cantidad: artDev.cantidadDevolver,
                         cantidadUnidadFundamental: artDev.cantidadDevolverUnidadFundamental,
                         id_documento: id_devolucion_creado,
-                        id_original: id,
+                        id_original: id_original,
                         ajuste: 'positivo',
                         documento: 'remito_devolucion'
                     }
@@ -1095,18 +1103,12 @@ export class EgresosComponent {
     }
     seleccionarDevolverTodo(art: any = null) {
         if (art) {
-            var cantidadDisponible = art.cantidad - art.salidas + art.entradas
-            art.cantidadDevolver = cantidadDisponible
-
-            var cantidadUFDisponible = art.cantidadUnidadFundamental - art.salidas_uf + art.entradas_uf
-            art.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+            art.cantidadDevolver = art.disponibleDevolver
+            art.cantidadDevolverUnidadFundamental = art.disponibleDevolver_uf
         } else {
             this.articulosDevolucion.forEach((art: any) => {
-                var cantidadDisponible = art.cantidad - art.salidas + art.entradas
-                art.cantidadDevolver = cantidadDisponible
-
-                var cantidadUFDisponible = art.cantidadUnidadFundamental - art.salidas_uf + art.entradas_uf
-                art.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+                art.cantidadDevolver = art.disponibleDevolver
+                art.cantidadDevolverUnidadFundamental = art.disponibleDevolver_uf
             })
         }
 
@@ -1202,22 +1204,18 @@ export class EgresosComponent {
         this.verificarMaxUFRemitar(art)
     }
     verificarMax(a: any) {
-        var cantidadDisponible = a.cantidad - a.salidas + a.entradas
-
-        if (a.cantidadDevolver > cantidadDisponible) {
-            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver es: ' + cantidadDisponible })
-            a.cantidadDevolver = cantidadDisponible
+        if (a.cantidadDevolver > a.disponibleDevolver) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver es: ' + a.disponibleDevolver })
+            a.cantidadDevolver = a.disponibleDevolver
         }
         if (a.cantidadDevolver < 0) {
             a.cantidadDevolver = 0
         }
     }
     verificarMaxUF(a: any) {
-        var cantidadUFDisponible = a.cantidadUnidadFundamental - a.salidas_uf + a.entradas_uf
-
-        if (a.cantidadDevolverUnidadFundamental > cantidadUFDisponible) {
-            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver (UF) es: ' + cantidadUFDisponible })
-            a.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+        if (a.cantidadDevolverUnidadFundamental > a.disponibleDevolver_uf) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a devolver (UF) es: ' + a.disponibleDevolver_uf })
+            a.cantidadDevolverUnidadFundamental = a.disponibleDevolver_uf
         }
         if (a.cantidadDevolverUnidadFundamental < 0) {
             a.cantidadDevolverUnidadFundamental = 0
@@ -1305,13 +1303,13 @@ export class EgresosComponent {
 
     //INFORMES
     listadoXLSX() {
-        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
+        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'REMITOS');
     }
     detalleXLSX() {
         var user = this.as.isUser()
-        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion });
+        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion }, 'REMITOS');
     }
     datosXLSX() {
-        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados });
+        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'REMITOS');
     }
 }

@@ -13,7 +13,7 @@ export class XlsxService {
 
     constructor(private http: HttpClient) { }
 
-    downloadExcelListado(data: any) {
+    downloadExcelListado(data: any, nombre: string = '') {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
@@ -22,11 +22,11 @@ export class XlsxService {
 
         this.http.post(`${this.XLSX_URI}/xlsx/ingresos`, data, { headers, responseType: 'blob' }).subscribe((data: Blob) => {
             const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(blob, 'INGRESOS LISTADO.xlsx');
+            saveAs(blob, `${nombre} - LISTADO - ${this.fechaHoy()}.xlsx`);
         });
     }
 
-    downloadExcelDetalle(data: any) {
+    downloadExcelDetalle(data: any, nombre: string = '') {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
@@ -36,11 +36,11 @@ export class XlsxService {
         this.http.post(`${this.XLSX_URI}/xlsx/ingresos/detalles`, data, { headers, responseType: 'blob' }).subscribe((result: Blob) => {
             const blob = new Blob([result], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-            saveAs(blob, 'INGRESOS DE MERCADERÍA Y DEVOLUCIONES - ' + data.fecha + '.xlsx');
+            saveAs(blob, `${nombre} - REPORTE - ${this.fechaHoy()}.xlsx`);
         });
     }
 
-    downloadExcelDatos(data: any) {
+    downloadExcelDatos(data: any, nombre: string = '') {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
@@ -49,8 +49,18 @@ export class XlsxService {
 
         this.http.post(`${this.XLSX_URI}/xlsx/ingresos/datos`, data, { headers, responseType: 'blob' }).subscribe((data: Blob) => {
             const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(blob, 'INGRESOS DE MERCADERÍA Y DEVOLUCIONES - DATOS.xlsx');
+            saveAs(blob, `${nombre} - DATOS - ${this.fechaHoy()}.xlsx`);
         });
+    }
+
+    private fechaHoy() {
+        const fechaActual = new Date();
+
+        const ano = fechaActual.getFullYear();
+        const mes = ('0' + (fechaActual.getMonth() + 1)).slice(-2);
+        const dia = ('0' + fechaActual.getDate()).slice(-2);
+
+        return `${ano}-${mes}-${dia}`
     }
 
 }

@@ -97,7 +97,7 @@
         </div>
         <div class="col-12 col-md-6">
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">CUIT</span>
+                <button class="btn btn-outline-secondary" type="button" id="button-addon1" (click)="buscarCUIT()">CUIT</button>
                 <input type="number" class="form-control" placeholder="C.U.I.T." aria-label="C.U.I.T."
                     aria-describedby="basic-addon1" [(ngModel)]="cliente.cuit" (keyup.enter)="buscarCUIT()">
             </div>
