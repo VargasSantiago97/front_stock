@@ -453,7 +453,7 @@ export class IngresosComponent {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id_ingreso_creado })
                 this.ingreso.id = id_ingreso_creado
 
-                var artIngs = this.articulosIngreso.map((artIng: ArticuloAsociado) => {
+                var artIngs = this.articulosIngreso.filter((e: ArticuloAsociado) => e.id_articulo).map((artIng: ArticuloAsociado) => {
                     const { id, ...resto } = artIng;
 
                     return {
@@ -1273,6 +1273,8 @@ export class IngresosComponent {
     }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
+        if(art.cantidad < 0) art.cantidad = 0;
+
         art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
 
         this.ingreso.total_unidades = this.totalesArticulosIngreso()

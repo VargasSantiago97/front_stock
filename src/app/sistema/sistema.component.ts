@@ -30,6 +30,8 @@ export class SistemaComponent {
     navigate(ruta:any, e:any = null){
         if(e) e.preventDefault();
 
+        document.title = 'STOCK - ' + ruta.toLocaleUpperCase();
+
         this.router.navigate(['/sistema/' + ruta])
     }
 }

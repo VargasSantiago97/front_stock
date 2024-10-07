@@ -12,7 +12,7 @@
                 <div class="listbox-container" id="listbox">
                     @for (dep of depositosFiltrados; track $index) {
                     <div class="listbox-item" [ngClass]="id_deposito == dep.id ? 'selected' : ''"
-                        (click)="id_deposito = dep.id" (dblclick)="mostrarModalDeposito(dep.id)">{{dep.alias}}
+                        (click)="id_deposito = dep.id" (dblclick)="mostrarModalDeposito(dep.id)">{{dep.descripcion}}
                     </div>
                     }
                 </div>
@@ -30,7 +30,7 @@
                 <div class="listbox-container" id="listbox">
                     @for (um of unidadMedidasFiltrados; track $index) {
                     <div class="listbox-item" [ngClass]="id_unidadMedida == um.id ? 'selected' : ''"
-                        (click)="id_unidadMedida = um.id" (dblclick)="mostrarModalUnidadMedida(um.id)">{{um.alias}}
+                        (click)="id_unidadMedida = um.id" (dblclick)="mostrarModalUnidadMedida(um.id)">{{um.descripcion}}
                     </div>
                     }
                 </div>
@@ -48,7 +48,7 @@
                 <div class="listbox-container" id="listbox">
                     @for (lab of laboratoriosFiltrados; track $index) {
                     <div class="listbox-item" [ngClass]="id_laboratorio == lab.id ? 'selected' : ''"
-                        (click)="id_laboratorio = lab.id" (dblclick)="mostrarModalLaboratorio(lab.id)">{{lab.alias}}
+                        (click)="id_laboratorio = lab.id" (dblclick)="mostrarModalLaboratorio(lab.id)">{{lab.descripcion}}
                     </div>
                     }
                 </div>
