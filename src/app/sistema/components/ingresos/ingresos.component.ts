@@ -361,6 +361,7 @@ export class IngresosComponent {
 
     mostrarModalIngreso(id: any = undefined) {
         this.pestActiva = 'cliente'
+        this.documentosAsociados = []
         if (id) {
             this.articulosIngreso = []
 
