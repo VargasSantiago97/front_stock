@@ -8,19 +8,31 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/" (click)="navigate('ingresos', $event)">INGRESOS</a>
+                    <a class="nav-link active" aria-current="page" href="/"
+                        (click)="navigate('ingresos', $event)">INGRESOS</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/" (click)="navigate('egresos', $event)">EGRESOS</a>
+                    <a class="nav-link active" aria-current="page" href="/"
+                        (click)="navigate('egresos', $event)">EGRESOS</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/" (click)="navigate('productos', $event)">PRODUCTOS</a>
+                    <a class="nav-link active" aria-current="page" href="/"
+                        (click)="navigate('productos', $event)">PRODUCTOS</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        STOCK
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/" (click)="navigate('stock', $event)">STOCK GENERAL</a></li>
+                        <li><a class="dropdown-item" href="/" (click)="navigate('stockPorClientes', $event)">STOCK POR
+                                CLIENTES</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/" (click)="navigate('stock', $event)">STOCK</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/" (click)="navigate('clientes', $event)">CLIENTES</a>
+                    <a class="nav-link active" aria-current="page" href="/"
+                        (click)="navigate('clientes', $event)">CLIENTES</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"

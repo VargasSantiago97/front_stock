@@ -245,13 +245,15 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col text-end">
-            <button type="button" class="btn btn-info m-2" (click)="guardarFechas()">GUARDAR FECHAS</button>
-
-            <button type="button" class="btn btn-warning m-2" (click)="visible_filtros = false">CERRAR</button>
-
-            <button type="button" class="btn btn-success m-2" (click)="filtrar()">APLICAR</button>
+    <ng-template pTemplate="footer">
+        <div class="row">
+            <div class="col text-end">
+                <button type="button" class="btn btn-info m-2" (click)="guardarFechas()">GUARDAR FECHAS</button>
+    
+                <button type="button" class="btn btn-warning m-2" (click)="visible_filtros = false">CERRAR</button>
+    
+                <button type="button" class="btn btn-success m-2" (click)="filtrar()">APLICAR</button>
+            </div>
         </div>
-    </div>
+    </ng-template>
 </p-dialog>
