@@ -17,7 +17,15 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/"
+                        (click)="navigate('clientes', $event)">CLIENTES</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/"
                         (click)="navigate('productos', $event)">PRODUCTOS</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/"
+                        (click)="navigate('operaciones', $event)">OPERACIONES</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -29,10 +37,6 @@
                         <li><a class="dropdown-item" href="/" (click)="navigate('stockPorClientes', $event)">STOCK POR
                                 CLIENTES</a></li>
                     </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/"
-                        (click)="navigate('clientes', $event)">CLIENTES</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"

@@ -13,6 +13,7 @@ import { StockComponent } from './sistema/components/stock/stock.component';
 import { DepositosComponent } from './sistema/components/depositos/depositos.component';
 import { VariablesComponent } from './sistema/components/variables/variables.component';
 import { StockPorClientesComponent } from './sistema/components/stock-por-clientes/stock-por-clientes.component';
+import { OperacionesComponent } from './sistema/components/operaciones/operaciones.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/sistema', pathMatch: 'full' },
@@ -31,6 +32,10 @@ export const routes: Routes = [
             { path: 'egresos', component: EgresosComponent, canActivate: [AuthGuard] },
             { path: 'egresos/:id_cliente', component: EgresosComponent, canActivate: [AuthGuard] },
             { path: 'egresos/nuevo/:id_cliente', component: EgresosComponent, canActivate: [AuthGuard] },
+
+            { path: 'operaciones', component: OperacionesComponent, canActivate: [AuthGuard] },
+            { path: 'operaciones/:id_cliente', component: OperacionesComponent, canActivate: [AuthGuard] },
+
 
             { path: 'stock', component: StockComponent, canActivate: [AuthGuard] },
             { path: 'stock/:id_cliente', component: StockComponent, canActivate: [AuthGuard] },
