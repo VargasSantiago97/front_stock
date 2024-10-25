@@ -348,14 +348,13 @@ export class OperacionesComponent {
     actualizarDatosTabla() {
         this.dataTabla = []
 
-        this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
-            this.dataTabla = e
+        //this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
+        //    this.dataTabla = e
 
-            //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
-            this.ordenarTablaPorAnterior = ''
-            this.ordenarTabla(this.ordenarTablaPor)
-        })
-
+        //    //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
+        //    this.ordenarTablaPorAnterior = ''
+        //    this.ordenarTabla(this.ordenarTablaPor)
+        //})
     }
 
 
