@@ -27,13 +27,15 @@
     </div>
 
     <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" [(ngModel)]="value_um" value="um">
+        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"
+            [(ngModel)]="value_um" value="um">
         <label class="form-check-label" for="flexRadioDefault1">
             Usar U.M.
         </label>
     </div>
     <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" [(ngModel)]="value_um" value="umf">
+        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2"
+            [(ngModel)]="value_um" value="umf">
         <label class="form-check-label" for="flexRadioDefault2">
             Usar U.M.F.
         </label>
@@ -48,10 +50,23 @@
                     <tr>
                         <th class="text-center align-middle" scope="col">PRODUCTO</th>
                         <th class="text-center align-middle" scope="col">U.M.</th>
-                        <th class="text-center align-middle" scope="col" title="INGRESOS de {{dataCliente.cliente}}, descontando DEVOLUCIONES de INGRESO">INGRESOS</th>
-                        <th class="text-center align-middle" scope="col" title="REMITOS a nombre de {{dataCliente.cliente}}, (incluye otros dueños). Descontando las DEVOLUCIONES de REMITOS">SALIDAS</th>
-                        <th class="text-center align-middle" scope="col">EN STOCK</th>
-                        <th class="text-center align-middle" scope="col" title="REMITOS a nombre de otros clientes, con mercadería ingresada por {{dataCliente.cliente}}. Descontando las DEVOLUCIONES de REMITOS">OTROS DESTINOS</th>
+                        <th class="text-center align-middle" scope="col"
+                            title="INGRESOS de {{dataCliente.cliente}}, descontando DEVOLUCIONES de INGRESO">INGRESOS
+                        </th>
+                        <th class="text-center align-middle" scope="col"
+                            title="REMITOS a nombre de {{dataCliente.cliente}} de mercadería propia. Descontando las DEVOLUCIONES de REMITOS">
+                            SALIDAS</th>
+                        <th class="text-center align-middle" scope="col" title="= INGRESOS - SALIDAS">STOCK</th>
+                        <th class="text-center align-middle" scope="col"
+                            title="REMITOS a nombre de otros clientes, con mercadería ingresada por {{dataCliente.cliente}}. Descontando las DEVOLUCIONES de REMITOS">
+                            OTROS DESTINOS</th>
+                        <th class="text-center align-middle" scope="col" title="= STOCK - OTROS DESTINOS">STOCK FISICO
+                        </th>
+                        <th class="text-center align-middle" scope="col"
+                            title="REMITOS a nombre de {{dataCliente.cliente}}, con mercadería de otros clientes. Descontando las DEVOLUCIONES de REMITOS">
+                            OTROS ORIGENES</th>
+                        <th class="text-center align-middle" scope="col" title="= STOCK - OTROS ORIGENES">STOCK REAL
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,11 +74,14 @@
                     <tr>
                         <td class="text-nowrap">{{item.descripcion}}</td>
                         <th class="text-start">{{item[value_um].toLocaleUpperCase()}}</th>
-    
+
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.ingresos) : mostrarNumero(item.ingresos_uf)}}</td>
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.salidas) : mostrarNumero(item.salidas_uf)}}</td>
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.stock) : mostrarNumero(item.stock_uf)}}</td>
-                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros) : mostrarNumero(item.otros_uf)}}</td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_destinos) : mostrarNumero(item.otros_destinos_uf)}}</td>
+                        <td class="text-end"><b>{{value_um == 'um' ? mostrarNumero(item.stock_fisico) : mostrarNumero(item.stock_fisico_uf)}}</b></td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_origenes) : mostrarNumero(item.otros_origenes_uf)}}</td>
+                        <td class="text-end"><b>{{value_um == 'um' ? mostrarNumero(item.stock_real) : mostrarNumero(item.stock_real_uf)}}</b></td>
                     </tr>
                     }
                 </tbody>
@@ -71,12 +89,12 @@
         </div>
     </div>
     }
-
     }
 </div>
 
 
-<p-dialog header="FILTRAR" [modal]="true" [(visible)]="visible_filtros" [style]="{ width: '90rem', height:'90rem', 'max-width': '700px'}"
+<p-dialog header="FILTRAR" [modal]="true" [(visible)]="visible_filtros"
+    [style]="{ width: '90rem', height:'90rem', 'max-width': '700px'}"
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
 
     <div class="row py-2">
@@ -143,9 +161,9 @@
 
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="Deposito"
-                    aria-label="Deposito" aria-describedby="basic-addon1" [(ngModel)]="searchValue_deposito"
-                    (change)="depositoFiltro()" (keyup)="depositoFiltro()">
+                <input type="text" class="form-control" placeholder="Deposito" aria-label="Deposito"
+                    aria-describedby="basic-addon1" [(ngModel)]="searchValue_deposito" (change)="depositoFiltro()"
+                    (keyup)="depositoFiltro()">
             </div>
             <div class="form-group">
                 <select id="depositos" class="form-control" multiple [(ngModel)]="selectedDepositos"
@@ -163,9 +181,9 @@
 
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="Articulos"
-                    aria-label="Articulos" aria-describedby="basic-addon1" [(ngModel)]="searchValue_articulo"
-                    (change)="articuloFiltro()" (keyup)="articuloFiltro()">
+                <input type="text" class="form-control" placeholder="Articulos" aria-label="Articulos"
+                    aria-describedby="basic-addon1" [(ngModel)]="searchValue_articulo" (change)="articuloFiltro()"
+                    (keyup)="articuloFiltro()">
             </div>
             <div class="form-group">
                 <select id="articulos" class="form-control" multiple [(ngModel)]="selectedArticulos"
@@ -183,13 +201,12 @@
 
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="Rubro"
-                    aria-label="Rubro" aria-describedby="basic-addon1" [(ngModel)]="searchValue_rubro"
-                    (change)="rubroFiltro()" (keyup)="rubroFiltro()">
+                <input type="text" class="form-control" placeholder="Rubro" aria-label="Rubro"
+                    aria-describedby="basic-addon1" [(ngModel)]="searchValue_rubro" (change)="rubroFiltro()"
+                    (keyup)="rubroFiltro()">
             </div>
             <div class="form-group">
-                <select id="rubros" class="form-control" multiple [(ngModel)]="selectedRubros"
-                    style="height: 150px;">
+                <select id="rubros" class="form-control" multiple [(ngModel)]="selectedRubros" style="height: 150px;">
                     @for (item of rubrosFiltrados; track $index) {
                     <option value="{{item.id}}">{{item.descripcion}} ({{item.alias}})</option>
                     }
@@ -203,9 +220,9 @@
 
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="SubRubro"
-                    aria-label="SubRubro" aria-describedby="basic-addon1" [(ngModel)]="searchValue_subRubro"
-                    (change)="subRubroFiltro()" (keyup)="subRubroFiltro()">
+                <input type="text" class="form-control" placeholder="SubRubro" aria-label="SubRubro"
+                    aria-describedby="basic-addon1" [(ngModel)]="searchValue_subRubro" (change)="subRubroFiltro()"
+                    (keyup)="subRubroFiltro()">
             </div>
             <div class="form-group">
                 <select id="subRubros" class="form-control" multiple [(ngModel)]="selectedSubRubros"
@@ -223,9 +240,9 @@
 
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="Laboratorio"
-                    aria-label="Laboratorio" aria-describedby="basic-addon1" [(ngModel)]="searchValue_laboratorio"
-                    (change)="laboratorioFiltro()" (keyup)="laboratorioFiltro()">
+                <input type="text" class="form-control" placeholder="Laboratorio" aria-label="Laboratorio"
+                    aria-describedby="basic-addon1" [(ngModel)]="searchValue_laboratorio" (change)="laboratorioFiltro()"
+                    (keyup)="laboratorioFiltro()">
             </div>
             <div class="form-group">
                 <select id="laboratorios" class="form-control" multiple [(ngModel)]="selectedLaboratorios"
@@ -242,9 +259,9 @@
         <div class="row">
             <div class="col text-end">
                 <button type="button" class="btn btn-info m-2" (click)="guardarFechas()">GUARDAR FECHAS</button>
-    
+
                 <button type="button" class="btn btn-warning m-2" (click)="visible_filtros = false">CERRAR</button>
-    
+
                 <button type="button" class="btn btn-success m-2" (click)="filtrar()">APLICAR</button>
             </div>
         </div>
