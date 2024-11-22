@@ -72,7 +72,7 @@
                 <tbody>
                     @for (item of dataCliente.datos; track $index) {
                     <tr>
-                        <td class="text-nowrap">{{item.descripcion}}</td>
+                        <td class="text-nowrap"><a href="" style="color: black" (click)="verMovimientosProductos($event, dataCliente.id_cliente, item.id_articulo)">{{item.descripcion}}</a></td>
                         <th class="text-start">{{item[value_um].toLocaleUpperCase()}}</th>
 
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.ingresos) : mostrarNumero(item.ingresos_uf)}}</td>
@@ -263,6 +263,122 @@
                 <button type="button" class="btn btn-warning m-2" (click)="visible_filtros = false">CERRAR</button>
 
                 <button type="button" class="btn btn-success m-2" (click)="filtrar()">APLICAR</button>
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="MOVIMIENTOS DEL ARTICULOS" [modal]="true" [(visible)]="visible_movimientos"
+    [style]="{ width: '90rem', height:'90rem'}"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+    <div class="table-responsive d-inline-table">
+        <table class="table table-striped table-hover table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">TIPO</th>
+                    <th scope="col" (click)="ordenarTabla('numero')">NUMERO
+                        @if (ordenarTablaPor == 'numero') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('fecha')">FECHA
+                        @if (ordenarTablaPor == 'fecha') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('cliente')">CLIENTE
+                        @if (ordenarTablaPor == 'cliente') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('cantidad')">CANTIDAD
+                        @if (ordenarTablaPor == 'cantidad') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('unidad_medida')">U.M.
+                        @if (ordenarTablaPor == 'unidad_medida') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('deposito')">DEPOSITO
+                        @if (ordenarTablaPor == 'deposito') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('lote')">LOTE
+                        @if (ordenarTablaPor == 'lote') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col" (click)="ordenarTabla('vencimiento')">VENCIMIENTO
+                        @if (ordenarTablaPor == 'vencimiento') {
+                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                        } @else {
+                        <i class="pi pi-sort-alt"></i>
+                        }
+                    </th>
+                    <th scope="col">#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (registro of dataTablaMovimientosProducto; track $index) {
+                <tr>
+                    <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
+                            [severity]="registro.tipo == 'INGRESO' ? 'success' : 'danger'" /></th>
+                    <th class="text-nowrap" scope="row">{{registro.numero}}</th>
+                    <td class="text-nowrap">{{registro.fecha}}</td>
+                    <td class="text-nowrap">{{registro.cliente}}</td>
+                    <td class="text-nowrap">{{registro.cantidad}}</td>
+                    <td class="text-nowrap">{{registro.unidad_medida}}</td>
+                    <td class="text-nowrap">{{registro.deposito}}</td>
+                    <td class="text-nowrap">{{registro.lote}}</td>
+                    <td class="text-nowrap">{{registro.vencimiento}}</td>
+                    @if (registro.tipo == 'INGRESO') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verIngreso(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarIngreso(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    } @else {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verDevolucion(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarDevolucion(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="row">
+            <div class="col text-end">
+                <button type="button" class="btn btn-warning m-2" (click)="visible_movimientos = false">CERRAR</button>
             </div>
         </div>
     </ng-template>

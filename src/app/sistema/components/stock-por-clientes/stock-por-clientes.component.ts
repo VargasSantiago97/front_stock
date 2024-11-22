@@ -9,12 +9,14 @@ import { MessageService } from 'primeng/api';
 import { Cliente } from '../../interfaces/clientes';
 import { Deposito, Laboratorio } from '../../interfaces/variables';
 import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
-
+import { TagModule } from 'primeng/tag';
+import { PdfService } from '../../services/pdf.service';
+import { Remito, RemitoDevolucion } from '../../interfaces/remitos';
 
 @Component({
     selector: 'app-stock-por-clientes',
     standalone: true,
-    imports: [ProgressSpinnerModule, FormsModule, DialogModule, DividerModule],
+    imports: [ProgressSpinnerModule, FormsModule, DialogModule, DividerModule, TagModule],
     templateUrl: './stock-por-clientes.component.html',
     styleUrl: './stock-por-clientes.component.css'
 })
@@ -22,8 +24,10 @@ export class StockPorClientesComponent {
 
     visible_scroll: boolean = true
     visible_filtros: boolean = false
+    visible_movimientos: boolean = false
 
     dataTabla: any = []
+    dataTablaMovimientosProducto: any = []
 
 
     clientes: Cliente[] = []
@@ -64,10 +68,16 @@ export class StockPorClientesComponent {
 
     value_um: string = "um";
 
+
+    ordenarTablaOrden: boolean = false
+    ordenarTablaPorAnterior: string = ''
+    ordenarTablaPor: string = 'fecha'
+
     constructor(
         private route: ActivatedRoute,
         private cs: ConsultasService,
-        private ms: MessageService
+        private ms: MessageService,
+        private pdf: PdfService
     ) { }
 
     ngOnInit(): void {
@@ -175,6 +185,100 @@ export class StockPorClientesComponent {
         this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Fechas guardadas' })
     }
 
+    verIngreso(id: string) {
+        this.pdf.ingreso(id, 3).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+    descargarIngreso(id: string) {
+        this.pdf.ingreso(id, 1).subscribe((blob: any) => {
+
+            this.cs.getAll('ingresos/' + id, (ingreso: Remito) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `INGRESO DE MERCADERIA ${this.mostrarDocumento(ingreso.punto, ingreso.numero)} - ${ingreso.razon_social}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+    verDevolucion(id: string) {
+        this.pdf.devolucion(id, 3).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+    descargarDevolucion(id: string) {
+        this.pdf.devolucion(id, 1).subscribe((blob: any) => {
+
+            this.cs.getAll('devoluciones/' + id, (devolucion: RemitoDevolucion) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `DEVOLUCION DE MERCADERIA ${this.mostrarDocumento(devolucion.punto, devolucion.numero)} - ${devolucion.razon_social}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+    verMovimientosProductos(e: any, id_cliente: string, id_articulo: string) {
+        if (e) e.preventDefault();
+
+        this.dataTablaMovimientosProducto = []
+
+        this.actualizarDatosTablaMovimientosProducto(id_cliente, id_articulo)
+
+        this.visible_movimientos = true
+    }
+    actualizarDatosTablaMovimientosProducto(id_cliente: string, id_articulo: string) {
+        
+
+        this.cs.getAll(`operaciones/movimientosPorArticulo/?cliente=${id_cliente}&articulo=${id_articulo}&fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, (e: any) => {
+            console.log(e)
+
+            this.dataTablaMovimientosProducto = e
+
+            //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
+            this.ordenarTablaPorAnterior = ''
+            this.ordenarTabla(this.ordenarTablaPor)
+        })
+
+    }
+
+    ordenarTabla(ordenaPor: string) {
+
+        if (this.ordenarTablaPorAnterior == ordenaPor) {
+            this.ordenarTablaOrden = !this.ordenarTablaOrden
+        }
+
+        this.ordenarTablaPor = ordenaPor
+
+        this.dataTablaMovimientosProducto.sort((a: any, b: any) => {
+            if (typeof a[ordenaPor] === 'string') {
+                return this.ordenarTablaOrden ? b[ordenaPor].localeCompare(a[ordenaPor]) : a[ordenaPor].localeCompare(b[ordenaPor]);
+            }
+            return this.ordenarTablaOrden ? (a[ordenaPor] - b[ordenaPor]) : (b[ordenaPor] - a[ordenaPor]);
+        });
+
+        this.ordenarTablaPorAnterior = ordenaPor
+    }
+
     //HELPERS
     fechaHoy(dias: number = 0) {
         const fechaActual = new Date();
@@ -189,7 +293,6 @@ export class StockPorClientesComponent {
 
         return `${ano}-${mes}-${dia}`
     }
-
     mostrarNumero(ent: any) {
         var numero = ''
         try {
@@ -202,5 +305,8 @@ export class StockPorClientesComponent {
             numero = ent
         }
         return numero
+    }
+    mostrarDocumento(pto: number, nro: number) {
+        return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
     }
 }
