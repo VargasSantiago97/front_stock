@@ -25,6 +25,7 @@ export class StockPorClientesComponent {
     visible_scroll: boolean = true
     visible_filtros: boolean = false
     visible_movimientos: boolean = false
+    visible_help: boolean = false
 
     dataTabla: any = []
     dataTablaMovimientosProducto: any = []
@@ -72,6 +73,9 @@ export class StockPorClientesComponent {
     ordenarTablaOrden: boolean = false
     ordenarTablaPorAnterior: string = ''
     ordenarTablaPor: string = 'fecha'
+
+    detalleMovimientosCliente: string | undefined = ''
+    detalleMovimientosArticulo: string | undefined = ''
 
     constructor(
         private route: ActivatedRoute,
@@ -237,12 +241,67 @@ export class StockPorClientesComponent {
         });
     }
 
+    verRemito(id: string) {
+        this.pdf.remito(id, 3).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+    descargarRemito(id: string) {
+        this.pdf.remito(id, 1).subscribe((blob: any) => {
+
+            this.cs.getAll('egresos/' + id, (remito: Remito) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `REMITO ${this.mostrarDocumento(remito.punto, remito.numero)} - ${remito.razon_social}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+    verDevolucionRemito(id: string) {
+        this.pdf.devolucionRemito(id, 3).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+    descargarDevolucionRemito(id: string) {
+        this.pdf.devolucionRemito(id, 1).subscribe((blob: any) => {
+
+            this.cs.getAll('egresosDevoluciones/' + id, (devolucion: RemitoDevolucion) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `REMITO DEVOLUCION ${this.mostrarDocumento(devolucion.punto, devolucion.numero)} - ${devolucion.razon_social}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
     verMovimientosProductos(e: any, id_cliente: string, id_articulo: string) {
         if (e) e.preventDefault();
 
         this.dataTablaMovimientosProducto = []
 
         this.actualizarDatosTablaMovimientosProducto(id_cliente, id_articulo)
+
+        this.detalleMovimientosCliente = this.clientes.find((e:Cliente) => e.id == id_cliente)?.alias
+        this.detalleMovimientosArticulo = this.articulos.find((e:Articulo) => e.id == id_articulo)?.descripcion
 
         this.visible_movimientos = true
     }

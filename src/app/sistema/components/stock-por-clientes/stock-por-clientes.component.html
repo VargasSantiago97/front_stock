@@ -72,16 +72,25 @@
                 <tbody>
                     @for (item of dataCliente.datos; track $index) {
                     <tr>
-                        <td class="text-nowrap"><a href="" style="color: black" (click)="verMovimientosProductos($event, dataCliente.id_cliente, item.id_articulo)">{{item.descripcion}}</a></td>
+                        <td class="text-nowrap"><a href="" style="color: black"
+                                (click)="verMovimientosProductos($event, dataCliente.id_cliente, item.id_articulo)">{{item.descripcion}}</a>
+                        </td>
                         <th class="text-start">{{item[value_um].toLocaleUpperCase()}}</th>
 
-                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.ingresos) : mostrarNumero(item.ingresos_uf)}}</td>
-                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.salidas) : mostrarNumero(item.salidas_uf)}}</td>
-                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.stock) : mostrarNumero(item.stock_uf)}}</td>
-                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_destinos) : mostrarNumero(item.otros_destinos_uf)}}</td>
-                        <td class="text-end"><b>{{value_um == 'um' ? mostrarNumero(item.stock_fisico) : mostrarNumero(item.stock_fisico_uf)}}</b></td>
-                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_origenes) : mostrarNumero(item.otros_origenes_uf)}}</td>
-                        <td class="text-end"><b>{{value_um == 'um' ? mostrarNumero(item.stock_real) : mostrarNumero(item.stock_real_uf)}}</b></td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.ingresos) :
+                            mostrarNumero(item.ingresos_uf)}}</td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.salidas) :
+                            mostrarNumero(item.salidas_uf)}}</td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.stock) :
+                            mostrarNumero(item.stock_uf)}}</td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_destinos) :
+                            mostrarNumero(item.otros_destinos_uf)}}</td>
+                        <td class="text-end"><b>{{value_um == 'um' ? mostrarNumero(item.stock_fisico) :
+                                mostrarNumero(item.stock_fisico_uf)}}</b></td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_origenes) :
+                            mostrarNumero(item.otros_origenes_uf)}}</td>
+                        <td class="text-end"><b>{{value_um == 'um' ? mostrarNumero(item.stock_real) :
+                                mostrarNumero(item.stock_real_uf)}}</b></td>
                     </tr>
                     }
                 </tbody>
@@ -268,8 +277,9 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog header="MOVIMIENTOS DEL ARTICULOS" [modal]="true" [(visible)]="visible_movimientos"
-    [style]="{ width: '90rem', height:'90rem'}"
+
+<p-dialog header="MOVIMIENTOS DEL ARTICULO: {{detalleMovimientosArticulo}} - De: {{detalleMovimientosCliente}}"
+    [modal]="true" [(visible)]="visible_movimientos" [style]="{ width: '90rem', height:'90rem'}"
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
 
     <div class="table-responsive d-inline-table">
@@ -291,7 +301,7 @@
                         <i class="pi pi-sort-alt"></i>
                         }
                     </th>
-                    <th scope="col" (click)="ordenarTabla('cliente')">CLIENTE
+                    <th scope="col" (click)="ordenarTabla('cliente')">CLIENTE/DUEÑO
                         @if (ordenarTablaPor == 'cliente') {
                         <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                         } @else {
@@ -312,27 +322,6 @@
                         <i class="pi pi-sort-alt"></i>
                         }
                     </th>
-                    <th scope="col" (click)="ordenarTabla('deposito')">DEPOSITO
-                        @if (ordenarTablaPor == 'deposito') {
-                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
-                        } @else {
-                        <i class="pi pi-sort-alt"></i>
-                        }
-                    </th>
-                    <th scope="col" (click)="ordenarTabla('lote')">LOTE
-                        @if (ordenarTablaPor == 'lote') {
-                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
-                        } @else {
-                        <i class="pi pi-sort-alt"></i>
-                        }
-                    </th>
-                    <th scope="col" (click)="ordenarTabla('vencimiento')">VENCIMIENTO
-                        @if (ordenarTablaPor == 'vencimiento') {
-                        <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
-                        } @else {
-                        <i class="pi pi-sort-alt"></i>
-                        }
-                    </th>
                     <th scope="col">#</th>
                 </tr>
             </thead>
@@ -340,15 +329,14 @@
                 @for (registro of dataTablaMovimientosProducto; track $index) {
                 <tr>
                     <th class="text-nowrap" scope="row"><p-tag [value]="registro.tipo"
-                            [severity]="registro.tipo == 'INGRESO' ? 'success' : 'danger'" /></th>
+                            [severity]="registro.tipo == 'INGRESO' || registro.tipo == 'REMITO' || registro.tipo == 'REMITO OTRO ORIGEN' || registro.tipo == 'REMITO OTRO DESTINO' ? 'success' : 'danger'" />
+                    </th>
                     <th class="text-nowrap" scope="row">{{registro.numero}}</th>
                     <td class="text-nowrap">{{registro.fecha}}</td>
                     <td class="text-nowrap">{{registro.cliente}}</td>
-                    <td class="text-nowrap">{{registro.cantidad}}</td>
+                    <td class="text-nowrap text-end">{{mostrarNumero(registro.cantidad)}}</td>
                     <td class="text-nowrap">{{registro.unidad_medida}}</td>
-                    <td class="text-nowrap">{{registro.deposito}}</td>
-                    <td class="text-nowrap">{{registro.lote}}</td>
-                    <td class="text-nowrap">{{registro.vencimiento}}</td>
+
                     @if (registro.tipo == 'INGRESO') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
@@ -358,7 +346,9 @@
                             (click)="descargarIngreso(registro.id_documento)" title="Descargar PDF"><i
                                 class="pi pi-download"></i></button>
                     </td>
-                    } @else {
+                    }
+
+                    @if (registro.tipo == 'DEV. INGRESO') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="verDevolucion(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
@@ -369,11 +359,98 @@
                     </td>
                     }
 
+                    @if (registro.tipo == 'REMITO') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarRemito(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                    @if (registro.tipo == 'DEV. REMITO') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                    @if (registro.tipo == 'REMITO OTRO DESTINO') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarRemito(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                    @if (registro.tipo == 'DEV. REMITO OTRO DEST') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                    @if (registro.tipo == 'REMITO OTRO ORIGEN') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarRemito(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
+
+                    @if (registro.tipo == 'DEV. REMITO OTRO ORIGEN') {
+                    <td class="text-nowrap">
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
+                            (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
+                                class="pi pi-download"></i></button>
+                    </td>
+                    }
                 </tr>
                 }
             </tbody>
         </table>
     </div>
+
+    <button type="button" class="btn btn-primary m-0 p-0 px-1" (click)="visible_help = !visible_help"><i
+            class="pi pi-question-circle"></i></button>
+
+    @if (visible_help) {
+    <div class="card my-2 p-3">
+        <span class="mt-2"><b>INGRESO:</b> Ingresos de mercaderia propia de {{detalleMovimientosCliente}}</span>
+        <span class="mt-2"><b>DEV. INGRESO:</b> Devoluciones a los ingresos</span>
+        <span class="mt-2"><b>REMITO:</b> Retiros de mercaderia propia de {{detalleMovimientosCliente}} que retira
+            {{detalleMovimientosCliente}}</span>
+        <span class="mt-2"><b>DEV. REMITO:</b> Devoluciones de REMITOS</span>
+        <br>
+        <span class="mt-2"><b>REMITO OTRO DESTINO:</b> Retiros de mercaderia propia de {{detalleMovimientosCliente}} que
+            retiran OTROS CLIENTES</span>
+        <span class="mt-2"><b>DEV. REMITO OTRO DEST:</b> Devolucion de mercaderia retirada por otros clientes</span>
+        <span class="mt-2"><b>REMITO OTRO ORIGEN:</b> Retiros de mercaderia de OTROS CLIENTES retirada por
+            {{detalleMovimientosCliente}}</span>
+        <span class="mt-2"><b>DEV. REMITO OTRO ORIGEN:</b> Devolucion de mercaderia de otros clientes retirada por
+            {{detalleMovimientosCliente}}</span>
+    </div>
+    }
+
 
     <ng-template pTemplate="footer">
         <div class="row">
