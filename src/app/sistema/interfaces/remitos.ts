@@ -100,3 +100,38 @@ export interface Remito {
 export interface RemitoDevolucion extends Remito {
     id_asociado: string;
 }
+
+export interface Operaciones {
+    id: string;
+
+    fecha: string;
+    numero: number;
+    punto: number;
+    modelo: string; //moliendasndas
+    tipo: string;
+
+    id_cliente_egreso: string;
+    codigo_egreso: string;
+    razon_social_egreso: string;
+    cuit_egreso: number;
+    alias_egreso: string;
+
+    id_cliente_ingreso: string;
+    codigo_ingreso: string;
+    razon_social_ingreso: string;
+    cuit_ingreso: number;
+    alias_ingreso: string;
+
+    observaciones: string;
+    observaciones_sistema: string;
+
+    datos: {
+        documentos?: DocumentoRemito[]
+    };
+    estado: number;
+
+    createdBy: string;
+    updatedBy: string;
+    createdAt: string;
+    updatedAt: string;
+}

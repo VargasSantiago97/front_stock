@@ -141,8 +141,10 @@ export class ConsultasService {
         var id_user = sessionStorage.getItem('stock_user_id')
 
         var datos = data.map((dato: any) => {
+            const { createdAt, updatedAt, ...resto } = dato;
+
             return {
-                ...dato,
+                ...resto,
                 createdBy: id_user,
                 updatedBy: id_user
             }

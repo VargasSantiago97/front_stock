@@ -361,7 +361,6 @@ export class EgresosComponent {
 
     }
 
-
     mostrarModalRemito(id: any = undefined) {
         this.pestActiva = 'cliente'
         this.dataTablaArticulosRemitar = []
@@ -449,9 +448,9 @@ export class EgresosComponent {
             this.cs.create('egresos', this.remito, (id_ingreso_creado: any) => {
                 this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Remito creado con ID: ' + id_ingreso_creado })
                 this.remito.id = id_ingreso_creado
-
-                var artRemitos = this.dataTablaArticulosRemitar.map((artRemitos: ArticuloAsociado) => {
-                    const { id, ...resto } = artRemitos;
+                //
+                var artRemitos = this.dataTablaArticulosRemitar.map((artRemito: ArticuloAsociado) => {
+                    const { id, ...resto } = artRemito;
 
                     return {
                         ...resto,

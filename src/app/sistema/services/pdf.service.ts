@@ -13,7 +13,7 @@ export class PdfService {
 
     constructor(
         private http: HttpClient
-    ) { }
+    ) {}
 
     ingreso(id: string, cantidad_copias: number): Observable<Blob> {
         let token = sessionStorage.getItem('stock_token');
@@ -43,6 +43,16 @@ export class PdfService {
         });
 
         return this.http.get(`${this.PDF_URI}/pdf/remitos/${id}/${cantidad_copias}`, { headers, responseType: 'blob' })
+    }
+
+    operacion(id: string, cantidad_copias: number): Observable<Blob> {
+        let token = sessionStorage.getItem('stock_token');
+
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+
+        return this.http.get(`${this.PDF_URI}/pdf/operaciones/${id}/${cantidad_copias}`, { headers, responseType: 'blob' })
     }
     
     devolucionRemito(id: string, cantidad_copias: number): Observable<Blob> {

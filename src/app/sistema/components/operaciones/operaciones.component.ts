@@ -17,9 +17,9 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { Deposito, UnidadMedida } from '../../interfaces/variables';
-import { ArticuloAsociado, Remito, RemitoDevolucion } from '../../interfaces/remitos';
+import { ArticuloAsociado, Operaciones, RemitoDevolucion } from '../../interfaces/remitos';
 import { TagModule } from 'primeng/tag';
-import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
+import { Articulo, Rubro, SubRubro, TiposOperaciones } from '../../interfaces/productos';
 import { PdfService } from '../../services/pdf.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ActivatedRoute } from '@angular/router';
@@ -44,196 +44,74 @@ export class OperacionesComponent {
 
     pestActiva: string = ''
 
-    visible_ingreso: boolean = false
+    visible_operacion: boolean = false
     visible_cliente: boolean = false
-    visible_autorizado: boolean = false
-    visible_transporte: boolean = false
-    visible_establecimiento: boolean = false
     visible_articulo: boolean = false
-    visible_totales: boolean = false
-    datosTotales: any = []
-
-    visible_devolucion: boolean = false
+    visible_articulo_egreso: boolean = false
     visible_filtros: boolean = false
 
-
-    permite_secuencia_lote: boolean = false
-    cantidad_secuencia_lote: number = 1
-    digitos_secuencia_lote: number = 3
-
-    avisarRegistrosVacios: boolean = true
-
     searchValue_cliente: string = ''
-    searchValue_autorizado: string = ''
-    searchValue_transporte: string = ''
-    searchValue_establecimiento: string = ''
     searchValue_articulo: string = ''
+    searchValue_articuloEgreso: string = ''
 
-    ingreso: Remito = {
-        id: '',
-        numero: 0,
-        punto: 2,
-        datos: { documentos: [] },
-        fecha: '',
-        modelo: '',
-        id_cliente: '',
-        codigo: '',
-        razon_social: '',
-        cuit: 0,
-        alias: '',
-        direccion: '',
-        localidad: '',
-        provincia: '',
-        codigo_postal: '',
-        telefono: '',
-        correo: '',
-        id_autorizado: '',
-        autorizado_descripcion: '',
-        autorizado_documento: '',
-        autorizado_contacto: '',
-        id_transporte: '',
-        transporte_transporte: '',
-        transporte_cuit_transporte: 0,
-        transporte_chofer: '',
-        transporte_cuit_chofer: 0,
-        transporte_patente_chasis: '',
-        transporte_patente_acoplado: '',
-        id_establecimiento: '',
-        establecimiento_descripcion: '',
-        establecimiento_localidad: '',
-        establecimiento_provincia: '',
-        observaciones: '',
-        observaciones_sistema: '',
-        total_unidades: '',
-        estado: 1,
-        createdBy: '',
-        updatedBy: '',
-        createdAt: '',
-        updatedAt: ''
-    }
-    ingresos: Remito[] = []
-    devolucion: RemitoDevolucion = {
+    operacion: Operaciones = {
         id: '',
         fecha: '',
         numero: 0,
         punto: 0,
         modelo: '',
-        id_cliente: '',
-        codigo: '',
-        razon_social: '',
-        cuit: 0,
-        alias: '',
-        direccion: '',
-        localidad: '',
-        provincia: '',
-        codigo_postal: '',
-        telefono: '',
-        correo: '',
-        id_autorizado: '',
-        autorizado_descripcion: '',
-        autorizado_documento: '',
-        autorizado_contacto: '',
-        id_transporte: '',
-        transporte_transporte: '',
-        transporte_cuit_transporte: 0,
-        transporte_chofer: '',
-        transporte_cuit_chofer: 0,
-        transporte_patente_chasis: '',
-        transporte_patente_acoplado: '',
-        id_establecimiento: '',
-        establecimiento_descripcion: '',
-        establecimiento_localidad: '',
-        establecimiento_provincia: '',
+        tipo: '',
+        id_cliente_egreso: '',
+        codigo_egreso: '',
+        razon_social_egreso: '',
+        cuit_egreso: 0,
+        alias_egreso: '',
+        id_cliente_ingreso: '',
+        codigo_ingreso: '',
+        razon_social_ingreso: '',
+        cuit_ingreso: 0,
+        alias_ingreso: '',
         observaciones: '',
         observaciones_sistema: '',
-        total_unidades: '',
         datos: {
-            documentos: []
+            documentos: undefined
         },
         estado: 1,
         createdBy: '',
         updatedBy: '',
         createdAt: '',
-        updatedAt: '',
-        id_asociado: ''
+        updatedAt: ''
     }
-    devoluciones: RemitoDevolucion[] = []
+    operaciones: Operaciones[] = []
 
     dataTabla: any = []
+    dataArticulosRemitar: any = []
+    dataTablaArticulos: any = []
+    dataTablaArticulosRemitar: any = []
 
     clientes: Cliente[] = []
     clientesFiltrados: Cliente[] = []
     clientesTodos: Cliente[] = []
     selectedClientes: string[] = []
+    selectedClientesArticulos: Cliente[] = []
 
-    id_cliente: string = ''
-
-    autorizado: Autorizado = {
-        id: '',
-        id_cliente: '',
-        descripcion: '',
-        documento: '',
-        cargo: '',
-        contacto: '',
-        datos: {},
-        estado: 0,
-        createdBy: '',
-        updatedBy: '',
-        createdAt: '',
-        updatedAt: ''
-    }
-    autorizados: Autorizado[] = []
-    autorizadosFiltrados: Autorizado[] = []
-
-    transporte: Transporte = {
-        id: '',
-        id_cliente: '',
-        transporte: '',
-        cuit_transporte: 0,
-        chofer: '',
-        cuit_chofer: 0,
-        patente_chasis: '',
-        patente_acoplado: '',
-        datos: {},
-        estado: 0,
-        createdBy: '',
-        updatedBy: '',
-        createdAt: '',
-        updatedAt: ''
-    }
-    transportes: Transporte[] = []
-    transportesFiltrados: Transporte[] = []
-
-    establecimiento: Establecimiento = {
-        id: '',
-        id_cliente: '',
-        descripcion: '',
-        localidad: '',
-        provincia: '',
-        datos: {},
-        estado: 0,
-        createdBy: '',
-        updatedBy: '',
-        createdAt: '',
-        updatedAt: ''
-    }
-    establecimientos: Establecimiento[] = []
-    establecimientosFiltrados: Establecimiento[] = []
+    id_cliente_ingreso: string = ''
+    id_cliente_egreso: string = ''
 
     depositos: Deposito[] = []
     unidadMedidas: UnidadMedida[] = []
 
     articulos: Articulo[] = []
     articulosFiltrados: Articulo[] = []
-    articulosIngreso: ArticuloAsociado[] = []
+    articulosOperacionEgreso: ArticuloAsociado[] = []
+    articulosOperacionIngreso: ArticuloAsociado[] = []
     articuloProvisorio: ArticuloAsociado | undefined
 
     articulosDevolucion: any[] = []
 
     rubros: Rubro[] = []
     subRubros: SubRubro[] = []
-
-    documentosAsociados: Remito[] | RemitoDevolucion[] = []
+    tiposOperaciones: TiposOperaciones[] = []
 
     fechaFiltroDesde: string = this.fechaHoy(31)
     fechaFiltroHasta: string = this.fechaHoy()
@@ -245,8 +123,13 @@ export class OperacionesComponent {
     ordenarTablaPorAnterior: string = ''
     ordenarTablaPor: string = 'numeroMostrar'
 
+    ordenarTablaOrden_art: boolean = false
+    ordenarTablaPorAnterior_art: string = ''
+    ordenarTablaPor_art: string = ''
+
+    buscandoCliente: 'ingreso' | 'egreso' | undefined
+
     constructor(
-        private padron: PadronService,
         private ms: MessageService,
         private cs: ConsultasService,
         private as: AuthService,
@@ -256,12 +139,14 @@ export class OperacionesComponent {
     ) { }
 
     ngOnInit() {
-        if (localStorage.getItem('stock_ingresosFechaFiltroDesde')) {
-            this.fechaFiltroDesde = localStorage.getItem('stock_ingresosFechaFiltroDesde')!
+        if (localStorage.getItem('stock_operacionesFechaFiltroDesde')) {
+            this.fechaFiltroDesde = localStorage.getItem('stock_operacionesFechaFiltroDesde')!
         }
-        if (localStorage.getItem('stock_ingresosFechaFiltroHasta')) {
-            this.fechaFiltroHasta = localStorage.getItem('stock_ingresosFechaFiltroHasta')!
+        if (localStorage.getItem('stock_operacionesFechaFiltroHasta')) {
+            this.fechaFiltroHasta = localStorage.getItem('stock_operacionesFechaFiltroHasta')!
         }
+
+        this.cs.getAll('tiposOperaciones', (data: any) => { this.tiposOperaciones = data })
 
         this.cs.getAll('depositos', (data: Deposito[]) => { this.depositos = data })
         this.cs.getAll('unidadMedidas', (data: UnidadMedida[]) => { this.unidadMedidas = data })
@@ -272,24 +157,12 @@ export class OperacionesComponent {
             this.clientesTodos = data
             this.clientesFiltrados = data
 
-            const esNuevo = this.route.snapshot.url.some(segment => segment.path === 'nuevo');
-
-            this.route.paramMap.subscribe(params => {
-                var id_cliente = params.get('id_cliente');
-                if (id_cliente && esNuevo) {
-                    this.mostrarModalIngreso()
-                    this.buscarClientePorId(id_cliente)
-                } else if (id_cliente) {
-                    this.selectedClientes = [id_cliente]
-                }
-                this.filtrar()
-            });
+            this.filtrar()
         })
     }
 
-
-    verIngreso(id: string) {
-        this.pdf.ingreso(id, 3).subscribe((blob: any) => {
+    verOperacion(id: string) {
+        this.pdf.operacion(id, 3).subscribe((blob: any) => {
             const url = window.URL.createObjectURL(blob);
             const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
             window.open(url, '_blank', windowFeatures);
@@ -297,40 +170,14 @@ export class OperacionesComponent {
             console.error('Error al obtener el PDF', error);
         });
     }
-    descargarIngreso(id: string) {
-        this.pdf.ingreso(id, 1).subscribe((blob: any) => {
+    descargarOperacion(id: string) {
+        this.pdf.operacion(id, 1).subscribe((blob: any) => {
 
-            this.cs.getAll('ingresos/' + id, (ingreso: Remito) => {
+            this.cs.getAll('operaciones/' + id, (operacion: Operaciones) => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `INGRESO DE MERCADERIA ${this.mostrarDocumento(ingreso.punto, ingreso.numero)} - ${ingreso.razon_social}.pdf`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-            })
-
-        }, error => {
-            console.error('Error al obtener el PDF', error);
-        });
-    }
-
-    verDevolucion(id: string) {
-        this.pdf.devolucion(id, 3).subscribe((blob: any) => {
-            const url = window.URL.createObjectURL(blob);
-            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
-            window.open(url, '_blank', windowFeatures);
-        }, error => {
-            console.error('Error al obtener el PDF', error);
-        });
-    }
-    descargarDevolucion(id: string) {
-        this.pdf.devolucion(id, 1).subscribe((blob: any) => {
-
-            this.cs.getAll('devoluciones/' + id, (devolucion: RemitoDevolucion) => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `DEVOLUCION DE MERCADERIA ${this.mostrarDocumento(devolucion.punto, devolucion.numero)} - ${devolucion.razon_social}.pdf`;
+                a.download = `Operacion ${this.mostrarDocumento(operacion.punto, operacion.numero)} - EG ${operacion.razon_social_egreso} - IN ${operacion.razon_social_ingreso}.pdf`;
                 a.click();
                 window.URL.revokeObjectURL(url);
             })
@@ -348,250 +195,141 @@ export class OperacionesComponent {
     actualizarDatosTabla() {
         this.dataTabla = []
 
-        //this.cs.getAllPost(`operaciones/ingresos/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
-        //    this.dataTabla = e
+        this.cs.getAllPost(`operaciones/operaciones/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
+            this.dataTabla = e
 
-        //    //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
-        //    this.ordenarTablaPorAnterior = ''
-        //    this.ordenarTabla(this.ordenarTablaPor)
-        //})
+            //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
+            this.ordenarTablaPorAnterior = ''
+            this.ordenarTabla(this.ordenarTablaPor)
+        })
     }
 
 
-    mostrarModalIngreso(id: any = undefined) {
+    mostrarModalOperacion(id: any = undefined) {
         this.pestActiva = 'cliente'
-        this.documentosAsociados = []
+        this.dataArticulosRemitar = []
+        this.dataTablaArticulosRemitar = []
+        this.dataTablaArticulos = []
         if (id) {
-            this.articulosIngreso = []
+            this.articulosOperacionIngreso = []
+            this.articulosOperacionEgreso = []
 
-            this.cs.getAll('ingresos/' + id, (dato: Remito) => {
-                this.ingreso = dato
+            this.cs.getAll('operaciones/' + id, (dato: Operaciones) => {
+                this.operacion = dato
             })
 
             this.cs.getAll('articulosAsociados/buscar/' + id, (datos: ArticuloAsociado[]) => {
-                this.articulosIngreso = datos
+                this.articulosOperacionIngreso = datos.filter((e:ArticuloAsociado) => { return e.ajuste == 'positivo' })
+                this.dataTablaArticulosRemitar = datos.filter((e:ArticuloAsociado) => { return e.ajuste == 'negativo' })
             })
 
-            this.cs.getAll(`devoluciones/buscar/asociado/${id}`, (datos: RemitoDevolucion[]) => {
-                this.documentosAsociados = datos
-            })
         } else {
-            this.ingreso = {
+            this.operacion = {
                 id: '',
                 numero: 0,
                 punto: this.puntosVenta[0].punto,
                 datos: { documentos: [] },
                 fecha: this.fechaHoy(),
                 modelo: this.modelosRemitos[0].alias,
-                id_cliente: '',
-                codigo: '',
-                razon_social: '',
-                cuit: 0,
-                alias: '',
-                direccion: '',
-                localidad: '',
-                provincia: '',
-                codigo_postal: '',
-                telefono: '',
-                correo: '',
-                id_autorizado: '',
-                autorizado_descripcion: '',
-                autorizado_documento: '',
-                autorizado_contacto: '',
-                id_transporte: '',
-                transporte_transporte: '',
-                transporte_cuit_transporte: 0,
-                transporte_chofer: '',
-                transporte_cuit_chofer: 0,
-                transporte_patente_chasis: '',
-                transporte_patente_acoplado: '',
-                id_establecimiento: '',
-                establecimiento_descripcion: '',
-                establecimiento_localidad: '',
-                establecimiento_provincia: '',
+                tipo: 'Clasificacion',
+
+                id_cliente_ingreso: '',
+                codigo_ingreso: '',
+                razon_social_ingreso: '',
+                cuit_ingreso: 0,
+                alias_ingreso: '',
+
+                id_cliente_egreso: '',
+                codigo_egreso: '',
+                razon_social_egreso: '',
+                cuit_egreso: 0,
+                alias_egreso: '',
+
                 observaciones: '',
                 observaciones_sistema: '',
-                total_unidades: '',
                 estado: 1,
+
                 createdBy: '',
                 updatedBy: '',
                 createdAt: '',
                 updatedAt: ''
             }
 
-            this.articulosIngreso = []
+            this.articulosOperacionIngreso = []
+            this.articulosOperacionEgreso = []
         }
-        this.permite_secuencia_lote = false
-        this.visible_ingreso = true
-        this.id_cliente = ''
+        this.visible_operacion = true
+        this.id_cliente_ingreso = ''
+        this.id_cliente_egreso = ''
     }
-    guardarIngreso(tipo: 'D' | 'M' | null = null) {
-        var cantidadRegistros = this.articulosIngreso.length
-        var cantidadRegistrosId = this.articulosIngreso.filter((e: ArticuloAsociado) => e.id_articulo).length
-        if (!this.ingreso.id_cliente) {
-            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'No asignó un cliente' })
-        }
-        if (!cantidadRegistros) {
-            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
-        }
-        if (!cantidadRegistrosId) {
-            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar al menos un articulo' })
-        }
-        if ((cantidadRegistros > cantidadRegistrosId) && this.avisarRegistrosVacios) {
-            this.avisarRegistrosVacios = false
-            setTimeout(() => {
-                this.avisarRegistrosVacios = true
-            }, 5000);
+    guardarOperacion(tipo: 'D' | 'M' | null = null) {
+        this.cs.getAll('operaciones/buscar/siguiente/' + this.operacion.punto, (ultNum: number) => {
+            this.operacion.numero = ultNum
 
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Existes articulos que están vacíos. Presione nuevamente para confirmar' })
-        }
-
-        this.cs.getAll('ingresos/buscar/siguiente/' + this.ingreso.punto, (ultNum: number) => {
-            this.ingreso.numero = ultNum
-
-            this.cs.create('ingresos', this.ingreso, (id_ingreso_creado: any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Ingreso creado con ID: ' + id_ingreso_creado })
-                this.ingreso.id = id_ingreso_creado
-
-                var artIngs = this.articulosIngreso.filter((e: ArticuloAsociado) => e.id_articulo).map((artIng: ArticuloAsociado) => {
+            this.cs.create('operaciones', this.operacion, (id_operacion_creado: any) => {
+                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Operacion creado con ID: ' + id_operacion_creado })
+                this.operacion.id = id_operacion_creado
+                //
+                var artOpEgr = this.dataTablaArticulosRemitar.filter((e: ArticuloAsociado) => e.id_articulo).map((artIng: ArticuloAsociado) => {
                     const { id, ...resto } = artIng;
 
                     return {
                         ...resto,
-                        id_documento: id_ingreso_creado
+                        ajuste: 'negativo',
+                        documento: 'operaciones',
+                        id_documento: id_operacion_creado
                     }
                 })
-
-                this.cs.createMultiple('articulosAsociados', artIngs, (mensaje: any) => {
-                    this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
-                    this.actualizarDatosTabla()
-
-                    if (tipo == 'D') {
-                        this.descargarIngreso(id_ingreso_creado)
-                        this.visible_ingreso = false
-                    }
-                    if (tipo == 'M') {
-                        this.verIngreso(id_ingreso_creado)
-                        this.visible_ingreso = false
-                    }
-                })
-
-            })
-
-        }, (err: any) => {
-            this.ms.add({ severity: 'error', summary: 'Error obteniendo numero de remito', detail: err.message })
-        })
-    }
-
-
-    mostrarModalDevolucion({ id_ingreso = '', id_devolucion = '' } = {}) {
-        this.pestActiva = 'cliente'
-        if (id_ingreso) {
-            this.cs.getAll('ingresos/' + id_ingreso, (dato: Remito) => {
-                this.devolucion = {
-                    ...dato,
-                    id: '',
-                    id_asociado: id_ingreso,
-                    fecha: this.fechaHoy(),
-                    numero: 0,
-                    total_unidades: '',
-                    observaciones_sistema: '',
-                    observaciones: '',
-                    datos: { documentos: [] }
-                }
-
-                this.id_cliente = dato.id_cliente
-
-                this.cs.getAll('articulosAsociados/devolucion/' + id_ingreso, (datos: any) => {
-                    this.articulosDevolucion = datos
-                })
-            })
-        } else if (id_devolucion) {
-            //BUSCAMOS Y MOSTRAMOS LA DEVOLUCION
-            this.articulosDevolucion = []
-
-            this.cs.getAll('devoluciones/' + id_devolucion, (dato: RemitoDevolucion) => {
-                this.devolucion = dato
-            })
-
-            this.cs.getAll('articulosAsociados/buscar/' + id_devolucion, (datos: ArticuloAsociado[]) => {
-                this.articulosDevolucion = datos
-            })
-        } else {
-            //creamos nueva devolucion, para esto habria que seleccionar el cliente y el ingreso a devolver
-        }
-        this.visible_devolucion = true
-
-    }
-    guardarDevolucion(tipo: 'D' | 'M' | null = null) {
-        var cantidadRegistros = this.articulosDevolucion.filter((artDev) => artDev.cantidadDevolver).length
-
-        if (!cantidadRegistros) {
-            return this.ms.add({ severity: 'error', summary: 'Atencion!', detail: 'Agregar cantidad a al menos un articulo' })
-        }
-
-        this.cs.getAll('devoluciones/buscar/siguiente/' + this.devolucion.punto, (ultNum: number) => {
-            this.devolucion.numero = ultNum
-
-            this.cs.create('devoluciones', this.devolucion, (id_devolucion_creado: any) => {
-                this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Devolucion creada con ID: ' + id_devolucion_creado })
-                this.devolucion.id = id_devolucion_creado
-
-                var artDevs = this.articulosDevolucion.filter((artDev) => artDev.cantidadDevolver).map((artDev: any) => {
-                    const { id, ...resto } = artDev;
+                var artOpIng = this.articulosOperacionIngreso.filter((e: ArticuloAsociado) => e.id_articulo).map((artIng: ArticuloAsociado) => {
+                    const { id, ...resto } = artIng;
 
                     return {
                         ...resto,
-                        cantidad: artDev.cantidadDevolver,
-                        cantidadUnidadFundamental: artDev.cantidadDevolverUnidadFundamental,
-                        id_documento: id_devolucion_creado,
-                        id_original: id,
-                        ajuste: 'negativo',
-                        documento: 'ingreso_devolucion'
+                        ajuste: 'positivo',
+                        documento: 'operaciones',
+                        id_documento: id_operacion_creado
                     }
-                },)
+                })
 
-                this.cs.createMultiple('articulosAsociados', artDevs, (mensaje: any) => {
+                this.cs.createMultiple('articulosAsociados', [ ...artOpEgr, ...artOpIng ], (mensaje: any) => {
                     this.ms.add({ severity: 'success', summary: 'Exito!', detail: mensaje.length + ' registros de articulos creados' })
                     this.actualizarDatosTabla()
 
                     if (tipo == 'D') {
-                        this.descargarDevolucion(id_devolucion_creado)
-                        this.visible_devolucion = false
+                        this.descargarOperacion(id_operacion_creado)
+                        this.visible_operacion = false
                     }
                     if (tipo == 'M') {
-                        this.verDevolucion(id_devolucion_creado)
-                        this.visible_devolucion = false
+                        this.verOperacion(id_operacion_creado)
+                        this.visible_operacion = false
                     }
                 })
 
             })
 
         }, (err: any) => {
-            this.ms.add({ severity: 'error', summary: 'Error obteniendo numero de devolucion', detail: err.message })
+            this.ms.add({ severity: 'error', summary: 'Error obteniendo ultimo numero de operacion. No se guardará', detail: err.message })
         })
     }
+
 
     mostrarModalFiltro() {
         this.visible_filtros = true
     }
 
-    buscarClientePorId(id: string) {
-        this.cs.getAll('clientes/' + id, (data: Cliente) => {
-            this.asignarCliente(data)
-        })
-    }
-    buscarClientePorCodigo() {
-        if (!this.ingreso.codigo) {
+    buscarClienteIngresoPorCodigo() {
+        if (!this.operacion.codigo_ingreso) {
             return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ingrese un CODIGO' })
         }
 
-        this.cs.getAll('clientes/codigo/' + this.ingreso.codigo, (data: Cliente) => {
-            this.asignarCliente(data)
+        this.buscandoCliente = 'ingreso'
+
+        this.cs.getAll('clientes/codigo/' + this.operacion.codigo_ingreso, (data: Cliente) => {
+            this.asignarClienteIngreso(data)
         }, (err: any) => {
-            this.cs.getAll('clientes/buscar/' + this.ingreso.codigo, (data: Cliente[]) => {
+            this.cs.getAll('clientes/buscar/' + this.operacion.codigo_ingreso, (data: Cliente[]) => {
                 if (data.length == 1) {
-                    this.asignarCliente(data[0])
+                    this.asignarClienteIngreso(data[0])
                 }
                 else if (data.length > 1) {
                     this.clientes = data
@@ -604,317 +342,77 @@ export class OperacionesComponent {
             })
         })
     }
-    asignarCliente(cliente: Cliente, continua: boolean = true) {
-        this.id_cliente = cliente.id
+    buscarClienteEgresoPorCodigo() {
+        if (!this.operacion.codigo_egreso) {
+            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Ingrese un CODIGO' })
+        }
 
-        this.ingreso.id_cliente = cliente.id
-        this.ingreso.cuit = cliente.cuit
-        this.ingreso.codigo = cliente.codigo
-        this.ingreso.razon_social = cliente.razon_social
-        this.ingreso.alias = cliente.alias
-        this.ingreso.direccion = cliente.direccion
-        this.ingreso.localidad = cliente.localidad
-        this.ingreso.provincia = cliente.provincia
-        this.ingreso.codigo_postal = cliente.codigo_postal
-        this.ingreso.telefono = cliente.telefono
-        this.ingreso.correo = cliente.correo
+        this.buscandoCliente = 'egreso'
+
+        this.cs.getAll('clientes/codigo/' + this.operacion.codigo_egreso, (data: Cliente) => {
+            this.asignarClienteEgreso(data)
+        }, (err: any) => {
+            this.cs.getAll('clientes/buscar/' + this.operacion.codigo_egreso, (data: Cliente[]) => {
+                if (data.length == 1) {
+                    this.asignarClienteEgreso(data[0])
+                }
+                else if (data.length > 1) {
+                    this.clientes = data
+                    this.searchValue_cliente = ''
+                    this.filtroCliente()
+                    this.visible_cliente = true
+                } else {
+                    this.ms.add({ severity: 'error', summary: 'Error!', detail: 'No se encontró ningún cliente con ese código' })
+                }
+            })
+        })
+    }
+    asignarClienteIngreso(cliente: Cliente) {
+        this.id_cliente_ingreso = cliente.id
+
+        this.operacion.id_cliente_ingreso = cliente.id
+        this.operacion.cuit_ingreso = cliente.cuit
+        this.operacion.codigo_ingreso = cliente.codigo
+        this.operacion.razon_social_ingreso = cliente.razon_social
+        this.operacion.alias_ingreso = cliente.alias
 
         this.visible_cliente = false
-
-        if (continua) {
-            this.buscarAutorizados()
-        }
     }
-    asignarAutorizado(autorizado: Autorizado | undefined, continua: boolean = true) {
+    asignarClienteEgreso(cliente: Cliente) {
+        this.id_cliente_egreso = cliente.id
 
-        if (autorizado) {
-            this.ingreso.id_autorizado = autorizado?.id
-            this.ingreso.autorizado_descripcion = autorizado?.descripcion
-            this.ingreso.autorizado_documento = autorizado?.documento
-            this.ingreso.autorizado_contacto = autorizado?.contacto
+        this.operacion.id_cliente_egreso = cliente.id
+        this.operacion.cuit_egreso = cliente.cuit
+        this.operacion.codigo_egreso = cliente.codigo
+        this.operacion.razon_social_egreso = cliente.razon_social
+        this.operacion.alias_egreso = cliente.alias
 
-            this.devolucion.id_autorizado = autorizado?.id
-            this.devolucion.autorizado_descripcion = autorizado?.descripcion
-            this.devolucion.autorizado_documento = autorizado?.documento
-            this.devolucion.autorizado_contacto = autorizado?.contacto
-        } else {
-            this.ingreso.id_autorizado = ''
-            this.ingreso.autorizado_descripcion = ''
-            this.ingreso.autorizado_documento = ''
-            this.ingreso.autorizado_contacto = ''
-
-            this.devolucion.id_autorizado = ''
-            this.devolucion.autorizado_descripcion = ''
-            this.devolucion.autorizado_documento = ''
-            this.devolucion.autorizado_contacto = ''
-        }
-
-        this.visible_autorizado = false
-
-        if (continua) {
-            this.buscarTransportes()
-        }
-    }
-    asignarTransporte(transporte: Transporte | undefined, continua: boolean = true) {
-        if (transporte) {
-            this.ingreso.id_transporte = transporte?.id
-            this.ingreso.transporte_transporte = transporte?.transporte
-            this.ingreso.transporte_cuit_transporte = transporte?.cuit_transporte
-            this.ingreso.transporte_chofer = transporte?.chofer
-            this.ingreso.transporte_cuit_chofer = transporte?.cuit_chofer
-            this.ingreso.transporte_patente_chasis = transporte?.patente_chasis
-            this.ingreso.transporte_patente_acoplado = transporte?.patente_acoplado
-
-            this.devolucion.id_transporte = transporte?.id
-            this.devolucion.transporte_transporte = transporte?.transporte
-            this.devolucion.transporte_cuit_transporte = transporte?.cuit_transporte
-            this.devolucion.transporte_chofer = transporte?.chofer
-            this.devolucion.transporte_cuit_chofer = transporte?.cuit_chofer
-            this.devolucion.transporte_patente_chasis = transporte?.patente_chasis
-            this.devolucion.transporte_patente_acoplado = transporte?.patente_acoplado
-        } else {
-            this.ingreso.id_transporte = ''
-            this.ingreso.transporte_transporte = ''
-            this.ingreso.transporte_cuit_transporte = 0
-            this.ingreso.transporte_chofer = ''
-            this.ingreso.transporte_cuit_chofer = 0
-            this.ingreso.transporte_patente_chasis = ''
-            this.ingreso.transporte_patente_acoplado = ''
-
-            this.devolucion.id_transporte = ''
-            this.devolucion.transporte_transporte = ''
-            this.devolucion.transporte_cuit_transporte = 0
-            this.devolucion.transporte_chofer = ''
-            this.devolucion.transporte_cuit_chofer = 0
-            this.devolucion.transporte_patente_chasis = ''
-            this.devolucion.transporte_patente_acoplado = ''
-        }
-
-
-        this.visible_transporte = false
-
-        if (continua) {
-            this.buscarEstablecimientos()
-        }
-    }
-    asignarEstablecimiento(establecimiento: Establecimiento | undefined) {
-        if (establecimiento) {
-            this.ingreso.id_establecimiento = establecimiento?.id
-            this.ingreso.establecimiento_descripcion = establecimiento?.descripcion
-            this.ingreso.establecimiento_localidad = establecimiento?.localidad
-            this.ingreso.establecimiento_provincia = establecimiento?.provincia
-
-            this.devolucion.id_establecimiento = establecimiento?.id
-            this.devolucion.establecimiento_descripcion = establecimiento?.descripcion
-            this.devolucion.establecimiento_localidad = establecimiento?.localidad
-            this.devolucion.establecimiento_provincia = establecimiento?.provincia
-        } else {
-            this.ingreso.id_establecimiento = ''
-            this.ingreso.establecimiento_descripcion = ''
-            this.ingreso.establecimiento_localidad = ''
-            this.ingreso.establecimiento_provincia = ''
-
-            this.devolucion.id_establecimiento = ''
-            this.devolucion.establecimiento_descripcion = ''
-            this.devolucion.establecimiento_localidad = ''
-            this.devolucion.establecimiento_provincia = ''
-        }
-
-        this.visible_establecimiento = false
+        this.visible_cliente = false
     }
 
 
     filtroCliente() {
         this.clientesFiltrados = this.clientes.filter((cliente: Cliente) => { return cliente.razon_social.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) || cliente.alias.toLocaleUpperCase().includes(this.searchValue_cliente.toLocaleUpperCase()) })
     }
-    filtroAutorizado() {
-        this.autorizadosFiltrados = this.autorizados.filter((autorizado: Autorizado) => { return autorizado.descripcion.toLocaleUpperCase().includes(this.searchValue_autorizado.toLocaleUpperCase()) })
-    }
-    filtroTransporte() {
-        this.transportesFiltrados = this.transportes.filter((transporte: Transporte) => { return transporte.transporte.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) || transporte.chofer.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) || transporte.patente_chasis.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) || transporte.patente_acoplado.toLocaleUpperCase().includes(this.searchValue_transporte.toLocaleUpperCase()) })
-    }
-    filtroEstablecimiento() {
-        this.establecimientosFiltrados = this.establecimientos.filter((establecimiento: Establecimiento) => { return establecimiento.descripcion.toLocaleUpperCase().includes(this.searchValue_establecimiento.toLocaleUpperCase()) })
-    }
     filtroArticulo() {
         this.articulosFiltrados = this.articulos.filter((articulo: Articulo) => { return articulo.descripcion.toLocaleUpperCase().includes(this.searchValue_articulo.toLocaleUpperCase()) })
     }
-
-
-    buscarAutorizados(mostrar: boolean = false) {
-        if (!this.id_cliente) {
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un cliente' })
-        }
-        this.cs.getAll('autorizados/' + this.id_cliente, (data: Autorizado[]) => {
-
-            if (data.length > 0 || mostrar) {
-                this.autorizados = data
-                this.searchValue_autorizado = ''
-                this.autorizado = {
-                    id: '',
-                    id_cliente: this.id_cliente,
-                    descripcion: '',
-                    documento: '',
-                    cargo: '',
-                    contacto: '',
-                    datos: {},
-                    estado: 1,
-                    createdBy: '',
-                    updatedBy: '',
-                    createdAt: '',
-                    updatedAt: ''
-                }
-                this.filtroAutorizado()
-                this.visible_autorizado = true
-            } else {
-                this.asignarAutorizado(undefined)
-            }
-
-        })
-    }
-    buscarTransportes(mostrar: boolean = false) {
-        if (!this.id_cliente) {
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un cliente' })
-        }
-        this.cs.getAll('transportes/' + this.id_cliente, (data: Transporte[]) => {
-            if (data.length > 0 || mostrar) {
-                this.transportes = data
-                this.searchValue_transporte = ''
-                this.transporte = {
-                    id: '',
-                    id_cliente: this.id_cliente,
-                    transporte: '',
-                    cuit_transporte: 0,
-                    chofer: '',
-                    cuit_chofer: 0,
-                    patente_chasis: '',
-                    patente_acoplado: '',
-                    datos: {},
-                    estado: 1,
-                    createdBy: '',
-                    updatedBy: '',
-                    createdAt: '',
-                    updatedAt: ''
-                }
-                this.filtroTransporte()
-                this.visible_transporte = true
-            } else {
-                this.asignarTransporte(undefined)
-            }
-        })
-    }
-    buscarEstablecimientos(mostrar: boolean = false) {
-        if (!this.id_cliente) {
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'Seleccione un cliente' })
-        }
-        this.cs.getAll('establecimientos/' + this.id_cliente, (data: Establecimiento[]) => {
-            if (data.length > 0 || mostrar) {
-                this.establecimientos = data
-                this.searchValue_establecimiento = ''
-                this.establecimiento = {
-                    id: '',
-                    id_cliente: this.id_cliente,
-                    descripcion: '',
-                    localidad: '',
-                    provincia: '',
-                    datos: {},
-                    estado: 1,
-                    createdBy: '',
-                    updatedBy: '',
-                    createdAt: '',
-                    updatedAt: ''
-                }
-                this.filtroEstablecimiento()
-                this.visible_establecimiento = true
-            } else {
-                this.asignarEstablecimiento(undefined)
-            }
-        })
+    filtroArticuloEgreso() {
+        this.dataTablaArticulos = this.dataArticulosRemitar.filter((articulo: any) => { return articulo.codigo.toLocaleUpperCase().includes(this.searchValue_articuloEgreso.toLocaleUpperCase()) || articulo.descripcion.toLocaleUpperCase().includes(this.searchValue_articuloEgreso.toLocaleUpperCase()) || articulo.lote.toLocaleUpperCase().includes(this.searchValue_articuloEgreso.toLocaleUpperCase()) })
     }
 
-
-    agregarAutorizado() {
-        this.autorizado = {
-            id: '1',
-            id_cliente: this.id_cliente,
-            descripcion: '',
-            documento: '',
-            cargo: '',
-            contacto: '',
-            datos: {},
-            estado: 1,
-            createdBy: '',
-            updatedBy: '',
-            createdAt: '',
-            updatedAt: ''
-        }
-    }
-    guardarAutorizado() {
-        this.cs.create('autorizados', this.autorizado, (id: any) => {
-            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Autorizado creado con ID: ' + id })
-            this.asignarAutorizado(this.autorizado)
-        })
-
-    }
-    agregarTransporte() {
-        this.transporte = {
-            id: '1',
-            id_cliente: this.id_cliente,
-            transporte: '',
-            cuit_transporte: 0,
-            chofer: '',
-            cuit_chofer: 0,
-            patente_chasis: '',
-            patente_acoplado: '',
-            datos: {},
-            estado: 1,
-            createdBy: '',
-            updatedBy: '',
-            createdAt: '',
-            updatedAt: ''
-        }
-    }
-    guardarTransporte() {
-        this.cs.create('transportes', this.transporte, (id: any) => {
-            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Transporte creado con ID: ' + id })
-            this.asignarTransporte(this.transporte)
-        })
-
-    }
-    agregarEstablecimiento() {
-        this.establecimiento = {
-            id: '1',
-            id_cliente: this.id_cliente,
-            descripcion: '',
-            localidad: '',
-            provincia: '',
-            datos: {},
-            estado: 1,
-            createdBy: '',
-            updatedBy: '',
-            createdAt: '',
-            updatedAt: ''
-        }
-    }
-    guardarEstablecimiento() {
-        this.cs.create('establecimientos', this.establecimiento, (id: any) => {
-            this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Establecimiento creado con ID: ' + id })
-            this.asignarEstablecimiento(this.establecimiento)
-        })
-
-    }
 
     //ARTICULOS
-    agregarArticulos() {
-        if (this.articulosIngreso.some((art: ArticuloAsociado) => { return !art.id_articulo })) {
+    agregarArticulosIngreso() {
+        if (this.articulosOperacionIngreso.some((art: ArticuloAsociado) => { return !art.id_articulo })) {
             return this.ms.add({ severity: 'info', summary: 'Atencion!', detail: 'Existen Complete los datos vacios' })
         }
 
-        let ultimoId = this.articulosIngreso.reduce((max: number, curr: ArticuloAsociado) => {
+        let ultimoId = this.articulosOperacionIngreso.reduce((max: number, curr: ArticuloAsociado) => {
             return parseInt(curr.id) > max ? parseInt(curr.id) : max
         }, 0)
 
-        this.articulosIngreso.push({
+        this.articulosOperacionIngreso.push({
             id: (ultimoId + 1).toString(),
             id_original: '',
             id_articulo: '',
@@ -936,7 +434,7 @@ export class OperacionesComponent {
             unidadFundamental: '',
             cantidadPorUnidadFundamental: 0,
             ajuste: 'positivo',
-            documento: 'ingreso',
+            documento: 'operaciones',
             datos: {},
             estado: 1,
             createdBy: '',
@@ -944,36 +442,46 @@ export class OperacionesComponent {
             createdAt: '',
             updatedAt: ''
         })
-
-        this.permite_secuencia_lote = false
     }
-    agregarArticulosSecuencia() {
+    agregarArticulosEgreso() {
+        if (this.articulosOperacionEgreso.some((art: ArticuloAsociado) => { return !art.id_articulo })) {
+            return this.ms.add({ severity: 'info', summary: 'Atencion!', detail: 'Existen Complete los datos vacios' })
+        }
 
-        let ultimo = this.articulosIngreso.reduce((anterior: ArticuloAsociado, curr: ArticuloAsociado) => {
-            return parseInt(curr.id) > parseInt(anterior.id) ? curr : anterior
+        let ultimoId = this.articulosOperacionEgreso.reduce((max: number, curr: ArticuloAsociado) => {
+            return parseInt(curr.id) > max ? parseInt(curr.id) : max
+        }, 0)
+
+        this.articulosOperacionEgreso.push({
+            id: (ultimoId + 1).toString(),
+            id_original: '',
+            id_articulo: '',
+            id_documento: '',
+            id_rubro: '',
+            id_subRubro: '',
+            id_laboratorio: '',
+            id_unidadMedida: '',
+            id_deposito: this.depositoSeleccionado,
+            cantidad: 0,
+            cantidadUnidadFundamental: 0,
+            solicitaLote: false,
+            solicitaVencimiento: false,
+            lote: '',
+            vencimiento: this.fechaHoy(),
+            codigo: '',
+            descripcion: '',
+            observaciones: '',
+            unidadFundamental: '',
+            cantidadPorUnidadFundamental: 0,
+            ajuste: 'negativo',
+            documento: 'operaciones',
+            datos: {},
+            estado: 1,
+            createdBy: '',
+            updatedBy: '',
+            createdAt: '',
+            updatedAt: ''
         })
-
-        let serie = ultimo.lote.slice(-this.digitos_secuencia_lote)
-        let serie_base = ultimo.lote.slice(0, -this.digitos_secuencia_lote);
-
-        let numero_serie = 0
-        try {
-            numero_serie = parseInt(serie) ? parseInt(serie) : 0
-        } catch {
-            numero_serie = 0
-        }
-
-        for (let index = 0; index < this.cantidad_secuencia_lote; index++) {
-
-            this.articulosIngreso.push({
-                ...ultimo,
-                id: (parseInt(ultimo.id) + index + 1).toString(),
-                lote: serie_base + (numero_serie + index + 1).toString().padStart(this.digitos_secuencia_lote, '0')
-
-            })
-        }
-
-        this.ingreso.total_unidades = this.totalesArticulosIngreso()
     }
     buscarArticuloPorCodigo(art: ArticuloAsociado) {
         if (!art.codigo) {
@@ -1016,7 +524,7 @@ export class OperacionesComponent {
                         unidadFundamental: '',
                         cantidadPorUnidadFundamental: 0,
                         ajuste: 'positivo',
-                        documento: 'ingreso',
+                        documento: 'operaciones',
                         datos: {},
                         estado: 1,
                         createdBy: '',
@@ -1047,108 +555,23 @@ export class OperacionesComponent {
         art.vencimiento = datos.solicitaVencimiento ? this.fechaHoy() : ''
 
         this.visible_articulo = false
-        this.permite_secuencia_lote = datos.solicitaLote
-
-        console.log(art)
-        console.log(datos)
 
     }
-
-
-    eliminarArticulo(id: string) {
-        this.articulosIngreso = this.articulosIngreso.filter((art: ArticuloAsociado) => { return art.id != id });
-        this.permite_secuencia_lote = false
+    eliminarArticuloIngreso(id: string) {
+        this.articulosOperacionIngreso = this.articulosOperacionIngreso.filter((art: ArticuloAsociado) => { return art.id != id });
     }
-    verTotalesArticulosIngreso() {
-        if (this.articulosIngreso.length == 0) {
-            return this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'No hay articulos' })
-        }
-
-        this.datosTotales = Object.values(this.articulosIngreso.reduce((rubroAcc: any, item: ArticuloAsociado) => {
-            // Si el rubro no existe en el acumulador, lo agregamos
-            if (!rubroAcc.some((rub: any) => rub.id_rubro == item.id_rubro)) {
-                rubroAcc.push({
-                    id_rubro: item.id_rubro,
-                    rubro: this.obtenerDescripcionRubro(item.id_rubro),
-                    datos: [],
-                    totales: 0,
-                    litros: 0,
-                    kilos: 0,
-                    unidades: 0
-                });
-            }
-
-            const rubro = rubroAcc.find((rub: any) => rub.id_rubro == item.id_rubro)
-
-            // Buscamos el subrubro en los datos del rubro actual
-            let subrubro = rubro.datos.find((sub: any) => sub.id_subRubro === item.id_subRubro);
-
-            // Si no existe el subrubro, lo creamos
-            if (!subrubro) {
-                subrubro = {
-                    id_subRubro: item.id_subRubro,
-                    subRubro: this.obtenerDescripcionSubRubro(item.id_subRubro),
-                    datos: [],
-                    totales: 0,
-                    litros: 0,
-                    kilos: 0,
-                    unidades: 0
-                };
-                rubro.datos.push(subrubro);
-            }
-
-            // Agregamos el item al subrubro y actualizamos los totales
-            let articulo = subrubro.datos.find((art: any) => art.id_articulo === item.id_articulo)
-
-            if (!articulo) {
-                articulo = {
-                    id_articulo: item.id_articulo,
-                    descripcion: item.descripcion,
-                    cantidad: 0,
-                    unidadMedida: this.obtenerDescripcionUnidadMedida(item.id_unidadMedida),
-                    litros: 0,
-                    kilos: 0,
-                    unidades: 0
-                }
-                subrubro.datos.push(articulo);
-            }
-
-            articulo.cantidad += item.cantidad
-            subrubro.totales += item.cantidad;
-            rubro.totales += item.cantidad;
-
-            articulo[item.unidadFundamental] += item.cantidadUnidadFundamental
-            subrubro[item.unidadFundamental] += item.cantidadUnidadFundamental;
-            rubro[item.unidadFundamental] += item.cantidadUnidadFundamental;
-
-            return rubroAcc;
-        }, []));
-
-        this.visible_totales = true
+    eliminarArticuloEgreso(id: string) {
+        this.articulosOperacionEgreso = this.articulosOperacionEgreso.filter((art: ArticuloAsociado) => { return art.id != id });
     }
-
 
     //DOCUMENTOS
     agregarDocumento() {
-        let ultimoId = this.ingreso.datos.documentos?.reduce((max: number, curr: any) => {
+        let ultimoId = this.operacion.datos.documentos?.reduce((max: number, curr: any) => {
             return curr.id > max ? curr.id : max
         }, 0)
 
-        this.ingreso.datos.documentos?.push({
+        this.operacion.datos.documentos?.push({
             id: ultimoId ? ultimoId + 1 : 1,
-            tipo: 'remito',
-            letra: 'R',
-            punto: 1,
-            numero: 1,
-            fecha: this.fechaHoy()
-        })
-
-        let ultimoIdDev = this.devolucion.datos.documentos?.reduce((max: number, curr: any) => {
-            return curr.id > max ? curr.id : max
-        }, 0)
-
-        this.devolucion.datos.documentos?.push({
-            id: ultimoIdDev ? ultimoIdDev + 1 : 1,
             tipo: 'remito',
             letra: 'R',
             punto: 1,
@@ -1157,33 +580,62 @@ export class OperacionesComponent {
         })
     }
     eliminarDocumento(id: any) {
-        if (this.ingreso.datos.documentos?.length) {
-            this.ingreso.datos.documentos = this.ingreso.datos.documentos.filter((e: any) => e.id != id)
-        }
-        if (this.devolucion.datos.documentos?.length) {
-            this.devolucion.datos.documentos = this.devolucion.datos.documentos.filter((e: any) => e.id != id)
+        if (this.operacion.datos.documentos?.length) {
+            this.operacion.datos.documentos = this.operacion.datos.documentos.filter((e: any) => e.id != id)
         }
     }
 
-    //DEVOLUCIONES
-    seleccionarDevolverTodo(art: any = null) {
-        if (art) {
-            var cantidadDisponible = art.cantidad - art.salidas + art.entradas
-            art.cantidadDevolver = cantidadDisponible
 
-            var cantidadUFDisponible = art.cantidadUnidadFundamental - art.salidas_uf + art.entradas_uf
-            art.cantidadDevolverUnidadFundamental = cantidadUFDisponible
-        } else {
-            this.articulosDevolucion.forEach((art: any) => {
-                var cantidadDisponible = art.cantidad - art.salidas + art.entradas
-                art.cantidadDevolver = cantidadDisponible
 
-                var cantidadUFDisponible = art.cantidadUnidadFundamental - art.salidas_uf + art.entradas_uf
-                art.cantidadDevolverUnidadFundamental = cantidadUFDisponible
+    //ARTICULOS EGRESOS:
+    mostrarModalAsociarArticulos(){
+        this.visible_articulo_egreso = true
+        this.buscarArticulosParaRemitar()
+    }
+    buscarArticulosParaRemitar(){
+        const selectedClientes = [ this.id_cliente_egreso ]
+
+        this.cs.getAllPost(`operaciones/articulosRemito`, { id_clientes: selectedClientes }, (e: any) => {
+            this.dataArticulosRemitar = e.map((f:any) => {
+                return {
+                    ...f,
+                    numeroDocumento: this.mostrarDocumento(f.punto, f.numero),
+                    deposito: this.obtenerDescripcionDeposito(f.id_deposito),
+                    unidadMedida: this.obtenerDescripcionUnidadMedida(f.id_unidadMedida)
+                }
             })
-        }
 
-        this.devolucion.total_unidades = this.totalesArticulosDevolucion()
+            this.filtroArticuloEgreso()
+        })
+    }
+    setearArticulosSeleccionados(){
+        this.dataTablaArticulosRemitar = this.dataArticulosRemitar.filter((e:any) => e.cantidadRemitar).map((e:any) => {
+            return {
+                ...e,
+                documento: 'operaciones',
+                ajuste: "negativo",
+                cantidad: e.cantidadRemitar,
+                cantidadUnidadFundamental: e.cantidadRemitarUnidadFundamental,
+                id_original: e.id
+            }
+        })
+
+        this.visible_articulo_egreso = false
+    }
+    ordenarTablaArticulos(ordenaPor: string) {
+
+        if (this.ordenarTablaPorAnterior_art == ordenaPor) this.ordenarTablaOrden_art = !this.ordenarTablaOrden_art;
+
+        this.ordenarTablaPor_art = ordenaPor
+
+        this.dataTablaArticulos.sort((a: any, b: any) => {
+            if (typeof a[ordenaPor] === 'string') {
+                return this.ordenarTablaOrden_art ? b[ordenaPor].localeCompare(a[ordenaPor]) : a[ordenaPor].localeCompare(b[ordenaPor]);
+            }
+            return this.ordenarTablaOrden_art ? (a[ordenaPor] - b[ordenaPor]) : (b[ordenaPor] - a[ordenaPor]);
+        });
+
+        this.ordenarTablaPorAnterior_art = ordenaPor
     }
 
     //HELPERS
@@ -1196,10 +648,33 @@ export class OperacionesComponent {
     obtenerDescripcionUnidadMedida(id: string) {
         return this.unidadMedidas.find((unidadMedida: UnidadMedida) => { return unidadMedida.id == id })?.alias
     }
+    obtenerDescripcionDeposito(id: string) {
+        return this.depositos.find((deposito: Deposito) => { return deposito.id == id })?.alias
+    }
     //obtenerDescripcionLaboratorio(id: string) {
     //    return this.laboratorios.find((laboratorio: Laboratorio) => { return laboratorio.id == id })?.descripcion
     //}
+    seleccionarDevolverTodoRemito(art: any = null) {
+        if (art) {
+            var articuloDB = this.dataArticulosRemitar.find((e:any) => e.id == art.id )
 
+            articuloDB.cantidadRemitar = art.cantidad
+            articuloDB.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+
+            art.cantidadRemitar = art.cantidad
+            art.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+        } else {
+            this.dataTablaArticulos.forEach((art: any) => {
+                var articuloDB = this.dataArticulosRemitar.find((e:any) => e.id == art.id )
+
+                articuloDB.cantidadRemitar = art.cantidad
+                articuloDB.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+                
+                art.cantidadRemitar = art.cantidad
+                art.cantidadRemitarUnidadFundamental = art.cantidadUnidadFundamental
+            })
+        }
+    }
     fechaHoy(dias: number = 0) {
         const fechaActual = new Date();
 
@@ -1228,62 +703,31 @@ export class OperacionesComponent {
     mostrarDocumento(pto: number, nro: number) {
         return `${String(pto).padStart(4, '0')}-${String(nro).padStart(8, '0')}`
     }
-    totalesArticulosIngreso() {
-        var cantidad = 0
-        var kilos = 0
-        var litros = 0
-        var unidades = 0
-
-        this.articulosIngreso.map((item: ArticuloAsociado) => {
-
-            cantidad += item.cantidad
-
-            if (item.unidadFundamental == 'kilos') {
-                kilos += item.cantidadUnidadFundamental
-            } else if (item.unidadFundamental == 'litros') {
-                litros += item.cantidadUnidadFundamental
-            } else if (item.unidadFundamental == 'unidades') {
-                unidades += item.cantidadUnidadFundamental
-            }
-
-        });
-
-        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
-    }
-    totalesArticulosDevolucion(): string {
-        var cantidad = 0
-        var kilos = 0
-        var litros = 0
-        var unidades = 0
-
-        this.articulosDevolucion.map((item: any) => {
-
-            cantidad += (item.cantidadDevolver ? item.cantidadDevolver : 0)
-
-            if (item.unidadFundamental == 'kilos') {
-                kilos += (item.cantidadDevolverUnidadFundamental ? item.cantidadDevolverUnidadFundamental : 0)
-            } else if (item.unidadFundamental == 'litros') {
-                litros += (item.cantidadDevolverUnidadFundamental ? item.cantidadDevolverUnidadFundamental : 0)
-            } else if (item.unidadFundamental == 'unidades') {
-                unidades += (item.cantidadDevolverUnidadFundamental ? item.cantidadDevolverUnidadFundamental : 0)
-            }
-        });
-
-        return `${cantidad} unidades.${(kilos || litros || unidades) ? 'Equivale a' : ''}${kilos ? ' ~' + kilos + ' kilos.' : ''}${litros ? ' ~' + litros + ' litros.' : ''}${unidades ? ' ~' + unidades + ' unidades.' : ''}`
-    }
 
     calcularUnidadFundamental(art: ArticuloAsociado) {
         if(art.cantidad < 0) art.cantidad = 0;
 
         art.cantidadUnidadFundamental = Math.round(art.cantidad * art.cantidadPorUnidadFundamental * 100) / 100
-
-        this.ingreso.total_unidades = this.totalesArticulosIngreso()
     }
     calcularUnidadFundamentalDevolucion(art: any) {
         art.cantidadDevolverUnidadFundamental = Math.round(art.cantidadDevolver * art.cantidadPorUnidadFundamental * 100) / 100
 
         this.verificarMax(art)
         this.verificarMaxUF(art)
+    }
+    calcularUnidadFundamentalRemito(art: any) {
+        art.cantidadRemitarUnidadFundamental = Math.round(art.cantidadRemitar * art.cantidadPorUnidadFundamental * 100) / 100
+
+        //verificar max
+        if (art.cantidadRemitar > art.cantidad) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a remitar es: ' + art.cantidad })
+            art.cantidadRemitar = art.cantidad
+        }
+        if (art.cantidadRemitar < 0) {
+            art.cantidadRemitar = 0
+        }
+
+        this.verificarMaxUFRemitar(art)
     }
     verificarMax(a: any) {
         var cantidadDisponible = a.cantidad - a.salidas + a.entradas
@@ -1306,8 +750,16 @@ export class OperacionesComponent {
         if (a.cantidadDevolverUnidadFundamental < 0) {
             a.cantidadDevolverUnidadFundamental = 0
         }
+    }
+    verificarMaxUFRemitar(a: any) {
 
-        this.devolucion.total_unidades = this.totalesArticulosDevolucion()
+        if (a.cantidadRemitarUnidadFundamental > a.cantidadUnidadFundamental) {
+            this.ms.add({ severity: 'warn', summary: 'Atencion!', detail: 'La cantidad maxima disponible a remitar (UF) es: ' + a.cantidadUnidadFundamental })
+            a.cantidadRemitarUnidadFundamental = a.cantidadUnidadFundamental
+        }
+        if (a.cantidadRemitarUnidadFundamental < 0) {
+            a.cantidadRemitarUnidadFundamental = 0
+        }
     }
 
     fechaFiltro(dias: number) {
@@ -1357,8 +809,8 @@ export class OperacionesComponent {
         this.ordenarTablaPorAnterior = ordenaPor
     }
     guardarFechas() {
-        localStorage.setItem('stock_ingresosFechaFiltroDesde', this.fechaFiltroDesde)
-        localStorage.setItem('stock_ingresosFechaFiltroHasta', this.fechaFiltroHasta)
+        localStorage.setItem('stock_operacionesFechaFiltroDesde', this.fechaFiltroDesde)
+        localStorage.setItem('stock_operacionesFechaFiltroHasta', this.fechaFiltroHasta)
         this.ms.add({ severity: 'success', summary: 'Exito!', detail: 'Fechas guardadas' })
     }
 

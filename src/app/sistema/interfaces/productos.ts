@@ -12,6 +12,12 @@ export interface Rubro {
     updatedAt: string
 }
 
+export interface TiposOperaciones {
+    id: string;
+    descripcion: string;
+    alias: string;
+}
+
 export interface SubRubro {
     id: string;
     id_rubro: string;
