@@ -263,6 +263,17 @@ export class OperacionesComponent {
         this.id_cliente_egreso = ''
     }
     guardarOperacion(tipo: 'D' | 'M' | null = null) {
+        if(!this.id_cliente_egreso && !this.id_cliente_ingreso){
+            return this.ms.add({ severity: 'info', summary: 'Atención', detail: 'Por favor, seleccione un cliente para entrada o salida de mercadería' })
+        }
+
+        const cantIng = this.dataTablaArticulosRemitar.filter((e: ArticuloAsociado) => e.id_articulo).length
+        const cantEgr = this.articulosOperacionIngreso.filter((e: ArticuloAsociado) => e.id_articulo).length
+        
+        if(!cantIng && !cantEgr){
+            return this.ms.add({ severity: 'info', summary: 'Atención', detail: 'Por favor, seleccione al menos un artículo para Entrada o Salida' })
+        }
+
         this.cs.getAll('operaciones/buscar/siguiente/' + this.operacion.punto, (ultNum: number) => {
             this.operacion.numero = ultNum
 
