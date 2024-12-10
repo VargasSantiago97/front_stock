@@ -125,26 +125,6 @@
         </div>
         <div class="col-12 mt-5">
             <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '5px 0px'}">
-                <b>CLIENTES</b>
-            </p-divider>
-
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1" style="width: 15%;">Buscar</span>
-                <input type="text" class="form-control" placeholder="Alias / Razon Social"
-                    aria-label="Alias / Razon Social" aria-describedby="basic-addon1" [(ngModel)]="searchValue_cliente"
-                    (change)="clienteFiltro()" (keyup)="clienteFiltro()">
-            </div>
-            <div class="form-group">
-                <select id="clientes" class="form-control" multiple [(ngModel)]="selectedClientes"
-                    style="height: 150px;">
-                    @for (item of clientesFiltrados; track $index) {
-                    <option value="{{item.id}}">{{item.alias}} ({{item.razon_social}})</option>
-                    }
-                </select>
-            </div>
-        </div>
-        <div class="col-12 mt-5">
-            <p-divider align="left" type="solid" class="m-0 p-0" [style]="{'margin': '5px 0px'}">
                 <b>DEPOSITOS</b>
             </p-divider>
 
