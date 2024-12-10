@@ -56,6 +56,9 @@
                         <th class="text-center align-middle" scope="col"
                             title="REMITOS a nombre de {{dataCliente.cliente}} de mercadería propia. Descontando las DEVOLUCIONES de REMITOS">
                             SALIDAS</th>
+                        <th class="text-center align-middle" scope="col"
+                            title="Operaciones de INGRESO y/o EGRESO a nombre de {{dataCliente.cliente}}">
+                            OPERACIONES</th>
                         <th class="text-center align-middle" scope="col" title="= INGRESOS - SALIDAS">STOCK</th>
                         <th class="text-center align-middle" scope="col"
                             title="REMITOS a nombre de otros clientes, con mercadería ingresada por {{dataCliente.cliente}}. Descontando las DEVOLUCIONES de REMITOS">
@@ -81,6 +84,8 @@
                             mostrarNumero(item.ingresos_uf)}}</td>
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.salidas) :
                             mostrarNumero(item.salidas_uf)}}</td>
+                        <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.operaciones) :
+                            mostrarNumero(item.operaciones_uf)}}</td>
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.stock) :
                             mostrarNumero(item.stock_uf)}}</td>
                         <td class="text-end">{{value_um == 'um' ? mostrarNumero(item.otros_destinos) :
@@ -351,7 +356,8 @@
                     @if (registro.tipo == 'DEV. INGRESO') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verDevolucion(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            (click)="verDevolucion(registro.id_documento)" title="Ver PDF"><i
+                                class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="descargarDevolucion(registro.id_documento)" title="Descargar PDF"><i
@@ -373,7 +379,8 @@
                     @if (registro.tipo == 'DEV. REMITO') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i
+                                class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
@@ -395,7 +402,8 @@
                     @if (registro.tipo == 'DEV. REMITO OTRO DEST') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i
+                                class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
@@ -417,7 +425,8 @@
                     @if (registro.tipo == 'DEV. REMITO OTRO ORIGEN') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
+                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i
+                                class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
