@@ -283,7 +283,7 @@
 </p-dialog>
 
 
-<p-dialog header="MOVIMIENTOS DEL ARTICULO: {{detalleMovimientosArticulo}} - De: {{detalleMovimientosCliente}}"
+<p-dialog header="MOVIMIENTOS DE: {{detalleMovimientosCliente}}; DEL ARTICULO: {{detalleMovimientosArticulo}}"
     [modal]="true" [(visible)]="visible_movimientos" [style]="{ width: '90rem', height:'90rem'}"
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
 
@@ -439,7 +439,7 @@
         </table>
     </div>
 
-    <button type="button" class="btn btn-primary m-0 p-0 px-1" (click)="visible_help = !visible_help"><i
+    <button type="button" class="btn btn-primary my-4 p-0 px-1" (click)="visible_help = !visible_help"><i
             class="pi pi-question-circle"></i></button>
 
     @if (visible_help) {
@@ -460,7 +460,6 @@
     </div>
     }
 
-
     <ng-template pTemplate="footer">
         <div class="row">
             <div class="col text-end">
@@ -468,4 +467,5 @@
             </div>
         </div>
     </ng-template>
+
 </p-dialog>

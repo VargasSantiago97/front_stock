@@ -3,7 +3,7 @@ var vars = {
     API_URI: 'http://localhost:3001',
     PDF_URI: 'http://localhost:3001',
     XLSX_URI: 'http://localhost:3001',
-    PADRON_URI: 'http://154.49.246.119/api/afip/api',
+    PADRON_URI: 'http://46.202.147.144/api/afip/api',
 
     modelosRemitos: [{ //ACTIVO EL PRIMERO
         id: 1,

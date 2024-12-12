@@ -12,11 +12,14 @@ import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { TagModule } from 'primeng/tag';
 import { PdfService } from '../../services/pdf.service';
 import { Remito, RemitoDevolucion } from '../../interfaces/remitos';
+import { TimelineModule } from 'primeng/timeline';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 
 @Component({
     selector: 'app-stock-por-clientes',
     standalone: true,
-    imports: [ProgressSpinnerModule, FormsModule, DialogModule, DividerModule, TagModule],
+    imports: [ProgressSpinnerModule, FormsModule, DialogModule, DividerModule, TagModule, TimelineModule, ButtonModule, CardModule],
     templateUrl: './stock-por-clientes.component.html',
     styleUrl: './stock-por-clientes.component.css'
 })
@@ -77,6 +80,8 @@ export class StockPorClientesComponent {
     detalleMovimientosCliente: string | undefined = ''
     detalleMovimientosArticulo: string | undefined = ''
 
+    events: any = []
+
     constructor(
         private route: ActivatedRoute,
         private cs: ConsultasService,
@@ -132,6 +137,13 @@ export class StockPorClientesComponent {
                 })
             })
         });
+
+        this.events = [
+            { status: 'Ingreso', date: '10/10/2020 10:30', icon: 'pi pi-arrow-circle-down', color: '#9C27B0', descripcion: 'asd' },
+            { status: 'Remito', date: '15/10/2020 14:00', icon: 'pi pi-arrow-circle-up', color: '#673AB7', descripcion: 'dsa' },
+            { status: 'Operacion', date: '15/10/2020 16:15', icon: 'pi pi-arrow-circle-down', color: '#FF9800', descripcion: '1asd' },
+            { status: 'Operacion', date: '16/10/2020 10:00', icon: 'pi pi-arrow-circle-up', color: '#607D8B', descripcion: '2asd' }
+        ];
     }
 
     actualizarTabla() {

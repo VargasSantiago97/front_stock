@@ -40,6 +40,7 @@ export const routes: Routes = [
             { path: 'stock', component: StockComponent, canActivate: [AuthGuard] },
             { path: 'stock/:id_cliente', component: StockComponent, canActivate: [AuthGuard] },
             { path: 'stockPorClientes', component: StockPorClientesComponent, canActivate: [AuthGuard] },
+            { path: 'stockPorClientes/:id_cliente', component: StockPorClientesComponent, canActivate: [AuthGuard] },
 
             { path: 'depositos', component: DepositosComponent, canActivate: [AuthGuard] },
             { path: 'variables', component: VariablesComponent, canActivate: [AuthGuard] }
