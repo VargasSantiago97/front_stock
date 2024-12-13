@@ -13,41 +13,41 @@ export class XlsxService {
 
     constructor(private http: HttpClient) { }
 
-    downloadExcelListado(data: any, nombre: string = '') {
+    downloadExcelListado(data: any, nombre: string = '', ruta: string = '') {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
 
-        this.http.post(`${this.XLSX_URI}/xlsx/ingresos`, data, { headers, responseType: 'blob' }).subscribe((data: Blob) => {
+        this.http.post(`${this.XLSX_URI}/xlsx/${ruta}`, data, { headers, responseType: 'blob' }).subscribe((data: Blob) => {
             const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             saveAs(blob, `${nombre} - LISTADO - ${this.fechaHoy()}.xlsx`);
         });
     }
 
-    downloadExcelDetalle(data: any, nombre: string = '') {
+    downloadExcelDetalle(data: any, nombre: string = '', ruta: string = '') {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
 
-        this.http.post(`${this.XLSX_URI}/xlsx/ingresos/detalles`, data, { headers, responseType: 'blob' }).subscribe((result: Blob) => {
+        this.http.post(`${this.XLSX_URI}/xlsx/${ruta}/detalles`, data, { headers, responseType: 'blob' }).subscribe((result: Blob) => {
             const blob = new Blob([result], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
             saveAs(blob, `${nombre} - REPORTE - ${this.fechaHoy()}.xlsx`);
         });
     }
 
-    downloadExcelDatos(data: any, nombre: string = '') {
+    downloadExcelDatos(data: any, nombre: string = '', ruta: string = '') {
         let token = sessionStorage.getItem('stock_token');
 
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
 
-        this.http.post(`${this.XLSX_URI}/xlsx/ingresos/datos`, data, { headers, responseType: 'blob' }).subscribe((data: Blob) => {
+        this.http.post(`${this.XLSX_URI}/xlsx/${ruta}/datos`, data, { headers, responseType: 'blob' }).subscribe((data: Blob) => {
             const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             saveAs(blob, `${nombre} - DATOS - ${this.fechaHoy()}.xlsx`);
         });

@@ -1365,13 +1365,13 @@ export class IngresosComponent {
 
     //INFORMES
     listadoXLSX() {
-        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS');
+        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS', 'ingresos');
     }
     detalleXLSX() {
         var user = this.as.isUser()
-        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion }, 'INGRESOS');
+        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion }, 'INGRESOS', 'ingresos');
     }
     datosXLSX() {
-        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS');
+        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS', 'ingresos');
     }
 }

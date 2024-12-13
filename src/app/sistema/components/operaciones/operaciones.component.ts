@@ -198,6 +198,8 @@ export class OperacionesComponent {
         this.cs.getAllPost(`operaciones/operaciones/?fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, { clientes: this.selectedClientes }, (e: any) => {
             this.dataTabla = e
 
+            console.log(e)
+
             //BORRAMOS this.ordenarTablaPorAnterior PARA QUE NO SE DE VUELTA EL FILTRO
             this.ordenarTablaPorAnterior = ''
             this.ordenarTabla(this.ordenarTablaPor)
@@ -827,13 +829,13 @@ export class OperacionesComponent {
 
     //INFORMES
     listadoXLSX() {
-        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS');
+        this.xlsx.downloadExcelListado({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'OPERACIONES', 'operaciones');
     }
     detalleXLSX() {
         var user = this.as.isUser()
-        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion }, 'INGRESOS');
+        this.xlsx.downloadExcelDetalle({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados, usuario: user.descripcion }, 'OPERACIONES', 'operaciones');
     }
     datosXLSX() {
-        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'INGRESOS');
+        this.xlsx.downloadExcelDatos({ datos: this.dataTabla, fecha: this.fechasFiltradas, clientes: this.clienteFiltrados }, 'OPERACIONES', 'operaciones');
     }
 }
