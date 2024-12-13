@@ -365,18 +365,7 @@
                     </td>
                     }
 
-                    @if (registro.tipo == 'REMITO') {
-                    <td class="text-nowrap">
-                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="descargarRemito(registro.id_documento)" title="Descargar PDF"><i
-                                class="pi pi-download"></i></button>
-                    </td>
-                    }
-
-                    @if (registro.tipo == 'DEV. REMITO') {
+                    @if (registro.tipo == 'DEV. REMITO' || registro.tipo == 'DEV. REMITO OTRO DEST' || registro.tipo == 'DEV. REMITO OTRO ORIGEN') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i
@@ -388,7 +377,7 @@
                     </td>
                     }
 
-                    @if (registro.tipo == 'REMITO OTRO DESTINO') {
+                    @if (registro.tipo == 'REMITO' || registro.tipo == 'REMITO OTRO DESTINO' || registro.tipo == 'REMITO OTRO ORIGEN') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
                             (click)="verRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
@@ -399,37 +388,13 @@
                     </td>
                     }
 
-                    @if (registro.tipo == 'DEV. REMITO OTRO DEST') {
+                    @if (registro.tipo == 'OPERACIONES') {
                     <td class="text-nowrap">
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i
-                                class="pi pi-file-pdf"></i>
+                            (click)="verOperacion(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
-                                class="pi pi-download"></i></button>
-                    </td>
-                    }
-
-                    @if (registro.tipo == 'REMITO OTRO ORIGEN') {
-                    <td class="text-nowrap">
-                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verRemito(registro.id_documento)" title="Ver PDF"><i class="pi pi-file-pdf"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="descargarRemito(registro.id_documento)" title="Descargar PDF"><i
-                                class="pi pi-download"></i></button>
-                    </td>
-                    }
-
-                    @if (registro.tipo == 'DEV. REMITO OTRO ORIGEN') {
-                    <td class="text-nowrap">
-                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="verDevolucionRemito(registro.id_documento)" title="Ver PDF"><i
-                                class="pi pi-file-pdf"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-primary m-0 mx-1 p-0 px-1 pt-1"
-                            (click)="descargarDevolucionRemito(registro.id_documento)" title="Descargar PDF"><i
+                            (click)="descargarOperacion(registro.id_documento)" title="Descargar PDF"><i
                                 class="pi pi-download"></i></button>
                     </td>
                     }

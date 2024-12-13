@@ -11,7 +11,7 @@ import { Deposito, Laboratorio } from '../../interfaces/variables';
 import { Articulo, Rubro, SubRubro } from '../../interfaces/productos';
 import { TagModule } from 'primeng/tag';
 import { PdfService } from '../../services/pdf.service';
-import { Remito, RemitoDevolucion } from '../../interfaces/remitos';
+import { Operaciones, Remito, RemitoDevolucion } from '../../interfaces/remitos';
 import { TimelineModule } from 'primeng/timeline';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -304,6 +304,36 @@ export class StockPorClientesComponent {
             console.error('Error al obtener el PDF', error);
         });
     }
+    verOperacion(id: string) {
+        this.pdf.operacion(id, 3).subscribe((blob: any) => {
+            const url = window.URL.createObjectURL(blob);
+            const windowFeatures = 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+            window.open(url, '_blank', windowFeatures);
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+    descargarOperacion(id: string) {
+        this.pdf.operacion(id, 1).subscribe((blob: any) => {
+
+            this.cs.getAll('operaciones/' + id, (operacion: Operaciones) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Operacion ${this.mostrarDocumento(operacion.punto, operacion.numero)} - EG ${operacion.razon_social_egreso} - IN ${operacion.razon_social_ingreso}.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+
+        }, error => {
+            console.error('Error al obtener el PDF', error);
+        });
+    }
+
+
+
+
+
 
     verMovimientosProductos(e: any, id_cliente: string, id_articulo: string) {
         if (e) e.preventDefault();
@@ -312,13 +342,13 @@ export class StockPorClientesComponent {
 
         this.actualizarDatosTablaMovimientosProducto(id_cliente, id_articulo)
 
-        this.detalleMovimientosCliente = this.clientes.find((e:Cliente) => e.id == id_cliente)?.alias
-        this.detalleMovimientosArticulo = this.articulos.find((e:Articulo) => e.id == id_articulo)?.descripcion
+        this.detalleMovimientosCliente = this.clientes.find((e: Cliente) => e.id == id_cliente)?.alias
+        this.detalleMovimientosArticulo = this.articulos.find((e: Articulo) => e.id == id_articulo)?.descripcion
 
         this.visible_movimientos = true
     }
     actualizarDatosTablaMovimientosProducto(id_cliente: string, id_articulo: string) {
-        
+
 
         this.cs.getAll(`operaciones/movimientosPorArticulo/?cliente=${id_cliente}&articulo=${id_articulo}&fechaDesde=${this.fechaFiltroDesde}&fechaHasta=${this.fechaFiltroHasta}`, (e: any) => {
             console.log(e)
