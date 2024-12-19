@@ -26,5 +26,5 @@ var vars = {
     }],
 
     //depositoSeleccionado: '46968435-013e-4fef-bfd2-00d60f74a204'
-    depositoSeleccionado: 'a28db089-297d-4440-9671-72bd1a24d263'
+    depositoSeleccionado: '054f2071-35eb-42a3-a280-5d12b16d9787'
 }
