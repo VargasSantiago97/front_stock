@@ -79,7 +79,7 @@
                         <i class="pi pi-sort-alt"></i>
                         }
                     </th>
-                    <th scope="col" (click)="ordenarTabla('establecimiento_descripcion')">EST/ORIGEN
+                    <th scope="col" (click)="ordenarTabla('establecimiento_descripcion')">EST/DESTINO
                         @if (ordenarTablaPor == 'establecimiento_descripcion') {
                         <i class="pi {{ordenarTablaOrden ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
                         } @else {
@@ -1261,6 +1261,22 @@
                             <i class="pi pi-sort-alt"></i>
                             }
                         </th>
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('observaciones')">OBS
+                            @if (ordenarTablaPor_art == 'observaciones') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
+                        <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('observaciones_sistema')">OBS SIS
+                            @if (ordenarTablaPor_art == 'observaciones_sistema') {
+                            <i
+                                class="pi {{ordenarTablaOrden_art ? 'pi-sort-amount-down' : 'pi-sort-amount-up-alt'}}"></i>
+                            } @else {
+                            <i class="pi pi-sort-alt"></i>
+                            }
+                        </th>
                         <th class="text-nowrap" scope="col" (click)="ordenarTablaArticulos('cantidad')">CANT.
                             DISP.
                             @if (ordenarTablaPor_art == 'cantidad') {
@@ -1321,6 +1337,8 @@
                         <td class="text-nowrap">{{registro.deposito}}</td>
                         <td class="text-nowrap">{{registro.lote}}</td>
                         <td class="text-nowrap">{{registro.vencimiento}}</td>
+                        <td class="text-nowrap">{{registro.observaciones}}</td>
+                        <td class="text-nowrap">{{registro.observaciones_sistema}}</td>
                         <td class="text-nowrap"><strong>{{registro.cantidad}}</strong> | ~{{registro.cantidadUnidadFundamental}}</td>
 
 
